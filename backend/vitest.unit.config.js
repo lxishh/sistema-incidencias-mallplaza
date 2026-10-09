@@ -11,6 +11,7 @@ module.exports = defineConfig({
       "test/integrations.test.js",
       "test/migration.test.js",
       "test/filters.test.js",
+      "test/qr.test.js",
     ],
     setupFiles: [path.join(__dirname, "test", "setup.js")],
     testTimeout: 15000,

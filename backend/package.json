@@ -10,7 +10,8 @@
     "test:unit": "vitest run --config vitest.unit.config.js",
     "db:migrate": "node-pg-migrate up --migrations-dir ../db/migrations --database-url-var DATABASE_URL",
     "db:migrate:test": "node scripts/migrate-test.js",
-    "db:seed": "node scripts/seed.js"
+    "db:seed": "node scripts/seed.js",
+    "qr": "node scripts/generate-demo-qr.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

@@ -1,5 +1,6 @@
 import "./styles.css";
 import { registerSW } from "virtual:pwa-register";
+import { generateQrSvg } from "./qr.js";
 
 const app = document.querySelector("#app");
 const state = {
@@ -18,6 +19,8 @@ const state = {
   error: "",
   success: null,
   loading: false,
+  qrModalOpen: false,
+  qrUrl: "",
 };
 
 const labels = {
@@ -91,6 +94,51 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
+function renderQrModal() {
+  if (!state.qrModalOpen) return "";
+  const currentUrl =
+    state.qrUrl ||
+    window.location.origin + window.location.pathname + "#/report";
+  let svg = "";
+  let errorMsg = "";
+  try {
+    svg = generateQrSvg(currentUrl, { sizePx: 220, darkColor: "#bd1737" });
+  } catch (e) {
+    errorMsg = e.message;
+  }
+  return `
+    <div class="modal-backdrop" data-action="close-qr">
+      <section class="qr-modal-card" role="dialog" aria-modal="true" aria-labelledby="qr-modal-title" data-qr-panel>
+        <div class="detail-header">
+          <div>
+            <p class="eyebrow">Demostración en terreno</p>
+            <h2 id="qr-modal-title">Escanear código QR</h2>
+          </div>
+          <button class="icon-button close-button" data-action="close-qr" type="button" aria-label="Cerrar modal de QR">×</button>
+        </div>
+        <div class="qr-modal-body">
+          <div class="qr-preview-box" id="qr-svg-container">
+            ${svg || `<p class="notice notice-error">${escapeHtml(errorMsg)}</p>`}
+          </div>
+          <label class="field">
+            <span>URL de destino (editable para red local / IP LAN):</span>
+            <input type="text" id="qr-url-input" value="${escapeHtml(currentUrl)}" placeholder="http://192.168.1.X:5173/#/report" autocomplete="off" />
+          </label>
+          <div class="qr-hint">
+            <strong>¿Cómo probar desde tu teléfono?</strong>
+            <p>1. Conecta el teléfono al mismo Wi-Fi que este equipo.</p>
+            <p>2. Si necesitas la IP LAN (ej. <code>192.168.x.x</code>), cámbiala en el campo superior para actualizar el código al instante.</p>
+            <p>3. Abre la cámara del móvil y escanea el código para reportar una falla.</p>
+          </div>
+        </div>
+        <div class="detail-actions">
+          <button class="button button-secondary button-full" type="button" data-action="close-qr">Cerrar</button>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
 function pageShell(content, active = "report") {
   const reportActive = active === "report" ? "is-active" : "";
   const manageActive = active === "manage" ? "is-active" : "";
@@ -103,10 +151,12 @@ function pageShell(content, active = "report") {
       <nav class="main-nav" aria-label="Navegación principal">
         <a class="nav-link ${reportActive}" href="#/report">Reportar</a>
         <a class="nav-link ${manageActive}" href="#/manage">Jefatura</a>
+        <button class="nav-link nav-qr" type="button" data-action="open-qr" aria-label="Abrir código QR para escanear en móvil"><span aria-hidden="true">☵</span> QR móvil</button>
       </nav>
       <span class="prototype-tag"><span></span> Prototipo local</span>
     </header>
     <main id="main-content" class="page-content">${content}</main>
+    ${renderQrModal()}
     <footer class="site-footer"><span>Gestión de incidencias operativas</span><span>Prototipo académico · Datos de prueba</span></footer>
     <div id="toast-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
   `;
@@ -543,6 +593,11 @@ async function onSubmit(event) {
 }
 
 async function onClick(event) {
+  if (event.target.matches('.modal-backdrop[data-action="close-qr"]')) {
+    state.qrModalOpen = false;
+    renderCurrentView();
+    return;
+  }
   if (event.target.matches(".modal-backdrop")) {
     state.detail = null;
     state.error = "";
@@ -551,6 +606,20 @@ async function onClick(event) {
   }
   const button = event.target.closest("button");
   if (!button) return;
+  if (button.dataset.action === "open-qr") {
+    state.qrModalOpen = true;
+    if (!state.qrUrl) {
+      state.qrUrl =
+        window.location.origin + window.location.pathname + "#/report";
+    }
+    renderCurrentView();
+    return;
+  }
+  if (button.dataset.action === "close-qr") {
+    state.qrModalOpen = false;
+    renderCurrentView();
+    return;
+  }
   if (button.dataset.open) await openDetail(button.dataset.open);
   if (button.dataset.page) {
     state.page = Number(button.dataset.page);
@@ -560,11 +629,16 @@ async function onClick(event) {
     button.disabled = true;
     state.error = "";
     try {
-      await api(`/api/incidencias/${encodeURIComponent(state.detail.id)}/estado`, {
-        method: "PATCH",
-        body: JSON.stringify({ estado: button.dataset.transition }),
-      });
-      state.detail = await api(`/api/incidencias/${encodeURIComponent(state.detail.id)}`);
+      await api(
+        `/api/incidencias/${encodeURIComponent(state.detail.id)}/estado`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ estado: button.dataset.transition }),
+        },
+      );
+      state.detail = await api(
+        `/api/incidencias/${encodeURIComponent(state.detail.id)}`,
+      );
       await loadIncidents();
       await loadKpis();
       announce(`Estado actualizado a ${labels.estado[state.detail.estado]}.`);
@@ -608,6 +682,15 @@ async function onClick(event) {
   }
 }
 
+function renderCurrentView() {
+  if (location.hash === "#/manage") {
+    if (!state.user) renderLogin();
+    else renderManagement();
+  } else {
+    renderReport();
+  }
+}
+
 function renderRoute() {
   state.error = "";
   if (location.hash === "#/manage") {
@@ -622,6 +705,23 @@ function renderRoute() {
     renderReport();
   }
 }
+
+app.addEventListener("input", (event) => {
+  if (event.target.id === "qr-url-input") {
+    state.qrUrl = event.target.value;
+    const container = document.querySelector("#qr-svg-container");
+    if (container) {
+      try {
+        container.innerHTML = generateQrSvg(state.qrUrl.trim(), {
+          sizePx: 220,
+          darkColor: "#bd1737",
+        });
+      } catch (err) {
+        container.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;
+      }
+    }
+  }
+});
 
 app.addEventListener("submit", onSubmit);
 app.addEventListener("click", onClick);

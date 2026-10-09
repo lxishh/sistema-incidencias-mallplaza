@@ -39,14 +39,13 @@ Prototipo local para reportar fallas operativas de Mallplaza Copiapó, calcular 
 
 ### Frontend implementado y verificado en entorno local
 
-- Frontend con Vite y configuración PWA, formulario público JSON, login Jefatura, listado, filtros, detalle/historial y transición de estados.
+- Frontend con Vite y configuración PWA, formulario público JSON, login Jefatura, listado, filtros, detalle/historial, transición de estados y modal interactivo para escaneo de código QR en terreno.
 - `npm ci` y `npm run build` ejecutados desde Ubuntu/WSL con Node 20; Vite produjo el bundle PWA, manifest, service worker y precache.
 - Se revisó el panel en navegador contra PostgreSQL. El filtro de un día mostró tres incidencias y dos resueltas; el listado conserva su propio alcance de filtros.
 - Los artefactos compilados no se versionan como resultado de esta tarea; el build es reproducible desde el código fuente.
 
 ### No implementado todavía
 
-- QR de demostración.
 - API multipart, escritura de fotos, almacenamiento local/S3.
 - Worker/cola de sync, reintentos automáticos, reenvío manual y conexión externa.
 - Despliegue AWS, cuentas/IAM/secrets productivos, alertas/observabilidad, HA/DR.
@@ -165,3 +164,19 @@ Las variables locales de prueba están excluidas con `.gitignore`. En un clon li
 - Decisiones: conservar `frontend/dist` sin versionar y mantener el árbol de trabajo limpio. No se tocan reglas de negocio ni esquemas.
 - Riesgos/bloqueos actuales: ninguno para la ejecución y demostración local.
 - Próxima tarea: ensayo controlado del guion de demostración (`docs/guion-demostracion-local.md`) y preparación de entrega académica (P1).
+
+## Registro de avance — 2026-10-09 (código QR para demostración local)
+
+- Tarea completada: generador de código QR para demostración local en PWA y script CLI sin dependencias externas.
+- Archivos/capacidades:
+  - `backend/src/utils/qr.js`: utilidad pura en Node.js/CommonJS que genera matrices QR (ISO/IEC 18004, V1-10, EC M), SVG y ASCII.
+  - `backend/test/qr.test.js`: 6 pruebas unitarias que verifican matrices, finders en las 3 esquinas, temporización, dark module, SVG y ASCII.
+  - `backend/scripts/generate-demo-qr.js`: CLI script (`npm run qr`) que detecta IP local o acepta parámetros (`--host`, `--url`), imprime QR en la terminal y genera `docs/demo-qr.html` (ficha lista para imprimir) y `frontend/public/demo-qr.svg`.
+  - `frontend/src/qr.js`: módulo ESM para cliente.
+  - `frontend/src/main.js` y `frontend/src/styles.css`: botón "QR móvil" en barra superior, modal interactivo con vista previa SVG reactiva y campo para adaptar la IP LAN en exposiciones en terreno.
+- Verificación y resultado:
+  - `npm run lint`: código de salida 0.
+  - `npm test`: 33 pruebas aprobadas en 9 archivos (todas en verde).
+  - `npm run build:frontend`: compilación PWA exitosa con Vite 7 y vite-plugin-pwa.
+- Decisiones: cero dependencias externas añadidas a `package.json`, preservando el stack y la auditoría de vulnerabilidades intacta.
+- Próxima tarea: ensayo guiado y coordinación de publicación Git con el equipo.

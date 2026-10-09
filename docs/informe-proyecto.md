@@ -5,7 +5,7 @@
 **Versión:** 1.8 — 9 de octubre de 2026
 **Fecha objetivo de entrega académica:** 14 de octubre de 2026  
 **Estado:** informe vivo; se actualizará en cada avance relevante.  
-**Alcance de esta versión:** prototipo local con backend, PWA, KPI y recorrido visual de punta a punta con datos sintéticos; 27 pruebas, lint, build PWA y auditoría completa de dependencias reportados en verde. Producción AWS, QR distribuible, carga de fotografías e integración real externa continúan pendientes.
+**Alcance de esta versión:** prototipo local con backend, PWA, KPI, generador QR de demostración (modal interactivo y ficha de demostración) y recorrido visual de punta a punta con datos sintéticos; 33 pruebas, lint, build PWA y auditoría completa de dependencias reportados en verde. Producción AWS, carga de fotografías e integración real externa continúan pendientes.
 
 ## Resumen ejecutivo
 
@@ -1125,5 +1125,5 @@ Requiere sesión Jefatura. Acepta filtros opcionales `desde` y `hasta` en format
 - **Fotos:** implementar `multipart/form-data` con 0–3 imágenes, 2 MB cada una, JPEG/PNG/WebP y almacenamiento privado S3. Aunque el esquema ya contiene metadatos, el endpoint todavía no guarda archivos.
 - **Casa Central:** el alta deja `estado_sync = PENDIENTE_SINC`. La interfaz mock no se invoca como integración productiva; en la etapa de integración se conectará el worker y se configurará el conector con la especificación institucional correspondiente.
 - **Dashboard:** el recorrido visual local de cola y KPI ya se verificó con el caso #2; las pruebas KPI cubren denominadores sin cierres y rangos. Gráficos adicionales dependen de necesidades validadas con Jefatura.
-- **PWA:** el recorrido funcional local de formulario y gestión se verificó en navegador; la generación del QR final, fotos y aceptación con usuarios siguen pendientes.
+- **PWA:** el recorrido funcional local de formulario y gestión se verificó en navegador; se incorporó el generador de QR local para demostraciones operativas (modal reactivo en PWA y ficha imprimible `docs/demo-qr.html`). La carga de fotos y aceptación formal con usuarios siguen pendientes.
 
