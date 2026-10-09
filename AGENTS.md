@@ -12,6 +12,8 @@ Prototipo de sistema web para reportar fallas operativas, calcular una prioridad
 
 ## Contexto vigente y documentación
 
+Antes de cambiar código, leer `docs/HANDOFF-ANTIGRAVITY.md` para el traspaso operativo y el estado de Git; luego seguir el orden obligatorio de documentación listado abajo.
+
 Antes de cambiar código, leer `docs/estado-proyecto.md` para distinguir capacidades actuales de pendientes y `docs/justificacion-modelo-datos.md` para comprender el esquema. `docs/informe-proyecto.md` es el informe universitario consolidado; mantenerlo alineado con avances reales y nunca atribuir aprobaciones a Mallplaza que no estén documentadas.
 
 ## Estructura del repo

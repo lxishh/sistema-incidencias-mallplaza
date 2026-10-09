@@ -2,7 +2,7 @@
 
 Este archivo conserva decisiones locales del Sprint 1. Para completar el diseño de grupo, mantener las preguntas abiertas listadas abajo; no cerrar ninguna con un supuesto silencioso.
 
-- El checkout entregado no incluye metadatos `.git`; no es posible crear la rama, commits ni PR desde este directorio. Los cambios locales se preparan sobre el workspace existente.
+- El checkout actual sí tiene `.git`, remoto `origin` y ramas/commits locales. La rama activa registrada es `docs/S1-academic-closeout`; todavía no se hizo push ni PR. Confirmar con el equipo qué remoto/base son oficiales antes de integrar historia.
 - PostgreSQL local usa el usuario/contraseña `mallplaza` / `mallplaza_dev`; el volumen de Compose inicializa `mallplaza_test` mediante un script SQL. Para reinicializar ambas bases desde cero se debe borrar explícitamente el volumen local.
 - `JWT_SECRET` debe tener al menos 32 caracteres. Las pruebas cargan `backend/.env.test` automáticamente. La suite de integración requiere iniciar primero PostgreSQL con Docker Compose.
 - La integración de Casa Central solo simula resultados y genera el ID ficticio `MOCK-1`; no representa el contrato ni un payload de producción. `registrarIntento` implementa el mapeo y guardado de resultados para un worker futuro, pero no hay worker encolando intentos ni filas automáticas en esta etapa.

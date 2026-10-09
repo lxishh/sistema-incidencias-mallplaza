@@ -12,17 +12,18 @@ El informe consolidado editable se mantiene en Markdown y también se entrega co
 
 ## Lectura recomendada
 
-1. [Informe consolidado](informe-proyecto.md): documento principal con avance, alcance estable/adaptable y anexos técnicos para el informe académico.
-2. [Estado vivo del proyecto](estado-proyecto.md): contexto breve para retomar programación en cada sesión.
-3. [Justificación del modelo de datos](justificacion-modelo-datos.md): explicación didáctica del esquema y guía de defensa oral.
-4. [Bitácora Sprint 1](bitacora-sprint-1.md): qué se construyó, archivos, razones, pruebas y límites.
-5. [Selección de tecnologías](seleccion-tecnologias.md): comparación cualitativa/cuantitativa, herramientas y recursos.
-6. [Procesos, UML y arquitectura](procesos-y-arquitectura.md): procesos BPMN conceptuales, casos de uso, componentes, topología e infraestructura.
-7. [Datos, KPI y SLA](datos-kpi-sla.md): modelo relacional, diccionario, indicadores y niveles de servicio.
-8. [Calidad, operación y planificación](calidad-operacion-plan.md): plan de pruebas, estándares, continuidad, cambios y fases.
-9. [Contrato API Sprint 1](api.md) y [Preguntas abiertas](preguntas.md) para el equipo técnico.
-10. [Ejecución local](ejecucion-local.md): arranque de PostgreSQL, migración, seed ficticio, API, frontend y compilación.
-11. [Guion de demostración local](guion-demostracion-local.md): escenario sintético, pasos, resultados esperados y aceptación visual local ya realizada.
+1. [Traspaso de contexto para Antigravity](HANDOFF-ANTIGRAVITY.md): resumen técnico, evidencias, pendientes, Git y prompt para retomar.
+2. [Informe consolidado](informe-proyecto.md): documento principal con avance, alcance estable/adaptable y anexos técnicos para el informe académico.
+3. [Estado vivo del proyecto](estado-proyecto.md): contexto breve para retomar programación en cada sesión.
+4. [Justificación del modelo de datos](justificacion-modelo-datos.md): explicación didáctica del esquema y guía de defensa oral.
+5. [Bitácora Sprint 1](bitacora-sprint-1.md): qué se construyó, archivos, razones, pruebas y límites.
+6. [Selección de tecnologías](seleccion-tecnologias.md): comparación cualitativa/cuantitativa, herramientas y recursos.
+7. [Procesos, UML y arquitectura](procesos-y-arquitectura.md): procesos BPMN conceptuales, casos de uso, componentes, topología e infraestructura.
+8. [Datos, KPI y SLA](datos-kpi-sla.md): modelo relacional, diccionario, indicadores y niveles de servicio.
+9. [Calidad, operación y planificación](calidad-operacion-plan.md): plan de pruebas, estándares, continuidad, cambios y fases.
+10. [Contrato API Sprint 1](api.md) y [Preguntas abiertas](preguntas.md) para el equipo técnico.
+11. [Ejecución local](ejecucion-local.md): arranque de PostgreSQL, migración, seed ficticio, API, frontend y compilación.
+12. [Guion de demostración local](guion-demostracion-local.md): escenario sintético, pasos, resultados esperados y aceptación visual local ya realizada.
 
 ## Alcance real a la fecha
 
