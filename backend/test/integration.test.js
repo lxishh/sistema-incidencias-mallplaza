@@ -40,6 +40,11 @@ describe("autenticación", () => {
       .post("/api/auth/logout")
       .set("Cookie", response.headers["set-cookie"][0].split(";")[0]);
     expect(logout.status).toBe(204);
+    expect(logout.headers["set-cookie"][0]).toMatch(/^mallplaza_session=;/);
+    await request(app)
+      .get("/api/auth/me")
+      .set("Cookie", logout.headers["set-cookie"][0].split(";")[0])
+      .expect(401);
   });
   it("usa error genérico para credenciales incorrectas y usuario inactivo", async () => {
     await createUser();

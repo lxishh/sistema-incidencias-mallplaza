@@ -2,10 +2,10 @@
 
 ## Sistema de Gestión y Trazabilidad de Incidencias — Mallplaza Copiapó
 
-**Versión:** 1.6 — 9 de octubre de 2026
+**Versión:** 1.7 — 9 de octubre de 2026
 **Fecha objetivo de entrega académica:** 14 de octubre de 2026  
 **Estado:** informe vivo; se actualizará en cada avance relevante.  
-**Alcance de esta versión:** backend Sprint 1, interfaz PWA local y endpoint KPI verificados mediante pruebas y un recorrido visual local de punta a punta con datos sintéticos. Despliegue AWS productivo fuera del alcance inmediato.
+**Alcance de esta versión:** backend Sprint 1, interfaz PWA local y endpoint KPI verificados mediante pruebas y recorrido visual local de punta a punta con datos sintéticos. El audit completo de dependencias quedó sin hallazgos. Despliegue AWS productivo fuera del alcance inmediato.
 
 ## Resumen ejecutivo
 
@@ -45,11 +45,11 @@ Estos puntos se consideran cerrados en el prototipo, salvo que el dueño del req
 - Alta pública calcula prioridad y deja `estado_sync = PENDIENTE_SINC`; el endpoint responde sin esperar Casa Central.
 - Jefatura lista/filtra incidencias, ve detalle/historial y avanza estados.
 - El frontend PWA incluye formulario de reporte JSON, login de Jefatura, cola, filtros, detalle e historial. El formulario no carga fotos.
-- Se agregó `GET /api/dashboard/kpis` con filtro por período, MTTR, cumplimiento SLA, abiertas vencidas y conteos categorizados; requiere validación integrada antes de considerarlo liberado.
+- Se agregó `GET /api/dashboard/kpis` con filtro por período, MTTR, cumplimiento SLA, abiertas vencidas y conteos categorizados; pruebas y recorrido visual local aprobaron su uso en el prototipo.
 - El RUT no aparece en lista ni respuesta pública; el detalle autenticado sí lo incluye bajo el contrato actual y requiere validar necesidad/retención.
 - PostgreSQL local corre por Docker Compose; la migración replica el modelo inicial del prototipo en `db/schema.sql`.
 - El modelo de datos está explicado y sujeto a revisión técnica/académica; no se afirma que sea una especificación entregada o aprobada por Mallplaza.
-- Lint y 27 pruebas de backend pasaron. El build PWA y flujos de KPI/alta se verificaron localmente con datos sintéticos; el 9 de octubre se completó además una prueba visual de punta a punta del caso #2 en `feature/S1-dashboard-kpis`, commit `61b48e4`. bcrypt 6.0.0 pasó las pruebas de autenticación en Node 20 y `npm audit --omit=dev` informó cero vulnerabilidades productivas. El commit sigue local, sin publicar.
+- Lint y 27 pruebas de backend pasaron. El build PWA y flujos KPI/alta se verificaron localmente con datos sintéticos; el 9 de octubre se completó la prueba visual de punta a punta del caso #2 en `feature/S1-dashboard-kpis`, commit `61b48e4`. bcrypt 6.0.0, Vitest 4.1.11 y node-pg-migrate 8.0.4 pasaron en Node 20.20.2; `npm audit` completo informa cero vulnerabilidades. La actualización de dependencias está en la rama local `chore/S1-dev-dependency-audit`, sin publicar.
 
 Si el frontend necesita cambiar contratos, primero actualizamos `docs/api.md`, definimos compatibilidad, sumamos pruebas y recién después modificamos consumidores/servidor.
 
@@ -218,26 +218,26 @@ El alta responde con ID, prioridad, estado y fecha; el RUT no aparece en la list
 
 #### Estado de Git
 
-El workspace tiene `.git`; se detectó `origin` y la identidad Git ya está configurada en Ubuntu/WSL. Este cambio se guarda en `feature/S1-dashboard-kpis` mediante un commit local. No se publica ni se abre PR hasta revisar los cambios con el equipo. No se incluyeron artefactos compilados de `frontend/dist`.
+El workspace tiene `.git`; `origin` y la identidad Git están configurados en Ubuntu/WSL. La aceptación visual y su registro están en `feature/S1-dashboard-kpis`; la actualización de dependencias se revisa en `chore/S1-dev-dependency-audit`. Ninguna rama se ha publicado ni abierto como PR. No se incluyeron artefactos compilados de `frontend/dist`.
 
 ### 5. Verificación realizada
 
 - `npm run lint`: ejecutado correctamente.
-- `npm test`: **27 pruebas aprobadas en 8 archivos**, incluidas pruebas KPI, autenticación e integración HTTP/PostgreSQL.
-- `npm run db:migrate`: no hay migraciones pendientes en `mallplaza_dev`; el runner emite una advertencia de timestamp no reconocible por el identificador legado con guion.
-- `npm audit --omit=dev`: cero vulnerabilidades en dependencias productivas después de actualizar bcrypt a 6.0.0.
+- `npm test`: **27 pruebas aprobadas en 8 archivos**, incluidas KPI, autenticación e integración HTTP/PostgreSQL. La prueba de logout comprueba HTTP 204, cookie vaciada y rechazo 401 posterior en `/api/auth/me`.
+- `npm run db:migrate` y `npm run db:migrate:test`: no hay migraciones pendientes; ambos comandos terminan correctamente y advierten que el identificador legado con guion no permite determinar timestamp.
+- `npm audit`: cero vulnerabilidades en el árbol completo después de actualizar Vitest, node-pg-migrate y bcrypt.
 - PostgreSQL local quedó iniciado en Docker Desktop para el trabajo posterior.
-- **Prueba visual local (2026-10-09, `61b48e4`):** el reporte sintético #2 se confirmó como `CRITICA`/`PENDIENTE`; Jefatura lo localizó y abrió, y el historial registró `PENDIENTE → EN_PROCESO → RESUELTA`. La cola mostró #2 Resuelta. Los KPI visibles quedaron en 2 incidencias del período, 1 abierta, 1 resuelta, MTTR 0,8 min, SLA 100 % (1/1) y 0 vencidas. La sincronización permaneció `PENDIENTE_SINC`, sin conexión real a Casa Central. La incidencia #1 preexistente se conservó y no se guardó una captura.
+- **Prueba visual local (2026-10-09, `61b48e4`):** el reporte sintético #2 se confirmó como `CRITICA`/`PENDIENTE`; Jefatura lo localizó y abrió, y el historial registró `PENDIENTE → EN_PROCESO → RESUELTA`. La cola mostró #2 Resuelta. Los KPI visibles quedaron en 2 incidencias del período, 1 abierta, 1 resuelta, MTTR 0,8 min, SLA 100 % (1/1) y 0 vencidas. La sincronización permaneció `PENDIENTE_SINC`, sin conexión real a Casa Central. La incidencia #1 preexistente se conservó y no se guardó captura. El navegador informó `ERR_ABORTED` durante logout; después de recargar, la ruta pidió autenticación. La prueba API confirma que se emitió la cookie vaciada; la causa exacta del evento de red no quedó capturada.
 
 Los comandos se verificaron desde una copia local del workspace porque el shell de Windows no ejecuta scripts npm desde una ruta UNC de WSL. La prueba usa el mismo código sincronizado del proyecto y PostgreSQL local.
 
 ### 6. Límites y siguientes entregas
 
-No afirmar todavía que están disponibles: interfaz PWA/QR, carga multipart de 0–3 fotos, S3, consulta de KPI, dashboard, job de sincronización real, endpoint de reenvío, despliegue de producción, alertas/monitoreo, alta disponibilidad ni simulacro de DR. El esquema tiene parte de la estructura necesaria, pero el flujo y los servicios asociados deben implementarse y probarse.
+No afirmar todavía que están disponibles: QR físico distribuido, carga multipart de 0–3 fotos, S3, worker de sincronización real, endpoint de reenvío, despliegue de producción, alertas/monitoreo, alta disponibilidad ni simulacro de DR. El dashboard/KPI local sí está implementado y probado; el esquema tiene parte de la estructura para fotos/sync, pero esos servicios asociados deben implementarse y probarse.
 
 ### 7. Dependencias
 
-Después de actualizar bcrypt a 6.0.0, la auditoría de producción queda en cero vulnerabilidades. La auditoría completa todavía informa cinco hallazgos en dependencias de desarrollo (1 moderado, 2 altos y 2 críticos); deben revisarse por exposición antes de cualquier uso de esas dependencias en producción. No se ejecutó `npm audit fix --force`.
+El audit inicial identificó cinco avisos en dependencias de desarrollo: Vitest y sus transitivas (`@vitest/mocker`, `tinypool`) y `glob` a través de node-pg-migrate. Se actualizaron Vitest a 4.1.11 y node-pg-migrate a 8.0.4, que incorpora glob 11.1.0; bcrypt ya estaba en 6.0.0. La suite de 27 pruebas, lint, comandos de migración y audit completo pasan: cero vulnerabilidades. Las versiones se probaron en Node 20.20.2 y Vite 7. No se ejecutó `npm audit fix --force`.
 
 ## Cómo entender y defender el modelo de datos
 
@@ -946,7 +946,7 @@ El plan combina pruebas unitarias, integración y aceptación. Las pruebas exist
 | TLS 1.2 o superior | Protege datos en tránsito entre móvil, API, RDS e integración. HTTPS obligatorio en diseño productivo. | No existe despliegue productivo que validar. |
 | OWASP API Security | Complementa controles de autorización por objeto, autenticación, consumo de recursos, configuración y exposición de datos en endpoints. | Rate limit, validación y autorización Jefatura parcial; revisar todos los endpoints previo a producción. |
 | Accesibilidad WCAG 2.2 AA (objetivo de interfaz) | Formulario QR debe ser operable con teclado/lector, etiquetas/contraste y mensajes entendibles. Es relevante para operarios con dispositivos diversos. | Interfaz inicial implementada; revisar contraste, teclado y lector en pruebas de aceptación. |
-| Convención Conventional Commits / PR | Hace cambios auditables y facilita revisión grupal y rollback. | Imposible aplicar en checkout sin `.git`; implementar al mover el trabajo al repo compartido. |
+| Convención Conventional Commits / PR | Hace cambios auditables y facilita revisión grupal y rollback. | Commits locales en ramas feature/chore; PR y publicación remota pendientes de revisión grupal. |
 
 La mención de norma no implica auditoría ni conformidad certificada. Antes de entrega académica, citar edición exacta/fecha de consulta de estándares en bibliografía formal y validar con el docente cuál espera el curso.
 
@@ -1062,7 +1062,7 @@ Responde `201 { id, prioridad, estado, estado_sync, fecha_creacion }`.
 Público, JSON `{ "email", "password" }`. Rate limit por IP de 10 intentos por ventana de 15 minutos (configurable). En éxito responde `200 { id, nombre, email, rol }` y establece una cookie JWT `httpOnly`, `SameSite=Strict`, de 8 horas; en producción también `Secure`. Credenciales incorrectas o usuario inactivo responden `401` con `Credenciales inválidas`.
 
 ### `POST /api/auth/logout`
-Público. Elimina la cookie de sesión y responde `204`.
+Público. Elimina la cookie de sesión y responde `204`. La suite verifica `Set-Cookie` vacía y que `/api/auth/me` rechace esa cookie con HTTP 401.
 
 ### `GET /api/auth/me`
 Requiere sesión Jefatura. Responde `{ id, nombre, email, rol }`.

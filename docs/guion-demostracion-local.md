@@ -17,6 +17,8 @@ El recorrido presenta el registro de una falla, su priorización determinista, l
 
 ## Escenario sugerido
 
+Según la aceptación visual reportada el 9 de octubre, `mallplaza_dev` conserva la incidencia sintética #1 y la #2 resuelta. Para la exposición final, reutilizar la #2 en la vista de Jefatura y mostrar sus métricas; no volver a enviarla desde el formulario ni limpiar la base. Si se necesita repetir todo el ciclo desde cero, usar una base descartable acordada por el equipo.
+
 Registrar un evento sintético con estos valores:
 
 | Campo | Valor de demostración |
@@ -54,5 +56,6 @@ Registrar un evento sintético con estos valores:
 - **KPI:** comprobados con datos sintéticos en una base temporal y revisados visualmente en el panel de gestión.
 - **Aceptación visual completada — 2026-10-09:** en `localhost`, con PostgreSQL local y el commit `61b48e4` de `feature/S1-dashboard-kpis`, se registró el reporte sintético **#2**. La confirmación mostró prioridad `CRITICA` y estado `PENDIENTE`, sin mostrar el RUT. Jefatura lo localizó por ID, abrió el detalle y avanzó el historial `PENDIENTE → EN_PROCESO → RESUELTA`. La fila de la cola terminó como `Resuelta`; el panel se actualizó a 2 incidencias del período, 1 abierta y 1 resuelta, MTTR 0,8 min, SLA 100 % (1 de 1 dentro del objetivo) y 0 abiertas vencidas. La sincronización quedó `PENDIENTE_SINC`, como corresponde al mock. Se cerró sesión y la ruta de Jefatura volvió a pedir autenticación al recargar. La consola del navegador registró `ERR_ABORTED` en la petición de logout durante el cambio de vista; aunque la sesión no quedó disponible al recargar, conviene revisar ese evento en el siguiente pase de robustez.
 - **Datos preexistentes preservados:** la cola también contenía la incidencia #1, que no se modificó. No se limpió la base compartida ni se guardó una captura; no se cargaron datos personales reales. La evidencia es el recorrido visual observado, no una prueba de usuario ni una validación de Mallplaza.
+- **Logout — robustez de API:** la prueba automatizada comprueba que la ruta responde 204, expira `mallplaza_session` y el endpoint `/api/auth/me` rechaza la cookie vaciada. Esto verifica el contrato del servidor, pero no reproduce el `ERR_ABORTED` observado en la consola del navegador; la causa exacta del evento del navegador sigue sin determinar.
 
 Al repetirlo, anotar fecha, versión/commit, ambiente, ID sintético, resultado por paso, captura autorizada y defectos observados. No registrar RUT reales en capturas.

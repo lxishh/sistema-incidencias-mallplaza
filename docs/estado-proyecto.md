@@ -50,13 +50,22 @@ Prototipo local para reportar fallas operativas de Mallplaza Copiapó, calcular 
 - API multipart, escritura de fotos, almacenamiento local/S3.
 - Worker/cola de sync, reintentos automáticos, reenvío manual y conexión externa.
 - Despliegue AWS, cuentas/IAM/secrets productivos, alertas/observabilidad, HA/DR.
-- Repo Git tiene remoto `origin` e identidad local configurada; el trabajo de esta iteración queda en `feature/S1-dashboard-kpis`, con commit local no publicado.
-- El archivo de migración coincide con el identificador histórico `20261009000100-initial-schema`. `npm run db:migrate` informa que no hay migraciones pendientes; muestra una advertencia de timestamp no reconocible por el separador legado con guion, sin aplicar cambios.
-- bcrypt se actualizó a 6.0.0; compatibilidad validada con Node 20 por pruebas de login y sesión. `npm audit --omit=dev` reporta cero vulnerabilidades productivas. El audit completo todavía reporta 5 hallazgos en dependencias de desarrollo.
+
+### Verificación transversal
+
+- Git tiene `origin` e identidad local configurada. El flujo KPI/demo está en `feature/S1-dashboard-kpis`; el audit y robustez, en `chore/S1-dev-dependency-audit`. Cambios locales no publicados.
+- El archivo de migración coincide con el identificador histórico `20261009000100-initial-schema`. Los comandos de migración terminan sin cambios; el runner muestra una advertencia de timestamp por el separador legado con guion.
+- bcrypt 6.0.0, Vitest 4.1.11 y node-pg-migrate 8.0.4 se validaron en Node 20.20.2. `npm audit` completo reporta cero vulnerabilidades; lint y 27 pruebas pasan.
 
 ## 5. Siguiente objetivo corto
 
 Al 14 de octubre se prioriza un prototipo local reproducible: interfaz de reporte, gestión Jefatura, datos PostgreSQL y KPI principales. Si el tiempo se reduce, diferir fotos y mock visual antes que debilitar alta/prioridad/estados/gestión/KPI. No hacer deploy a AWS ni afirmar integración real para cumplir la fecha.
+
+## Próxima tarea activa
+
+- Aceptación visual y audit de dependencias completados; build PWA, lint, 27 pruebas, migraciones locales y `npm audit` completo en verde.
+- Pase final: repasar guion, conservar el caso sintético #2 existente y verificar instrucciones de arranque en el equipo de exposición.
+- Logout: la prueba backend confirma HTTP 204, cookie vaciada y 401 posterior en `/api/auth/me`. En la demo, el navegador mostró `ERR_ABORTED`, pero al recargar pidió autenticación. Esto sugiere que la sesión sí se cerró; sin una traza de red no se atribuye una causa al evento.
 
 ## 6. Protocolo de actualización
 
@@ -117,4 +126,19 @@ Las variables locales de prueba están excluidas con `.gitignore`. En un clon li
 - Tarea completada: aceptación visual local del alta, consulta de Jefatura, detalle, dos transiciones, cola, KPI y cierre de sesión.
 - Evidencia: commit `61b48e4` en `feature/S1-dashboard-kpis`; reporte sintético #2 confirmó `CRITICA`/`PENDIENTE`, luego `PENDIENTE → EN_PROCESO → RESUELTA`. Cola final: #2 Resuelta. KPI observados: 2 del período, 1 abierta, 1 resuelta, MTTR 0,8 min, SLA 100 % (1/1), 0 vencidas. `PENDIENTE_SINC` persistió según el alcance mock.
 - Límites/observaciones: la incidencia previa #1 se conservó; no se limpiaron datos ni se guardaron capturas. No se usaron datos personales reales y la demo no valida aceptación de Mallplaza. La ruta de gestión volvió a pedir login después de cerrar sesión y recargar; el navegador reportó `ERR_ABORTED` para la petición de logout durante el cambio de vista, evento a revisar en robustez.
-- Próximo paso: revisar los cinco hallazgos del audit de dependencias de desarrollo y preparar la demo final.
+- Próximo paso: revisar los hallazgos del audit de dependencias de desarrollo y preparar la demo final.
+
+## Registro de avance — 2026-10-09 (auditoría de dependencias)
+
+- Tarea completada: Vitest 4.1.11 y node-pg-migrate 8.0.4 con glob 11.1.0; bcrypt ya estaba en 6.0.0.
+- Verificación: lint, 27 pruebas, `npm audit` completo con cero vulnerabilidades, `npm run db:migrate` y `npm run db:migrate:test`.
+- Decisión: mantener Node.js 20.20.2 y Vite 7; evitar node-pg-migrate 9 porque la versión 8 ya elimina los hallazgos y pasa las rutas del proyecto.
+- Próxima tarea: build final, aserción de cookie en logout y preparación de la exposición.
+
+## Registro de avance — 2026-10-09 (preparación final)
+
+- Tarea completada: aserción de logout agregada a la prueba de autenticación; valida 204, cookie expirada y 401 posterior. Build PWA final completado.
+- Verificación: lint y 27 pruebas / 8 archivos; `npm audit` completo con 0; `db:migrate` y `db:migrate:test` sin migraciones pendientes; PWA Vite 7.3.7 / vite-plugin-pwa 2.0.0 compila y genera manifest/service worker. Los artefactos de `dist` generados se restauraron y no se incluyen en el cambio.
+- Datos de demo: se conserva #1 y #2 según la aceptación visual reportada; no se limpió la base ni se creó otro registro.
+- Límite: la causa de `ERR_ABORTED` del navegador no se pudo observar en una traza; la prueba de servidor sí confirma que el logout funciona.
+- Próximo paso: ensayo académico usando el reporte #2, sin alterar datos.
