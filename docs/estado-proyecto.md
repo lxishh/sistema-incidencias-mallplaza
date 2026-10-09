@@ -35,13 +35,14 @@ Prototipo local para reportar fallas operativas de Mallplaza Copiapó, calcular 
 - Función de prioridad pura, validación Zod/RUT, filtro/listado/detalle, cambio de estado y consulta de historial.
 - PostgreSQL por Docker Compose, esquema y migración equivalentes.
 - Interfaz `CasaCentralClient` mock y helper de auditoría; no se ejecutan desde un worker.
-- ESLint y Vitest/Supertest: último resultado 25 pruebas en 8 archivos y lint aprobado.
+- ESLint y Vitest/Supertest: lint aprobado y 27 pruebas aprobadas en 8 archivos, incluidos cálculos KPI y validación de rangos.
 
-### Frontend implementado, pendiente de verificación integrada
+### Frontend implementado y verificado en entorno local
 
 - Frontend con Vite y configuración PWA, formulario público JSON, login Jefatura, listado, filtros, detalle/historial y transición de estados.
-- El build PWA dejó artefactos en `frontend/dist` (manifest, service worker y assets); se necesita repetir `npm ci` y `npm run build` desde Ubuntu/WSL con Node Linux debido a la instalación inicial desde Windows/UNC.
-- El panel incluye tarjetas y distribuciones KPI con filtro de fechas; frontend y endpoint siguen pendientes de validación integrada en entorno Linux/PostgreSQL.
+- `npm ci` y `npm run build` ejecutados desde Ubuntu/WSL con Node 20; Vite produjo el bundle PWA, manifest, service worker y precache.
+- Se revisó el panel en navegador contra PostgreSQL. El filtro de un día mostró tres incidencias y dos resueltas; el listado conserva su propio alcance de filtros.
+- Los artefactos compilados no se versionan como resultado de esta tarea; el build es reproducible desde el código fuente.
 
 ### No implementado todavía
 
@@ -49,7 +50,9 @@ Prototipo local para reportar fallas operativas de Mallplaza Copiapó, calcular 
 - API multipart, escritura de fotos, almacenamiento local/S3.
 - Worker/cola de sync, reintentos automáticos, reenvío manual y conexión externa.
 - Despliegue AWS, cuentas/IAM/secrets productivos, alertas/observabilidad, HA/DR.
-- Repo Git local inicializado en la rama `develop`; a la última comprobación no hay commits ni remoto configurado.
+- Repo Git tiene remoto `origin` e identidad local configurada; el trabajo de esta iteración queda en `feature/S1-dashboard-kpis`, con commit local no publicado.
+- El archivo de migración coincide con el identificador histórico `20261009000100-initial-schema`. `npm run db:migrate` informa que no hay migraciones pendientes; muestra una advertencia de timestamp no reconocible por el separador legado con guion, sin aplicar cambios.
+- bcrypt se actualizó a 6.0.0; compatibilidad validada con Node 20 por pruebas de login y sesión. `npm audit --omit=dev` reporta cero vulnerabilidades productivas. El audit completo todavía reporta 5 hallazgos en dependencias de desarrollo.
 
 ## 5. Siguiente objetivo corto
 
@@ -73,16 +76,16 @@ Actualizar también `docs/informe-proyecto.md` con lo que haya quedado demostrad
 
 ## 7. Git y configuración local
 
-El workspace sí tiene `.git` y la rama actual es `develop`, pero aún no hay commits ni remoto configurado. Los comandos de Git deben ejecutarse dentro de Ubuntu/WSL, no desde Git for Windows por la ruta UNC. Antes del primer commit se debe confirmar si existe un remoto grupal y configurar el autor Git en WSL. No afirmar que hay PR hasta crearlo realmente.
+El workspace usa Git desde Ubuntu/WSL para evitar problemas con la ruta UNC. El remoto `origin` y la identidad local están configurados. La iteración se guarda en `feature/S1-dashboard-kpis`; no se ha publicado ni se declara PR creado.
 
 Las variables locales de prueba están excluidas con `.gitignore`. En un clon limpio, crear `backend/.env.test` a partir de `backend/.env.test.example`; versionar únicamente el archivo de ejemplo, nunca un `.env` con credenciales reales.
 
 ## Registro de avance — 2026-10-09
 
 - Tarea completada: backend base y documentación inicial; elaborado informe consolidado con procesos, UML, tecnologías, datos, KPI/SLA, calidad y operación.
-- Verificación backend: lint y 25 pruebas aprobadas; migración aplicada en PostgreSQL local.
+- Verificación backend: lint y 27 pruebas aprobadas; la migración ya constaba aplicada en PostgreSQL local.
 - Revisión completada: `schema.sql` está identificado como borrador creado con ayuda de IA; `docs/justificacion-modelo-datos.md` explica su diseño y limitaciones. El informe presenta el modelo como propuesta del prototipo y no como especificación corporativa aprobada.
-- Riesgo/bloqueo: Git ya está inicializado, pero está vacío y no tiene remoto. WSL devolvió `E_ACCESSDENIED` para comandos invocados desde Windows; el lint también falló al invocarlo sobre UNC. Node/npm deben usarse desde una terminal Ubuntu nativa.
+- Riesgo/bloqueo: Git ya está inicializado, pero está vacío y no tiene remoto. WSL devuelve `E_ACCESSDENIED` desde esta sesión y Docker deniega acceso a su API; Node/npm deben usarse desde una terminal Ubuntu nativa y el daemon debe estar accesible a esa distribución.
 - Próxima tarea recomendada: desde Ubuntu ejecutar `npm ci` en frontend y compilar PWA; verificar KPI con PostgreSQL y datos controlados; inspeccionar UI en navegador; luego preparar commit en WSL.
 
 ## Registro de avance — 2026-10-09 (continuación)
@@ -92,5 +95,13 @@ Las variables locales de prueba están excluidas con `.gitignore`. En un clon li
 - KPI cubiertos por endpoint y panel: total, abiertas, resueltas, vencidas, MTTR, cumplimiento SLA y distribuciones por prioridad, falla, ubicación y estado de sync, con filtro inclusivo por fecha local.
 - Verificación: `node --check` aprobó los JavaScript modificados y `node backend/scripts/lint.js` terminó con código 0. Los artefactos `frontend/dist` existentes son de una compilación previa; el build actual y los flujos integrados siguen pendientes. No se ejecutaron pruebas automatizadas en esta continuación.
 - Decisiones: conservar `frontend/package-lock.json`, limpiar e instalar solo desde Ubuntu; no eliminar lockfile salvo error de sincronización de `npm ci`.
-- Riesgos/bloqueos: Docker Desktop no expuso el daemon al consultar `docker ps`; endpoint KPI requiere validación automatizada e integración; frontend build actual pendiente; Git sin commit/remoto.
-- Próxima tarea: ejecutar instalación/build y verificaciones desde la terminal Ubuntu, revisar el panel en navegador y cerrar integración.
+- Riesgos/bloqueos de ese momento: WSL/Docker inaccesibles a la sesión; resueltos al habilitar ejecución desde Ubuntu para la siguiente tarea.
+- Próxima tarea: validar el build PWA y los KPI contra datos controlados.
+
+## Registro de avance — 2026-10-09 (validación PWA y KPI)
+
+- Tarea completada: compilación PWA, revisión visual del panel y validación del endpoint KPI con base temporal aislada.
+- Verificación: `npm ci` + `npm run build` en frontend; `npm run lint` y `npm test` en backend (27 pruebas / 8 archivos). Casos KPI probaron MTTR, SLA, abiertas vencidas, conteos categorizados, autorización, rangos inválidos y denominadores vacíos. Con datos sintéticos, el API dio 4 incidencias, 2 resueltas, 2 abiertas, 1 vencida, MTTR 0,9 min y SLA 100%; el filtro del 9 de octubre mostró 3 incidencias, 2 resueltas, MTTR 0,9 min y SLA 100%. La base temporal se eliminó; `mallplaza_dev` se conservó.
+- Verificación adicional: con el API aislado en una copia temporal de `mallplaza_dev`, el alta devolvió HTTP 201, prioridad `CRITICA`, estado `PENDIENTE` y `PENDIENTE_SINC`; la respuesta no expuso el RUT. La copia se eliminó al terminar.
+- Hallazgos abiertos: advertencia informativa por formato legado del timestamp de migración; cinco hallazgos en dependencias de desarrollo pendientes de triage. No hay vulnerabilidades en dependencias de producción según `npm audit --omit=dev`.
+- Próxima tarea: revisar visualmente envío, detalle y transición desde la interfaz; preparar instrucciones de demo con datos ficticios y decidir triage de dependencias de desarrollo.

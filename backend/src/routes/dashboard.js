@@ -49,7 +49,7 @@ function dashboardRouter({ config, pool }) {
       }
 
       const { desde, hasta } = parsed.data;
-      const values = [config.REPORT_TZ];
+      const values = desde || hasta ? [config.REPORT_TZ] : [];
       const where = [];
       if (desde) {
         values.push(desde);

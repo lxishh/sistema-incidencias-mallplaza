@@ -177,6 +177,102 @@ describe("incidencias", () => {
     expect(response.body.data).toHaveLength(1);
   });
 });
+describe("dashboard KPI", () => {
+  it("protege el endpoint y calcula MTTR, SLA, vencidas y distribuciones", async () => {
+    const denied = await request(app).get("/api/dashboard/kpis");
+    expect(denied.status).toBe(401);
+
+    const auth = await login();
+    const cookie = auth.headers["set-cookie"][0].split(";")[0];
+    const now = Date.now();
+    const atMinutesAgo = (minutes) => new Date(now - minutes * 60_000);
+    const fixtures = [
+      {
+        prioridad: "CRITICA",
+        estado: "RESUELTA",
+        fecha_creacion: atMinutesAgo(30),
+        fecha_inicio_proceso: atMinutesAgo(25),
+        fecha_cierre: atMinutesAgo(10),
+      },
+      {
+        prioridad: "ALTA",
+        estado: "RESUELTA",
+        fecha_creacion: atMinutesAgo(540),
+        fecha_inicio_proceso: atMinutesAgo(510),
+        fecha_cierre: new Date(now),
+      },
+      {
+        prioridad: "MEDIA",
+        estado: "PENDIENTE",
+        fecha_creacion: atMinutesAgo(1500),
+        fecha_inicio_proceso: null,
+        fecha_cierre: null,
+      },
+      {
+        prioridad: "BAJA",
+        estado: "PENDIENTE",
+        fecha_creacion: atMinutesAgo(30),
+        fecha_inicio_proceso: null,
+        fecha_cierre: null,
+      },
+    ];
+
+    for (const fixture of fixtures) {
+      await pool.query(
+        "INSERT INTO incidencias (rut_operario, ubicacion, tipo_falla, impacto_operativo, riesgo_accidente, afecta_terceros, prioridad, estado, fecha_creacion, fecha_inicio_proceso, fecha_cierre) VALUES ($1, 'BAJO_TRANSITO', 'ELECTRICA', false, false, false, $2, $3, $4, $5, $6)",
+        [
+          rutValido,
+          fixture.prioridad,
+          fixture.estado,
+          fixture.fecha_creacion,
+          fixture.fecha_inicio_proceso,
+          fixture.fecha_cierre,
+        ],
+      );
+    }
+
+    const response = await request(app)
+      .get("/api/dashboard/kpis")
+      .set("Cookie", cookie)
+      .expect(200);
+    expect(response.body).toMatchObject({
+      total: 4,
+      resueltas: 2,
+      abiertas: 2,
+      abiertas_vencidas: 1,
+      mttr_minutos: 280,
+      cumplimiento_sla_porcentaje: 50,
+      resueltas_en_sla: 1,
+      por_prioridad: { CRITICA: 1, ALTA: 1, MEDIA: 1, BAJA: 1 },
+      por_tipo_falla: { ELECTRICA: 4 },
+      por_ubicacion: { BAJO_TRANSITO: 4 },
+      por_estado_sync: { PENDIENTE_SINC: 4 },
+    });
+    expect(response.body.periodo.desde).toBeNull();
+    expect(response.body.periodo.hasta).toBeNull();
+  });
+
+  it("devuelve nulos para denominadores vacíos y rechaza rangos inválidos", async () => {
+    const auth = await login();
+    const cookie = auth.headers["set-cookie"][0].split(";")[0];
+    const empty = await request(app)
+      .get("/api/dashboard/kpis")
+      .set("Cookie", cookie)
+      .expect(200);
+    expect(empty.body.mttr_minutos).toBeNull();
+    expect(empty.body.cumplimiento_sla_porcentaje).toBeNull();
+    expect(empty.body.por_prioridad).toEqual({});
+
+    await request(app)
+      .get("/api/dashboard/kpis?desde=2026-02-30")
+      .set("Cookie", cookie)
+      .expect(400);
+    await request(app)
+      .get("/api/dashboard/kpis?desde=2026-10-10&hasta=2026-10-09")
+      .set("Cookie", cookie)
+      .expect(400);
+  });
+});
 describe("auditoría de Casa Central", () => {
   it("registra los cuatro resultados con detalle fijo", async () => {
     const hash = await bcrypt.hash("Password123!", 12);

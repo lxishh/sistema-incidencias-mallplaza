@@ -1,6 +1,6 @@
 # API — Sprint 1
 
-> **Estado:** contrato del backend al 9 de octubre. `POST /api/incidencias` acepta JSON; no hay multipart/fotos. `GET /api/dashboard/kpis` se incorporó después del Sprint 1 y requiere verificación integrada. No existen worker real de sincronización ni endpoint `/api/incidencias/:id/reenviar`.
+> **Estado:** contrato del backend verificado localmente al 9 de octubre. `POST /api/incidencias` acepta JSON; no hay multipart/fotos. `GET /api/dashboard/kpis` cuenta con pruebas automatizadas y validación manual con datos sintéticos. No existen worker real de sincronización ni endpoint `/api/incidencias/:id/reenviar`.
 
 Todas las respuestas de error usan `{ "error": { "code": string, "message": string, "details": [{ "field": string, "issue": string }] } }`. `details` es `[]` si no aplica. Los errores de validación son HTTP 400 (`VALIDATION_ERROR`); el rate limit responde HTTP 429 (`RATE_LIMITED`).
 
@@ -40,10 +40,12 @@ Requiere sesión Jefatura. Acepta `desde` y `hasta` opcionales en formato `YYYY-
 
 Devuelve conteo total, abiertas, resueltas, abiertas fuera de SLA, MTTR promedio en minutos, cumplimiento SLA de resolución en porcentaje y distribuciones por prioridad, tipo de falla, ubicación y estado de sincronización. MTTR y cumplimiento SLA usan la cohorte de incidencias creadas dentro del período. Cuando no hay incidencias resueltas, MTTR y porcentaje SLA se devuelven como `null`, no como cero. Los objetivos se consultan desde `sla_politica`.
 
+La ruta requiere autenticación. Al 9 de octubre de 2026, lint y 27 pruebas automatizadas pasan; la consulta también se cotejó con datos sintéticos temporales en PostgreSQL. Los resultados de esa validación no son datos operacionales de Mallplaza.
+
 ## Capacidades de siguientes sprints
 
 - **Fotos:** implementar `multipart/form-data` con 0–3 imágenes, 2 MB cada una, JPEG/PNG/WebP y almacenamiento privado S3. Aunque el esquema ya contiene metadatos, el endpoint todavía no guarda archivos.
 - **Casa Central:** el alta deja `estado_sync = PENDIENTE_SINC`. La interfaz mock no se invoca como integración productiva; en la etapa de integración se conectará el worker y se configurará el conector con la especificación institucional correspondiente.
-- **Dashboard:** endpoint y vista inicial local implementados; faltan verificación integrada y validación de fórmulas con datos controlados.
+- **Dashboard:** endpoint y vista inicial local implementados y verificados con pruebas automatizadas, datos sintéticos temporales y revisión en navegador.
 - **PWA:** el formulario y panel local existen; QR de demostración y carga de fotos quedan pendientes.
 

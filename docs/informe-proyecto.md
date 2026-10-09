@@ -2,16 +2,16 @@
 
 ## Sistema de Gestión y Trazabilidad de Incidencias — Mallplaza Copiapó
 
-**Versión:** 1.2 — 9 de octubre de 2026  
+**Versión:** 1.5 — 9 de octubre de 2026
 **Fecha objetivo de entrega académica:** 14 de octubre de 2026  
 **Estado:** informe vivo; se actualizará en cada avance relevante.  
-**Alcance de esta versión:** backend Sprint 1, interfaz PWA local y primera implementación del endpoint de KPI; prototipo todavía en verificación integrada. Despliegue AWS productivo fuera del alcance inmediato.
+**Alcance de esta versión:** backend Sprint 1, interfaz PWA local y endpoint de KPI compilados y verificados en entorno local con datos sintéticos. Despliegue AWS productivo fuera del alcance inmediato.
 
 ## Resumen ejecutivo
 
 El proyecto propone un sistema web para reportar fallas operativas mediante QR, calcular su prioridad con reglas deterministas y permitir a Jefatura gestionar su ciclo de vida. La persistencia se diseña en PostgreSQL y la interoperabilidad con la plataforma central se modela mediante un adaptador independiente, sustituible por el conector institucional en la fase de integración.
 
-Al 9 de octubre está implementada la base de backend y se incorporó una interfaz web/PWA que consume las rutas existentes para reportar y gestionar incidencias. También se agregó un endpoint autenticado para calcular KPI desde PostgreSQL. La interfaz y el endpoint aún requieren compilación/verificación integrada desde el entorno Linux correcto; los artefactos PWA presentes en `frontend/dist` provienen de una compilación previa y no prueban por sí solos la última edición.
+Al 9 de octubre está implementada la base de backend y se incorporó una interfaz web/PWA que consume las rutas existentes para reportar y gestionar incidencias. También se agregó un endpoint autenticado para calcular KPI desde PostgreSQL. El build PWA, lint y la suite de 27 pruebas pasan en Ubuntu/WSL. KPI y alta se verificaron con datos sintéticos en bases aisladas; estas pruebas no son datos operacionales de Mallplaza.
 
 La meta propuesta para el 14 es un **prototipo local demostrable**: formulario web móvil, gestión de incidencias por Jefatura, indicadores principales, persistencia Docker y simulación local de Casa Central. Fotos, si alcanzan los días disponibles, usarán almacenamiento local detrás de un adaptador; esto no equivale a S3. La publicación en AWS y la conexión efectiva a la plataforma central corresponden a fases posteriores.
 
@@ -49,7 +49,7 @@ Estos puntos se consideran cerrados en el prototipo, salvo que el dueño del req
 - El RUT no aparece en lista ni respuesta pública; el detalle autenticado sí lo incluye bajo el contrato actual y requiere validar necesidad/retención.
 - PostgreSQL local corre por Docker Compose; la migración replica el modelo inicial del prototipo en `db/schema.sql`.
 - El modelo de datos está explicado y sujeto a revisión técnica/académica; no se afirma que sea una especificación entregada o aprobada por Mallplaza.
-- Lint y 25 pruebas de backend pasaron. Git está inicializado localmente en `develop`; todavía no hay commits ni remoto configurado.
+- Lint y 27 pruebas de backend pasaron. El build PWA y flujos de KPI/alta se verificaron localmente con datos sintéticos. bcrypt 6.0.0 pasó las pruebas de autenticación en Node 20 y `npm audit --omit=dev` informó cero vulnerabilidades productivas. Los cambios quedan en la rama `feature/S1-dashboard-kpis`, con commit local sin publicar.
 
 Si el frontend necesita cambiar contratos, primero actualizamos `docs/api.md`, definimos compatibilidad, sumamos pruebas y recién después modificamos consumidores/servidor.
 
@@ -157,6 +157,7 @@ No crear una segunda historia ni subir a un remoto hasta confirmar el repositori
 | 1.0 | 09-10-2026 | Consolidación de diseño, implementación Sprint 1, alcance fijo/adaptable, meta de prototipo local y plan de entrega al 14-10-2026. |
 | 1.1 | 09-10-2026 | Se aclara la procedencia del modelo de datos como propuesta inicial del proyecto, se agrega justificación para defensa oral y se actualiza el contexto técnico para distinguir prototipo de integración institucional. |
 | 1.2 | 09-10-2026 | Se registra frontend PWA local, vista inicial KPI y endpoint agregado, y se replanifica la verificación integrada. |
+| 1.3 | 09-10-2026 | Se agrega la vista KPI conectada, la guía reproducible de ejecución local y se precisa que el build integrado sigue pendiente por restricciones de acceso a WSL/Docker. |
 
 ---
 
@@ -192,7 +193,7 @@ Entregar una primera base ejecutable del sistema de incidencias operativas de Ma
 - `backend/src/rules/prioridad.js`: función de prioridad.
 - `backend/src/db.js`, `config.js`, `errors.js`, `logger.js`: pool, configuración, respuesta de errores y redacción.
 - `backend/src/integrations/casaCentralClient.js`, `auditoriaApi.js`: frontera con el mock y registro de intentos.
-- `db/schema.sql`: esquema de referencia; `db/migrations/20261009000100000_initial-schema.js`: migración equivalente.
+- `db/schema.sql`: esquema de referencia; `db/migrations/20261009000100-initial-schema.js`: migración equivalente al identificador ya aplicado.
 - `backend/test/`: pruebas unitarias, integración, privacidad de logs y equivalencia de esquema.
 - `docker-compose.yml`, `db/docker-init/01-create-test-db.sql`: entorno local y DB de pruebas.
 - `docs/api.md`, `docs/preguntas.md`: contrato disponible y decisiones abiertas.
@@ -215,15 +216,16 @@ La API ofrece un error 409 entendible para el cliente. El trigger de base de dat
 
 El alta responde con ID, prioridad, estado y fecha; el RUT no aparece en la lista ni en logs. El detalle autenticado de Jefatura sí devuelve RUT porque así está documentado en el contrato actual; su necesidad, retención y visibilidad deben quedar aprobadas por el responsable de datos.
 
-#### Restricciones del checkout
+#### Estado de Git
 
-El checkout proporcionado no tiene carpeta `.git`. Por eso no se pudo crear `feature/S1-backend`, commits ni PR. Los cambios se dejaron en el workspace. Para retomar el flujo grupal, primero debe integrarse el contenido a un repositorio Git compartido y seguir allí la política de ramas.
+El workspace tiene `.git`; se detectó `origin` y la identidad Git ya está configurada en Ubuntu/WSL. Este cambio se guarda en `feature/S1-dashboard-kpis` mediante un commit local. No se publica ni se abre PR hasta revisar los cambios con el equipo. No se incluyeron artefactos compilados de `frontend/dist`.
 
 ### 5. Verificación realizada
 
 - `npm run lint`: ejecutado correctamente.
-- `npm test`: **25 pruebas aprobadas en 8 archivos**, incluidas 8 pruebas de integración HTTP/PostgreSQL.
-- `npm run db:migrate:test`: la migración se aplicó correctamente sobre `mallplaza_test`.
+- `npm test`: **27 pruebas aprobadas en 8 archivos**, incluidas pruebas KPI, autenticación e integración HTTP/PostgreSQL.
+- `npm run db:migrate`: no hay migraciones pendientes en `mallplaza_dev`; el runner emite una advertencia de timestamp no reconocible por el identificador legado con guion.
+- `npm audit --omit=dev`: cero vulnerabilidades en dependencias productivas después de actualizar bcrypt a 6.0.0.
 - PostgreSQL local quedó iniciado en Docker Desktop para el trabajo posterior.
 
 Los comandos se verificaron desde una copia local del workspace porque el shell de Windows no ejecuta scripts npm desde una ruta UNC de WSL. La prueba usa el mismo código sincronizado del proyecto y PostgreSQL local.
@@ -234,7 +236,7 @@ No afirmar todavía que están disponibles: interfaz PWA/QR, carga multipart de 
 
 ### 7. Dependencias
 
-La instalación reportó vulnerabilidades en dependencias transitivas/directas. No se aplicó `npm audit fix` automáticamente, porque puede actualizar versiones o introducir cambios incompatibles. El equipo debe revisar `npm audit` en una tarea separada, identificar paquetes afectados, priorizar por exposición y fijar versiones mediante PR.
+Después de actualizar bcrypt a 6.0.0, la auditoría de producción queda en cero vulnerabilidades. La auditoría completa todavía informa cinco hallazgos en dependencias de desarrollo (1 moderado, 2 altos y 2 críticos); deben revisarse por exposición antes de cualquier uso de esas dependencias en producción. No se ejecutó `npm audit fix --force`.
 
 ## Cómo entender y defender el modelo de datos
 
@@ -643,7 +645,7 @@ DASH --> API : GET /api/dashboard/kpis
 @enduml
 ```
 
-En Sprint 1 existen API, auth, reglas, módulo de incidencias, PostgreSQL local, auditoría base y cliente mock. En la iteración posterior se agregó la PWA local, una vista inicial de métricas y el endpoint KPI; requieren verificación integrada. No existen worker ni bucket S3.
+En Sprint 1 existen API, auth, reglas, módulo de incidencias, PostgreSQL local, auditoría base y cliente mock. En la iteración posterior se agregó la PWA local y el endpoint KPI; el build, pruebas y revisión visual del panel se verificaron localmente. No existen worker ni bucket S3.
 
 ### 6. Topología de comunicación
 
@@ -1040,7 +1042,7 @@ La planificación resuelve el problema por incrementos demostrables: cada fase e
 
 ## API — Sprint 1
 
-> **Estado:** contrato del backend al 9 de octubre. `POST /api/incidencias` acepta JSON; no hay multipart/fotos. `GET /api/dashboard/kpis` se incorporó después del primer Sprint y requiere verificación integrada. No existen worker real de sincronización ni endpoint `/api/incidencias/:id/reenviar`.
+> **Estado:** contrato del backend verificado localmente al 9 de octubre. `POST /api/incidencias` acepta JSON; no hay multipart/fotos. `GET /api/dashboard/kpis` cuenta con pruebas automatizadas y validación manual con datos sintéticos. No existen worker real de sincronización ni endpoint `/api/incidencias/:id/reenviar`.
 
 Todas las respuestas de error usan `{ "error": { "code": string, "message": string, "details": [{ "field": string, "issue": string }] } }`. `details` es `[]` si no aplica. Los errores de validación son HTTP 400 (`VALIDATION_ERROR`); el rate limit responde HTTP 429 (`RATE_LIMITED`).
 
@@ -1076,7 +1078,7 @@ Requiere sesión Jefatura. Devuelve todos los campos de la incidencia salvo `int
 Requiere sesión Jefatura. JSON `{ "estado": "EN_PROCESO" | "RESUELTA" }`. Solo permite `PENDIENTE → EN_PROCESO → RESUELTA`; transición inválida devuelve `409 INVALID_TRANSITION`. Incidencia inexistente devuelve `404 NOT_FOUND`.
 
 ### `GET /api/dashboard/kpis`
-Requiere sesión Jefatura. Acepta filtros opcionales `desde` y `hasta` en formato `YYYY-MM-DD`, inclusivos y evaluados en `REPORT_TZ`. Devuelve conteos, MTTR, cumplimiento SLA y distribuciones. Cuando no hay cierres, MTTR y cumplimiento SLA son `null`. El endpoint está pendiente de validación integrada.
+Requiere sesión Jefatura. Acepta filtros opcionales `desde` y `hasta` en formato `YYYY-MM-DD`, inclusivos y evaluados en `REPORT_TZ`. Devuelve conteos, MTTR, cumplimiento SLA y distribuciones. Cuando no hay cierres, MTTR y cumplimiento SLA son `null`. El endpoint pasó 27 pruebas de backend y se cotejó contra datos sintéticos temporales; las cifras no son datos operacionales de Mallplaza.
 
 ### Capacidades de siguientes sprints
 

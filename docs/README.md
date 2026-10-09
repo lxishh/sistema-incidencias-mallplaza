@@ -19,12 +19,13 @@ Esta documentación sirve como memoria técnica y como base de coordinación del
 7. [Datos, KPI y SLA](datos-kpi-sla.md): modelo relacional, diccionario, indicadores y niveles de servicio.
 8. [Calidad, operación y planificación](calidad-operacion-plan.md): plan de pruebas, estándares, continuidad, cambios y fases.
 9. [Contrato API Sprint 1](api.md) y [Preguntas abiertas](preguntas.md) para el equipo técnico.
+10. [Ejecución local](ejecucion-local.md): arranque de PostgreSQL, migración, seed ficticio, API, frontend y compilación.
 
 ## Alcance real a la fecha
 
-El Sprint 1 implementa la base del backend: API Express, autenticación de Jefatura, validación y cálculo determinista de prioridad, registro de incidencias, consulta/listado y avance de estados, modelo/migración PostgreSQL, helper de auditoría y pruebas automatizadas. La integración se representa con un **mock local** y el alta deja la incidencia en `PENDIENTE_SINC`; no existe aún un worker que entregue órdenes a Casa Central.
+El backend implementa API Express, autenticación de Jefatura, validación y cálculo determinista de prioridad, registro de incidencias, consulta/listado y avance de estados, modelo/migración PostgreSQL y helper de auditoría. El frontend local implementa formulario JSON, gestión de Jefatura y vista inicial de KPI. La integración se representa con un **mock local** y el alta deja la incidencia en `PENDIENTE_SINC`; no existe aún un worker que entregue órdenes a Casa Central. La compilación y validación integrada de los últimos cambios siguen pendientes.
 
-El esquema contempla evidencias y políticas SLA, pero no están terminados el formulario PWA, carga real de fotos/S3, dashboard/KPI API, proceso automático de reintentos, despliegue AWS ni recuperación ante desastre ensayada. Los diagramas de estos componentes describen el diseño objetivo y los identifican como pendientes.
+El esquema contempla evidencias y políticas SLA. La carga de fotos/S3, QR definitivo, proceso automático de reintentos, despliegue AWS y recuperación ante desastre ensayada siguen pendientes. Los diagramas de estos componentes describen el diseño objetivo y los identifican como pendientes.
 
 ## Criterio para completar el informe grupal
 
