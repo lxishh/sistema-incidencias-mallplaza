@@ -110,4 +110,11 @@ Las variables locales de prueba están excluidas con `.gitignore`. En un clon li
 
 - Tarea completada: documentado el recorrido repetible del prototipo, datos sintéticos, resultados esperados, reglas de prioridad y criterios de aceptación.
 - Límite: falta ejecutar la secuencia completa en navegador y conservar evidencia visual; las pruebas HTTP y automatizadas no se presentan como sustituto de aceptación UI.
-- Próximo paso: repetir el guion en un perfil de navegador limpio y anotar hallazgos; revisar los cinco hallazgos de dependencias de desarrollo.
+- Próximo paso indicado al redactar la guía: repetir el guion en navegador; completado en el registro siguiente. Revisar los cinco hallazgos de dependencias de desarrollo.
+
+## Registro de avance — 2026-10-09 (prueba visual de punta a punta)
+
+- Tarea completada: aceptación visual local del alta, consulta de Jefatura, detalle, dos transiciones, cola, KPI y cierre de sesión.
+- Evidencia: commit `61b48e4` en `feature/S1-dashboard-kpis`; reporte sintético #2 confirmó `CRITICA`/`PENDIENTE`, luego `PENDIENTE → EN_PROCESO → RESUELTA`. Cola final: #2 Resuelta. KPI observados: 2 del período, 1 abierta, 1 resuelta, MTTR 0,8 min, SLA 100 % (1/1), 0 vencidas. `PENDIENTE_SINC` persistió según el alcance mock.
+- Límites/observaciones: la incidencia previa #1 se conservó; no se limpiaron datos ni se guardaron capturas. No se usaron datos personales reales y la demo no valida aceptación de Mallplaza. La ruta de gestión volvió a pedir login después de cerrar sesión y recargar; el navegador reportó `ERR_ABORTED` para la petición de logout durante el cambio de vista, evento a revisar en robustez.
+- Próximo paso: revisar los cinco hallazgos del audit de dependencias de desarrollo y preparar la demo final.

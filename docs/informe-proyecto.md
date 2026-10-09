@@ -2,16 +2,16 @@
 
 ## Sistema de Gestión y Trazabilidad de Incidencias — Mallplaza Copiapó
 
-**Versión:** 1.5 — 9 de octubre de 2026
+**Versión:** 1.6 — 9 de octubre de 2026
 **Fecha objetivo de entrega académica:** 14 de octubre de 2026  
 **Estado:** informe vivo; se actualizará en cada avance relevante.  
-**Alcance de esta versión:** backend Sprint 1, interfaz PWA local y endpoint de KPI compilados y verificados en entorno local con datos sintéticos. Despliegue AWS productivo fuera del alcance inmediato.
+**Alcance de esta versión:** backend Sprint 1, interfaz PWA local y endpoint KPI verificados mediante pruebas y un recorrido visual local de punta a punta con datos sintéticos. Despliegue AWS productivo fuera del alcance inmediato.
 
 ## Resumen ejecutivo
 
 El proyecto propone un sistema web para reportar fallas operativas mediante QR, calcular su prioridad con reglas deterministas y permitir a Jefatura gestionar su ciclo de vida. La persistencia se diseña en PostgreSQL y la interoperabilidad con la plataforma central se modela mediante un adaptador independiente, sustituible por el conector institucional en la fase de integración.
 
-Al 9 de octubre está implementada la base de backend y se incorporó una interfaz web/PWA que consume las rutas existentes para reportar y gestionar incidencias. También se agregó un endpoint autenticado para calcular KPI desde PostgreSQL. El build PWA, lint y la suite de 27 pruebas pasan en Ubuntu/WSL. KPI y alta se verificaron con datos sintéticos en bases aisladas; estas pruebas no son datos operacionales de Mallplaza.
+Al 9 de octubre está implementada la base de backend y se incorporó una interfaz web/PWA que consume las rutas existentes para reportar y gestionar incidencias. También se agregó un endpoint autenticado para calcular KPI desde PostgreSQL. El build PWA, lint y la suite de 27 pruebas pasan en Ubuntu/WSL. Además, se completó en navegador el recorrido local de alta, consulta y resolución de un caso sintético; estas pruebas no son datos operacionales ni una aceptación de Mallplaza.
 
 La meta propuesta para el 14 es un **prototipo local demostrable**: formulario web móvil, gestión de incidencias por Jefatura, indicadores principales, persistencia Docker y simulación local de Casa Central. Fotos, si alcanzan los días disponibles, usarán almacenamiento local detrás de un adaptador; esto no equivale a S3. La publicación en AWS y la conexión efectiva a la plataforma central corresponden a fases posteriores.
 
@@ -49,7 +49,7 @@ Estos puntos se consideran cerrados en el prototipo, salvo que el dueño del req
 - El RUT no aparece en lista ni respuesta pública; el detalle autenticado sí lo incluye bajo el contrato actual y requiere validar necesidad/retención.
 - PostgreSQL local corre por Docker Compose; la migración replica el modelo inicial del prototipo en `db/schema.sql`.
 - El modelo de datos está explicado y sujeto a revisión técnica/académica; no se afirma que sea una especificación entregada o aprobada por Mallplaza.
-- Lint y 27 pruebas de backend pasaron. El build PWA y flujos de KPI/alta se verificaron localmente con datos sintéticos. bcrypt 6.0.0 pasó las pruebas de autenticación en Node 20 y `npm audit --omit=dev` informó cero vulnerabilidades productivas. Los cambios quedan en la rama `feature/S1-dashboard-kpis`, con commit local sin publicar.
+- Lint y 27 pruebas de backend pasaron. El build PWA y flujos de KPI/alta se verificaron localmente con datos sintéticos; el 9 de octubre se completó además una prueba visual de punta a punta del caso #2 en `feature/S1-dashboard-kpis`, commit `61b48e4`. bcrypt 6.0.0 pasó las pruebas de autenticación en Node 20 y `npm audit --omit=dev` informó cero vulnerabilidades productivas. El commit sigue local, sin publicar.
 
 Si el frontend necesita cambiar contratos, primero actualizamos `docs/api.md`, definimos compatibilidad, sumamos pruebas y recién después modificamos consumidores/servidor.
 
@@ -227,6 +227,7 @@ El workspace tiene `.git`; se detectó `origin` y la identidad Git ya está conf
 - `npm run db:migrate`: no hay migraciones pendientes en `mallplaza_dev`; el runner emite una advertencia de timestamp no reconocible por el identificador legado con guion.
 - `npm audit --omit=dev`: cero vulnerabilidades en dependencias productivas después de actualizar bcrypt a 6.0.0.
 - PostgreSQL local quedó iniciado en Docker Desktop para el trabajo posterior.
+- **Prueba visual local (2026-10-09, `61b48e4`):** el reporte sintético #2 se confirmó como `CRITICA`/`PENDIENTE`; Jefatura lo localizó y abrió, y el historial registró `PENDIENTE → EN_PROCESO → RESUELTA`. La cola mostró #2 Resuelta. Los KPI visibles quedaron en 2 incidencias del período, 1 abierta, 1 resuelta, MTTR 0,8 min, SLA 100 % (1/1) y 0 vencidas. La sincronización permaneció `PENDIENTE_SINC`, sin conexión real a Casa Central. La incidencia #1 preexistente se conservó y no se guardó una captura.
 
 Los comandos se verificaron desde una copia local del workspace porque el shell de Windows no ejecuta scripts npm desde una ruta UNC de WSL. La prueba usa el mismo código sincronizado del proyecto y PostgreSQL local.
 
@@ -1084,7 +1085,6 @@ Requiere sesión Jefatura. Acepta filtros opcionales `desde` y `hasta` en format
 
 - **Fotos:** implementar `multipart/form-data` con 0–3 imágenes, 2 MB cada una, JPEG/PNG/WebP y almacenamiento privado S3. Aunque el esquema ya contiene metadatos, el endpoint todavía no guarda archivos.
 - **Casa Central:** el alta deja `estado_sync = PENDIENTE_SINC`. La interfaz mock no se invoca como integración productiva; en la etapa de integración se conectará el worker y se configurará el conector con la especificación institucional correspondiente.
-- **Dashboard:** verificar la vista inicial conectada al endpoint, período/casos vacíos y definir si se requieren gráficos adicionales.
-- **PWA:** el frontend local existe; la generación del QR final, fotos y revisión integrada siguen pendientes.
-
+- **Dashboard:** el recorrido visual local de cola y KPI ya se verificó con el caso #2; aún falta revisar casos sin cierres/períodos vacíos y definir si se requieren gráficos adicionales.
+- **PWA:** el recorrido funcional local de formulario y gestión se verificó en navegador; la generación del QR final, fotos y aceptación con usuarios siguen pendientes.
 
