@@ -1,0 +1,35 @@
+{
+  "name": "mallplaza-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "lint": "node scripts/lint.js",
+    "format": "node scripts/lint.js --format",
+    "test": "vitest run",
+    "test:unit": "vitest run --config vitest.unit.config.js",
+    "db:migrate": "node-pg-migrate up --migrations-dir ../db/migrations --database-url-var DATABASE_URL",
+    "db:migrate:test": "node scripts/migrate-test.js",
+    "db:seed": "node scripts/seed.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1",
+    "pino": "^9.6.0",
+    "pino-http": "^10.4.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "eslint": "^9.19.0",
+    "globals": "^15.14.0",
+    "node-pg-migrate": "^7.9.1",
+    "prettier": "^3.5.0",
+    "supertest": "^7.0.0",
+    "vitest": "^3.0.5"
+  }
+}
