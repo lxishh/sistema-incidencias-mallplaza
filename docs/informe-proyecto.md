@@ -162,7 +162,7 @@ Cada tarea tendrá: objetivo, fuera de alcance, archivos esperados, criterios de
 
 ## 5. Repositorio Git y commits
 
-El workspace conserva commits y ramas locales de trabajo. Este bloque se trabaja en la rama `docs/S1-academic-closeout`, creada desde el estado que contiene el commit `8c8fdab`; el cierre documental quedó comprometido en `b6812f0`. No afirmar que la rama esté publicada ni que exista PR hasta confirmar remoto/estado desde Ubuntu/WSL. Las instrucciones antiguas que describían un repo vacío en `develop` quedaron superadas.
+El workspace conserva commits y ramas locales de trabajo. Este bloque se trabaja en la rama `docs/S1-academic-closeout`, creada desde el estado que contiene el commit `8c8fdab`; el informe quedó comprometido en `b6812f0` y el estado actualizado en `de67d96`. La rama no se publicó ni se abrió PR. En el cierre documental, `git diff --check` pasó y el árbol quedó limpio. El intento de `npm run lint` desde Ubuntu no pudo iniciar: `npm` resuelve a CMD de Windows y pierde el directorio UNC, por lo que buscó `C:\Windows\backend\package.json`. No se considera una prueba válida. La verificación final de código requiere Node 20 nativo en Ubuntu y ejecutar lint, pruebas y build PWA; la última evidencia previa registra 27 pruebas aprobadas. Las instrucciones antiguas que describían un repo vacío en `develop` quedaron superadas.
 
 ### Opción recomendada si ya existe un repositorio remoto
 
