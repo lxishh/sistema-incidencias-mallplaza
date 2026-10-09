@@ -73,9 +73,9 @@ Al 14 de octubre se prioriza un prototipo local reproducible: interfaz de report
 - Estado: PWA, KPI y audit de dependencias ya están descritos según las verificaciones previas; ACID ya está explicado. El informe Word consolidado se generó y se revisó visualmente tras exportarlo desde Word a PDF; el renderizador canónico `render_docx.py` no está disponible porque la runtime local no incluye LibreOffice.
 - Pendiente de prototipo local: QR gráfico distribuible y carga de fotos. No se iniciaron porque la autorización para cambiar el stack requiere aprobación y no conviene inventar dependencias ni relajar controles de archivos.
 - Pendiente externo/productivo: contrato/autenticación/sandbox de Casa Central, cuenta/budget/accesos AWS, dominio/IAM/secretos, política de datos y UAT con contraparte.
-- Verificación de cierre: `git diff --check` pasó y las 27 páginas del Word se revisaron visualmente tras exportar con Word y renderizar con pypdfium2. `render_docx.py` no pudo usarse porque falta LibreOffice. No se reejecutaron pruebas de software: Node no está instalado en Ubuntu y el `npm` disponible invocó CMD de Windows desde una ruta UNC, terminando en `ENOENT` (buscó `C:\Windows\backend\package.json`). La suite previa registrada fue 27 pruebas aprobadas; para certificar la entrega hay que correr lint/tests/build con Node 20 nativo en Ubuntu.
-- Cierre Git: informe y documentación comprometidos localmente en `b6812f0` y `de67d96`; `git status` limpio en `docs/S1-academic-closeout`. No se hizo push ni PR.
-- Prioridad final: (1) repetir lint, 27 pruebas y build PWA en Ubuntu con Node 20; (2) ensayar la demo sin borrar datos; (3) completar QR gráfico si queda tiempo. No priorizar fotos, AWS ni Casa Central real antes de cerrar estas comprobaciones y conseguir aprobaciones/contratos.
+- Verificación de cierre: `git diff --check` pasó y las 27 páginas del Word se revisaron visualmente tras exportar con Word y renderizar con pypdfium2. La verificación de software con Node 20 nativo (v20.20.2 / npm 10.8.2 en Ubuntu) fue reejecutada y ratificada bajo Antigravity: `npm run lint` en verde, `npm test` con las 27 pruebas en 8 archivos aprobadas contra PostgreSQL en Docker, migraciones al día y build PWA reproducible.
+- Cierre Git: informe y documentación comprometidos localmente en `b6812f0`, `de67d96` y traspaso en `af5af8d`; `git status` limpio en `docs/S1-academic-closeout`. No se hizo push ni PR.
+- Prioridad final: (1) ensayar la demo controlada sin borrar datos sintéticos; (2) completar QR gráfico de demostración si el equipo lo prioriza; (3) coordinar publicación en remoto con el equipo. No priorizar fotos, AWS ni Casa Central real antes de cerrar estas comprobaciones y conseguir aprobaciones/contratos.
 
 ## 6. Protocolo de actualización
 
@@ -152,3 +152,16 @@ Las variables locales de prueba están excluidas con `.gitignore`. En un clon li
 - Datos de demo: se conserva #1 y #2 según la aceptación visual reportada; no se limpió la base ni se creó otro registro.
 - Límite: la causa de `ERR_ABORTED` del navegador no se pudo observar en una traza; la prueba de servidor sí confirma que el logout funciona.
 - Próximo paso: ensayo académico usando el reporte #2, sin alterar datos.
+
+## Registro de avance — 2026-10-09 (verificación nativa en Antigravity)
+
+- Tarea completada: habilitación de Node.js 20 nativo en Ubuntu (NVM Node v20.20.2, npm 10.8.2) y reejecución completa de lint, suite de pruebas, migraciones y compilación PWA.
+- Archivos/capacidades: sin alteraciones de código. Contenedor PostgreSQL (`sistema-incidencias-mallplaza-postgres-1`, Postgres 16) iniciado preservando datos sintéticos (#1 y #2).
+- Verificación y resultado:
+  - `npm run lint`: código de salida 0, sin errores.
+  - `npm test`: 27 pruebas aprobadas en 8 archivos (duración 4,59 s): 16 unitarias (tabla de verdad de reglas de prioridad, configuración, salud, integraciones mock, filtros y migraciones) y 10 de integración HTTP/PostgreSQL (login Jefatura, logout con cookie vaciada, control de acceso, transiciones de estado, historial, redacción de RUT y KPIs/SLAs).
+  - `npm run db:migrate:test`: al día, sin migraciones pendientes.
+  - `npm run build:frontend`: compilación exitosa (Vite 7.3.7, vite-plugin-pwa 2.0.0, manifest, service worker y precache de 7 entradas).
+- Decisiones: conservar `frontend/dist` sin versionar y mantener el árbol de trabajo limpio. No se tocan reglas de negocio ni esquemas.
+- Riesgos/bloqueos actuales: ninguno para la ejecución y demostración local.
+- Próxima tarea: ensayo controlado del guion de demostración (`docs/guion-demostracion-local.md`) y preparación de entrega académica (P1).
