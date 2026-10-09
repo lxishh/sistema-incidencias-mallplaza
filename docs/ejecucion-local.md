@@ -107,6 +107,7 @@ Después repite los pasos 3 y 4. `down -v` elimina de manera irreversible solo e
 ## Limitaciones
 
 - No cargar información real, RUT operativo ni secretos del cliente.
-- Fotos, QR impreso, S3, despliegue AWS y envío a Casa Central no forman parte del arranque local actual.
-- El endpoint KPI y su vista deben verificarse con casos de datos controlados; las metas SLA son propuesta del proyecto.
+- Fotos, QR gráfico distribuible, S3, despliegue AWS y envío a Casa Central no forman parte del arranque local actual.
+- El endpoint KPI y su vista ya se validaron con pruebas y datos sintéticos; las metas SLA siguen siendo propuesta del prototipo y requieren validación de negocio.
 - Para pruebas automatizadas del backend se requiere una base de pruebas separada; no apuntar la suite a una base con información que se quiera conservar.
+- La base local que se usó para la aceptación visual conserva las incidencias sintéticas #1 y #2. No ejecutar `docker compose down -v` si se quiere preservar ese escenario de exposición.

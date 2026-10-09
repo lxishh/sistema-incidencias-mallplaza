@@ -6,7 +6,7 @@ Los tres procesos se representan con notación de flujo compatible con la lectur
 
 ## 1. BPMN — Reportar y priorizar incidencia
 
-**Objetivo:** capturar una falla de forma rápida y dejar evidencia trazable con prioridad determinista. **Participantes/carriles:** Operario, PWA (pendiente), API, PostgreSQL y Casa Central (mock/pendiente). El QR identifica el punto de acceso al formulario; su generación y la PWA no están en Sprint 1.
+**Objetivo:** capturar una falla de forma rápida y dejar evidencia trazable con prioridad determinista. **Participantes/carriles:** Operario, PWA local implementada, API, PostgreSQL y Casa Central (mock/pendiente). El QR distribuible no está implementado; se puede abrir el formulario local desde su ruta web.
 
 ```mermaid
 flowchart LR
@@ -15,8 +15,8 @@ flowchart LR
     B --> C[Completa RUT, ubicación, tipo y factores]
     C --> D[Envía reporte]
   end
-  subgraph F[Lane: PWA futura]
-    E[Presenta formulario móvil] --> F1[Valida campos y fotos 0..3]
+  subgraph F[Lane: PWA local]
+    E[Presenta formulario móvil] --> F1[Valida campos del formulario JSON]
   end
   subgraph API[Lane: API Sprint 1]
     G[Valida formato, módulo 11 y catálogos] --> H{¿Entrada válida?}
@@ -37,7 +37,7 @@ flowchart LR
   N --> Z([Fin: reporte trazable])
 ```
 
-**Subprocesos:** escaneo y acceso; captura/validación; cálculo de prioridad; persistencia e historial; sincronización posterior. Regla ejecutada: (1) impacto y alto tránsito → Crítica; (2) riesgo o terceros → Alta; (3) alto tránsito o impacto → Media; (4) Baja. `tipo_falla` no cambia el resultado. En Sprint 1, API acepta JSON y no fotos; el diagrama muestra el destino funcional completo.
+**Subprocesos:** acceso por enlace/QR futuro; captura/validación; cálculo de prioridad; persistencia e historial; sincronización posterior. Regla ejecutada: (1) impacto y alto tránsito → Crítica; (2) riesgo o terceros → Alta; (3) alto tránsito o impacto → Media; (4) Baja. `tipo_falla` no cambia el resultado. El prototipo actual usa formulario web y API JSON, sin procesamiento de fotos.
 
 ## 2. BPMN — Gestionar cola priorizada y cerrar
 
@@ -158,16 +158,16 @@ U2 ..> U10 : <<extend>>
 skinparam componentStyle rectangle
 actor Operario
 actor Jefatura
-component "PWA Vite\n(roadmap)" as PWA
+component "PWA Vite\n(prototipo local)" as PWA
 component "API Express" as API
 component "Auth middleware\nJWT + cookie" as AUTH
 component "Reglas de prioridad" as RULES
 component "Módulo de incidencias" as INC
 component "CasaCentralClient\nmock Sprint 1" as CC
-component "Worker / cola\n(roadmap)" as WORKER
+component "Worker / cola\n(pendiente)" as WORKER
 database "PostgreSQL / RDS" as DB
 cloud "S3 evidencias\n(roadmap)" as S3
-component "Dashboard / Chart.js\n(roadmap)" as DASH
+component "Dashboard KPI\n(local)" as DASH
 Operario --> PWA : HTTPS / QR
 Jefatura --> PWA : HTTPS
 PWA --> API : REST/JSON
@@ -179,11 +179,11 @@ WORKER --> DB : pendientes y auditoría
 WORKER --> CC : contrato aún indefinido
 INC --> S3 : fotos (futuro)
 PWA --> DASH
-DASH --> API : endpoint KPI futuro
+DASH --> API : GET /api/dashboard/kpis
 @enduml
 ```
 
-En Sprint 1 existen API, auth, reglas, módulo de incidencias, PostgreSQL local, auditoría base y cliente mock. No existen PWA, worker, bucket S3 ni endpoint KPI.
+En el prototipo actual existen PWA local, API, auth, reglas, módulo de incidencias, PostgreSQL local, dashboard KPI, auditoría base y cliente mock. No existen worker, bucket S3 provisionado ni integración real con Casa Central.
 
 ## 6. Topología de comunicación
 

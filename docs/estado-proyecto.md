@@ -53,7 +53,7 @@ Prototipo local para reportar fallas operativas de Mallplaza Copiapó, calcular 
 
 ### Verificación transversal
 
-- Git tiene `origin` e identidad local configurada. El flujo KPI/demo está en `feature/S1-dashboard-kpis`; el audit y robustez, en `chore/S1-dev-dependency-audit`. Cambios locales no publicados.
+- La rama activa es `docs/S1-academic-closeout`, creada desde `8c8fdab`; `origin` está configurado. Este bloque documental aún no está comprometido ni publicado. Las ramas `feature/S1-dashboard-kpis` y `chore/S1-dev-dependency-audit` conservan sus commits locales previos.
 - El archivo de migración coincide con el identificador histórico `20261009000100-initial-schema`. Los comandos de migración terminan sin cambios; el runner muestra una advertencia de timestamp por el separador legado con guion.
 - bcrypt 6.0.0, Vitest 4.1.11 y node-pg-migrate 8.0.4 se validaron en Node 20.20.2. `npm audit` completo reporta cero vulnerabilidades; lint y 27 pruebas pasan.
 
@@ -66,6 +66,15 @@ Al 14 de octubre se prioriza un prototipo local reproducible: interfaz de report
 - Aceptación visual y audit de dependencias completados; build PWA, lint, 27 pruebas, migraciones locales y `npm audit` completo en verde.
 - Pase final: repasar guion, conservar el caso sintético #2 existente y verificar instrucciones de arranque en el equipo de exposición.
 - Logout: la prueba backend confirma HTTP 204, cookie vaciada y 401 posterior en `/api/auth/me`. En la demo, el navegador mostró `ERR_ABORTED`, pero al recargar pidió autenticación. Esto sugiere que la sesión sí se cerró; sin una traza de red no se atribuye una causa al evento.
+
+## Cierre de brechas y documentación — 2026-10-09
+
+- Tarea: corregir anexos que aún marcaban PWA/KPI como pendientes, incorporar explicación de ACID en el informe/justificación y construir un informe académico único en Word.
+- Estado: PWA, KPI y audit de dependencias ya están descritos según las verificaciones previas; ACID ya está explicado. El informe Word consolidado se generó y se revisó visualmente tras exportarlo desde Word a PDF; el renderizador canónico `render_docx.py` no está disponible porque la runtime local no incluye LibreOffice.
+- Pendiente de prototipo local: QR gráfico distribuible y carga de fotos. No se iniciaron porque la autorización para cambiar el stack requiere aprobación y no conviene inventar dependencias ni relajar controles de archivos.
+- Pendiente externo/productivo: contrato/autenticación/sandbox de Casa Central, cuenta/budget/accesos AWS, dominio/IAM/secretos, política de datos y UAT con contraparte.
+- Verificación de esta actualización: `git diff --check` y revisión visual de las 27 páginas del Word exportado a PDF mediante Microsoft Word y pypdfium2; el renderizador canónico `render_docx.py` no se pudo usar porque falta LibreOffice. No se reejecutaron pruebas de software porque el cambio es documental; la suite vigente previamente registrada fue 27 pruebas aprobadas. En esta sesión `node` no está instalado dentro de Ubuntu, aunque sí existe integración WSL; reponer/verificar Node 20 para correr lint/tests al congelar la entrega.
+- Siguiente paso: ensayar el arranque local con Node 20 en Ubuntu; congelar la versión del informe/documentación, revisar rama/diff y crear commit Conventional Commit en `docs/S1-academic-closeout`.
 
 ## 6. Protocolo de actualización
 
@@ -85,7 +94,7 @@ Actualizar también `docs/informe-proyecto.md` con lo que haya quedado demostrad
 
 ## 7. Git y configuración local
 
-El workspace usa Git desde Ubuntu/WSL para evitar problemas con la ruta UNC. El remoto `origin` y la identidad local están configurados. La iteración se guarda en `feature/S1-dashboard-kpis`; no se ha publicado ni se declara PR creado.
+El workspace usa Git desde Ubuntu/WSL para evitar problemas con la ruta UNC. El remoto `origin` y la identidad local están configurados. La rama activa para el cierre documental es `docs/S1-academic-closeout`; no se ha publicado ni se declara PR creado.
 
 Las variables locales de prueba están excluidas con `.gitignore`. En un clon limpio, crear `backend/.env.test` a partir de `backend/.env.test.example`; versionar únicamente el archivo de ejemplo, nunca un `.env` con credenciales reales.
 

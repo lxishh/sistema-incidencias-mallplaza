@@ -8,6 +8,8 @@ Esta documentación sirve como memoria técnica y como base de coordinación del
 - **Diseño propuesto:** arquitectura o procedimiento recomendado para completar la solución; requiere aprobación del equipo/cliente y todavía no se ejecuta en producción.
 - **Pendiente de definición:** depende de información que el cliente o Casa Central aún no entrega.
 
+El informe consolidado editable se mantiene en Markdown y también se entrega como Word para revisión académica: [Informe de proyecto en Word](informe-proyecto.docx). Los diagramas Mermaid y PlantUML se incluyen como fuentes textuales para conservar su edición; si la pauta exige figuras BPMN/UML exportadas, deben renderizarse y anexarse como imágenes.
+
 ## Lectura recomendada
 
 1. [Informe consolidado](informe-proyecto.md): documento principal con avance, alcance estable/adaptable y anexos técnicos para el informe académico.
@@ -20,14 +22,14 @@ Esta documentación sirve como memoria técnica y como base de coordinación del
 8. [Calidad, operación y planificación](calidad-operacion-plan.md): plan de pruebas, estándares, continuidad, cambios y fases.
 9. [Contrato API Sprint 1](api.md) y [Preguntas abiertas](preguntas.md) para el equipo técnico.
 10. [Ejecución local](ejecucion-local.md): arranque de PostgreSQL, migración, seed ficticio, API, frontend y compilación.
-11. [Guion de demostración local](guion-demostracion-local.md): escenario sintético, pasos, resultados esperados y aceptación manual pendiente.
+11. [Guion de demostración local](guion-demostracion-local.md): escenario sintético, pasos, resultados esperados y aceptación visual local ya realizada.
 
 ## Alcance real a la fecha
 
-El backend implementa API Express, autenticación de Jefatura, validación y cálculo determinista de prioridad, registro de incidencias, consulta/listado y avance de estados, modelo/migración PostgreSQL y helper de auditoría. El frontend local implementa formulario JSON, gestión de Jefatura y vista inicial de KPI. La integración se representa con un **mock local** y el alta deja la incidencia en `PENDIENTE_SINC`; no existe aún un worker que entregue órdenes a Casa Central. La compilación y validación integrada de los últimos cambios siguen pendientes.
+El backend implementa API Express, autenticación de Jefatura, validación y cálculo determinista de prioridad, registro JSON de incidencias, consulta/listado, detalle/historial, transiciones y KPI, con PostgreSQL y migración. El frontend local implementa formulario JSON, login, cola, filtros, detalle, historial y vista KPI. La compilación PWA, lint, 27 pruebas backend y `npm audit` completo se registraron en verde; el recorrido visual local también se completó con datos sintéticos.
 
-El esquema contempla evidencias y políticas SLA. La carga de fotos/S3, QR definitivo, proceso automático de reintentos, despliegue AWS y recuperación ante desastre ensayada siguen pendientes. Los diagramas de estos componentes describen el diseño objetivo y los identifican como pendientes.
+El esquema contempla metadatos de evidencias y políticas SLA. La carga de fotos, QR gráfico distribuible, worker/reintentos a Casa Central, despliegue AWS y recuperación ante desastre ensayada siguen pendientes. Los diagramas de esos componentes describen el diseño objetivo, no infraestructura implementada. La base local usada para la aceptación conserva los registros sintéticos #1 y #2; revisar el guion antes de volver a operar sobre ella.
 
 ## Criterio para completar el informe grupal
 
-Los puntajes tecnológicos, metas SMART, disponibilidad, RTO/RPO y calendario de fases son propuestas documentadas para discusión; no son compromisos del cliente. Deben validarse con la contraparte, el docente y los demás integrantes antes de presentarlos como baselines aprobados.
+Los puntajes tecnológicos, metas SMART, disponibilidad, RTO/RPO y calendario de fases son propuestas documentadas para discusión; no son compromisos del cliente. Deben validarse con la contraparte, el docente y los demás integrantes antes de presentarlos como baselines aprobados. La matriz de cierre del informe principal señala qué entregables están implementados, documentados, propuestos o bloqueados por dependencias externas.

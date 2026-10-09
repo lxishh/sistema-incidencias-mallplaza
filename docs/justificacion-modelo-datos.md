@@ -16,6 +16,21 @@ El dominio tiene relaciones claras (una incidencia con varios eventos, fotos e i
 
 Se elige `pg` sin ORM para usar SQL parametrizado directamente y poder leer consultas/migraciones con claridad. La contrapartida es que el equipo debe escribir y revisar las consultas, migraciones y mapeo de datos manualmente.
 
+## 3.1 Cómo se aplican ACID en el prototipo
+
+ACID describe garantías de una transacción en PostgreSQL. En esta versión se aplican al trabajo local de la base; no incluyen una futura llamada de red a Casa Central ni almacenamiento S3.
+
+| Propiedad | Aplicación en el código actual | Alcance / límite |
+|---|---|---|
+| Atomicidad | En `PATCH /api/incidencias/:id/estado`, la API toma un cliente dedicado del pool y ejecuta `BEGIN`, `SELECT ... FOR UPDATE`, `UPDATE` y `COMMIT`; ante error ejecuta `ROLLBACK`. El trigger inserta el evento de `historial_estados` como parte de ese mismo `UPDATE`. En el alta, el `INSERT` de incidencia dispara el historial inicial; ambas escrituras pertenecen a la misma sentencia/transacción implícita de PostgreSQL. | Para un alta, hoy hay una sola sentencia que crea la incidencia y el historial; no hay una transacción de aplicación explícita ni varias tablas adicionales que se escriban desde la ruta. |
+| Consistencia | Enums, `NOT NULL`, `CHECK`, claves y triggers validan estados, fechas, RUT y relaciones. La API valida datos de entrada y la transición de negocio antes de escribir. | Las reglas se sostienen mientras se usen los roles y objetos de DB configurados; permisos de administración pueden alterar el esquema. |
+| Aislamiento | El cambio de estado bloquea la fila concreta con `FOR UPDATE`; si dos solicitudes intentan avanzar simultáneamente la misma incidencia, se serializan sobre esa fila y la segunda evalúa el estado actualizado. PostgreSQL usa por defecto `READ COMMITTED`, y el proyecto no solicita otro nivel. | No se afirma aislamiento `SERIALIZABLE`. Las consultas de lectura del dashboard/listado son consultas separadas y no forman una fotografía transaccional común. |
+| Durabilidad | Una respuesta exitosa se envía después del `COMMIT` del cambio de estado; PostgreSQL confirma la transacción según su configuración de persistencia. | Las garantías ante pérdida de instancia/volumen y recuperación dependen de configuración y respaldos del entorno. Docker local no demuestra la durabilidad/DR que tendría RDS. |
+
+**Cómo defenderlo:** “Al cambiar el estado, usamos una transacción PostgreSQL. Bloqueamos la incidencia, validamos el paso, y el trigger actualiza fechas y añade el historial; si falla una parte, hacemos rollback. En el alta inicial, la fila y su evento inicial se escriben con una sola sentencia y trigger, que PostgreSQL trata atómicamente. La concurrencia se resuelve con bloqueo de fila y el nivel predeterminado `READ COMMITTED`; no configuramos `SERIALIZABLE`. La sincronización externa queda fuera de ACID y por ahora es un mock.”
+
+**Alcance comprobado:** estas afirmaciones se basan en `backend/src/routes/incidencias.js` y `db/schema.sql`. La suite automatizada cubre transiciones/reglas e integridad, pero no es una prueba de estrés concurrente, fallo forzado del proceso ni recuperación ante desastre. Esas verificaciones se deben diseñar antes de producción.
+
 ## 4. Tablas: propósito y defensa oral
 
 ### `incidencias` — el reporte operativo
@@ -135,7 +150,7 @@ No corregir ninguno de estos puntos en silencio. Proponer, registrar el impacto 
 “Las restricciones y triggers de DB vuelven a validar consistencia y transición; la interfaz y API no son la única barrera.”
 
 **¿Qué está listo y qué no?**  
-“El modelo y backend cubren registro, prioridad, usuarios, estados e historial. La PWA, adjuntos reales, KPI API y sincronizador todavía son trabajo de la siguiente fase del prototipo.”
+“El prototipo local tiene backend, PWA de formulario JSON y gestión, KPI, persistencia, autenticación, prioridad e historial, verificados con pruebas y un recorrido sintético. QR gráfico y fotos no están implementados; sincronización real, AWS productivo y DR son fases posteriores.”
 
 ## 10. Forma correcta de presentarlo en el informe universitario
 

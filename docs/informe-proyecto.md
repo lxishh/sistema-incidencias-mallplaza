@@ -2,10 +2,10 @@
 
 ## Sistema de Gestión y Trazabilidad de Incidencias — Mallplaza Copiapó
 
-**Versión:** 1.7 — 9 de octubre de 2026
+**Versión:** 1.8 — 9 de octubre de 2026
 **Fecha objetivo de entrega académica:** 14 de octubre de 2026  
 **Estado:** informe vivo; se actualizará en cada avance relevante.  
-**Alcance de esta versión:** backend Sprint 1, interfaz PWA local y endpoint KPI verificados mediante pruebas y recorrido visual local de punta a punta con datos sintéticos. El audit completo de dependencias quedó sin hallazgos. Despliegue AWS productivo fuera del alcance inmediato.
+**Alcance de esta versión:** prototipo local con backend, PWA, KPI y recorrido visual de punta a punta con datos sintéticos; 27 pruebas, lint, build PWA y auditoría completa de dependencias reportados en verde. Producción AWS, QR distribuible, carga de fotografías e integración real externa continúan pendientes.
 
 ## Resumen ejecutivo
 
@@ -13,7 +13,7 @@ El proyecto propone un sistema web para reportar fallas operativas mediante QR, 
 
 Al 9 de octubre está implementada la base de backend y se incorporó una interfaz web/PWA que consume las rutas existentes para reportar y gestionar incidencias. También se agregó un endpoint autenticado para calcular KPI desde PostgreSQL. El build PWA, lint y la suite de 27 pruebas pasan en Ubuntu/WSL. Además, se completó en navegador el recorrido local de alta, consulta y resolución de un caso sintético; estas pruebas no son datos operacionales ni una aceptación de Mallplaza.
 
-La meta propuesta para el 14 es un **prototipo local demostrable**: formulario web móvil, gestión de incidencias por Jefatura, indicadores principales, persistencia Docker y simulación local de Casa Central. Fotos, si alcanzan los días disponibles, usarán almacenamiento local detrás de un adaptador; esto no equivale a S3. La publicación en AWS y la conexión efectiva a la plataforma central corresponden a fases posteriores.
+La meta propuesta para el 14 es cerrar un **prototipo local demostrable**: formulario web móvil, gestión de incidencias por Jefatura, indicadores principales, persistencia Docker y simulación local de Casa Central. No se incorporan fotos en el build de entrega mientras falten carga segura, política de retención y validación. La publicación en AWS y la conexión efectiva a la plataforma central corresponden a fases posteriores.
 
 ## 1. Cómo se gobierna el alcance: lo fijo y lo adaptable
 
@@ -81,7 +81,7 @@ Disminuir el tiempo entre detectar y gestionar una falla operativa, dando a Jefa
 
 ### Alcance propuesto al 14 de octubre
 
-**Incluido en el objetivo de prototipo local:** formulario PWA usable desde navegador móvil, login de Jefatura, alta y priorización, lista/filtros/detalle, avance de estados, dashboard con KPI, PostgreSQL local y modo mock de integración. Las fotos se incluyen si no ponen en riesgo los flujos principales, usando almacenamiento local controlado y marcado como sustituto de S3.
+**Incluido en el objetivo de prototipo local:** formulario PWA usable desde navegador móvil, login de Jefatura, alta y priorización, lista/filtros/detalle, avance de estados, dashboard con KPI, PostgreSQL local y modo mock de integración. La carga de fotos y un QR gráfico se difieren; no se habilitarán adjuntos sin validación segura y política de retención.
 
 **Fuera del objetivo del 14:** producción AWS, disponibilidad/DR garantizados, integración Casa Central real, monitoreo productivo, certificación de normas, operación 24/7 y datos reales de operarios. Ninguna de estas capacidades se declara terminada por tener un diagrama o columna en el esquema.
 
@@ -90,10 +90,39 @@ Disminuir el tiempo entre detectar y gestionar una falla operativa, dando a Jefa
 1. Operario abre el formulario desde enlace/QR de demostración y registra una incidencia válida; ve confirmación sin RUT.
 2. Reglas de prioridad concuerdan con la tabla de verdad y quedan explicables en la interfaz/documentación.
 3. Jefatura inicia sesión, filtra cola, ve detalle/historial y hace transiciones permitidas; las inválidas responden 409.
-4. Dashboard presenta las métricas que sí se implementen con fórmula y rango temporal visibles; al menos MTTR, cumplimiento SLA y abiertas vencidas.
+4. Dashboard presenta MTTR, cumplimiento SLA y abiertas vencidas con fórmula y rango temporal visibles; estos KPI están implementados y probados localmente.
 5. La demo se levanta con instrucciones reproducibles en Docker/local, usa datos ficticios y no necesita cuenta AWS.
 6. Lint y pruebas automatizadas pasan; la guía de operación/demostración describe arranque, usuario semilla y reinicio de datos.
 7. La integración externa se identifica como mock y no duplica ni aparenta crear órdenes reales.
+
+### 2.1 Matriz de cierre de los entregables académicos
+
+La tabla separa entregables documentales del prototipo ejecutable. Un diagrama de una infraestructura futura no prueba que esté desplegada; una propuesta de estándar no prueba certificación ni conformidad legal.
+
+| Entregable solicitado | Estado actual | Evidencia o brecha para el cierre |
+|---|---|---|
+| Comparación cualitativa/cuantitativa de tecnologías | Documentado como análisis del equipo | `docs/seleccion-tecnologias.md`; ponderaciones son valoración académica, no benchmark. |
+| Herramientas, lenguajes, hardware y servicios TI | Documentado; entorno local definido | Stack y requisitos en selección tecnológica y ejecución local. Dimensionamiento AWS/costo siguen por acordar. |
+| Tres procesos BPMN con subprocesos | Documentados como flujos Mermaid compatibles conceptualmente | En `docs/procesos-y-arquitectura.md`; convertir a BPMN 2.0 editable si la pauta exige notación formal. |
+| UML de casos de uso y componentes | Documentado en PlantUML | Distingue prototipo local y componentes pendientes. Renderizar/exportar figuras finales si la entrega requiere imágenes. |
+| Modelo de datos y diccionario | Documentado | `db/schema.sql`, `docs/datos-kpi-sla.md` y justificación; esquema es propuesta inicial con asistencia de IA, no aprobado por Mallplaza. |
+| Topología de comunicación e infraestructura | Documentado como diseño objetivo | El diagrama de AWS es una propuesta; no hay VPC/EB/RDS/S3 productivos desplegados. |
+| Arquitectura con infraestructura software/hardware | Documentado como arquitectura lógica y objetivo | Implementado local: navegador/PWA, Express y PostgreSQL Docker; producción depende de accesos, costo, DNS e IAM. |
+| KPI SMART y SLA | Fórmulas/KPIs implementados; metas SMART y SLA TI son propuestas | KPI locales probados. Objetivos operacionales requieren baseline, horario y validación de Jefatura/cliente. |
+| Plan de pruebas | Diseñado y pruebas backend ejecutadas | 27 pruebas, lint y build reportados en verde; faltan accesibilidad/dispositivos, carga, pentest, concurrencia intensiva y DR. |
+| Normas y estándares | Referencias y motivos documentados | No implica certificación ni dictamen legal. Confirmar versiones/citas exigidas por docente y actualizar análisis normativo antes de producción. |
+| Servicios TI y disponibilidad | Catálogo y metas propuestos | No existen SLO/SLA productivos, guardia, monitoreo ni redundancia activos. |
+| Continuidad proactiva/reactiva | Procedimientos documentados | RTO/RPO propuestos; respaldos y restauración no se han demostrado en AWS. |
+| Control de cambios e incidentes | Procedimiento documentado | La colaboración requiere repositorio remoto común, responsables y revisión efectiva del equipo. |
+| Planificación Gantt/fases y adecuación | Fases adaptativas documentadas | Actualizar fechas/horas con integrantes y fecha de entrega confirmada; no se presentan duraciones como compromisos del cliente. |
+| Prototipo local ejecutable | Implementado y recorrido visualmente | Reutilizar el caso ficticio #2; build, pruebas y lint reportados en verde. Revisar instrucciones de arranque en equipo de exposición. |
+| QR gráfico y carga de fotos | Pendiente | El acceso puede compartirse como URL local; no hay QR generado ni endpoint multipart. |
+| Integración Casa Central real | Bloqueada por contrato técnico externo | No inventar payload, credenciales ni respuesta; mock deja `PENDIENTE_SINC`. |
+| Producción AWS | Fuera del alcance local inmediato | Requiere cuenta, aprobación, presupuesto, red, secretos, dominio, responsables y estrategia de operación. |
+
+### 2.2 Qué significa completar el porcentaje pendiente
+
+El trabajo restante no equivale a implementar en pocos días todos los servicios productivos. Para la entrega académica, el cierre realista es completar la documentación consolidada, verificar reproducibilidad local, ensayar el recorrido principal y presentar brechas con responsable y dependencia. QR gráfico y fotos quedan fuera del cierre local actual; AWS y Casa Central real deben planificarse cuando existan accesos y contrato. Por eso, este informe no asigna “100 %” al sistema productivo: describe un prototipo local funcional y una arquitectura objetivo parcialmente pendiente.
 
 ## 3. Plan corto hasta el 14 de octubre
 
@@ -101,21 +130,21 @@ La estimación toma como fecha actual el 9 de octubre y el cierre académico el 
 
 | Fecha | Tarea pequeña | Entregable y condición de cierre | Riesgo |
 |---|---|---|---|
-| 9 oct | Alinear línea base, consolidar informe, acordar repo/branch y preparar ejecución local repetible. | Este informe, decisiones fijas/adaptables y repositorio local inicializado. | Confirmar autor Git en WSL y remoto grupal para colaboración. |
-| 10 oct | Verificar instalación Linux, compilación PWA, formulario y login contra backend local; completar vista de KPI. | Build reproducible y flujo demostrado desde navegador. |
-| 11 oct | Verificar cola Jefatura, filtros, detalle, transición e historial; validar endpoint KPI con casos de datos controlados. | Flujos de operación y métricas cotejados con SQL/datos ficticios. |
-| 12 oct | Pulir accesibilidad, errores y persistencia; implementar adjuntos locales solo si los flujos centrales están verdes. | Funcionalidad central estable; fotos opcionales con límites. |
-| 13 oct | Completar pruebas de UI/API, accesibilidad básica, casos negativos, instrucciones de instalación/seed/reset y guion de demo. | Release candidate local, incidencias críticas resueltas. |
-| 14 oct | Congelar alcance, ejecutar verificación desde cero, capturas, revisar informe y preparar entrega/presentación. | Paquete local demostrable y documentación consistente. |
+| 9 oct | Alinear línea base, consolidar informe, preparar ejecución local y revisar brechas. | API, PWA y KPI están implementados; lint, 27 pruebas, build y aceptación visual reportados. |
+| 10 oct | Corregir documentación obsoleta, verificar arranque reproducible en el equipo de exposición y crear paquete DOCX consolidado. | Informe coherente con código, guía actualizada y artefacto Word renderizado/revisado. |
+| 11 oct | Ensayar flujo con incidencia sintética existente, revisar logout con herramientas de navegador si el entorno está disponible. | Ensayo sin alterar registros compartidos; defectos y límites anotados. |
+| 12 oct | Revisión cruzada del grupo/docente; priorizar observaciones críticas y decidir explícitamente si QR/fotos se aceptan como trabajo posterior. | Decisiones registradas, criterios de aceptación y pendientes responsables. |
+| 13 oct | Congelar release local, repetir lint/tests/build, verificar instrucciones y corregir defectos críticos de documentación/demo. | Release candidate reproducible y documentación consistente. |
+| 14 oct | Entrega y exposición. | Presentar prototipo y distinguir claramente propuesta, implementación y dependencias externas. |
 
-**Estimación:** un prototipo local completo para los criterios anteriores es alcanzable en aproximadamente **4–5 días de trabajo enfocado**, es decir, a más tardar el 13 por la noche para reservar el 14 a estabilización y entrega. Una app “completa” con S3 real, AWS, integración contractual, HA/DR probados y operación segura **no es realista ni necesaria para esa fecha**: faltan decisiones externas y validación de producción. La meta apropiada es un buen prototipo local, no simular producción.
+**Estimación actualizada al 9 de octubre:** el núcleo local y su aceptación visual ya están demostrados. El cierre restante para la entrega académica se estima en **1–2 jornadas enfocadas** para revisar el entorno del equipo, ensayar la demo, completar revisión grupal, renderizar/revisar el informe Word y congelar la entrega. QR gráfico y fotos serían incrementos separados de aproximadamente **2–4 jornadas** incluyendo diseño, implementación y pruebas; se difieren si amenazan estabilidad. Una solución productiva con S3, AWS, integración contractual, HA/DR probados y operación segura requiere varias semanas y dependencias externas; no forma parte de la estimación de prototipo local.
 
 ### Orden y prioridad si aparece atraso
 
 1. **P0:** levantamiento reproducible, alta pública, prioridad, login, cola, detalle y transición.
 2. **P1:** KPI y pruebas de aceptación; requisito fuerte de la exposición y del problema de negocio.
 3. **P2:** diseño PWA/QR, accesibilidad y manejo de mensajes.
-4. **P3:** fotos en disco local; diferir si distrae de P0/P1. S3 se deja para AWS.
+4. **P3:** QR gráfico/fotos; diferir para no distraer de P0/P1 y completar validación de privacidad/seguridad antes de adjuntos.
 5. **P4:** mock de reintentos demostrativos; no fabricar integración real.
 
 ## 4. Cómo trabajaremos en tareas pequeñas
@@ -124,28 +153,28 @@ Cada tarea tendrá: objetivo, fuera de alcance, archivos esperados, criterios de
 
 ### Primer bloque de trabajo recomendado
 
-1. **Git y entorno** (bloqueante para historial compartido, no para codificar): crear/recuperar repo y acordar `develop`.
-2. **Frontend base**: confirmar si frontend estaba vacío intencionalmente; inicializar Vite según stack y conectar `/api/catalogos`, login y alta.
-3. **Flujo Jefatura**: cola/detalle/transiciones.
-4. **KPIs**: fijar consultas/agregaciones y testear con casos controlados.
-5. **Fotos/local storage y mock**: solo después de cerrar rutas críticas.
-6. **Integración final y entrega**: Docker limpio, seed, documentación, demo y freeze.
+1. **Entorno reproducible**: confirmar Docker, Node 20/npm, API, frontend y usuario demo en el equipo de exposición.
+2. **Ensayo final**: reutilizar el caso sintético #2 sin alterar datos; revisar logout y anotar errores observables.
+3. **Revisión grupal/documental**: cada integrante valida su sección, diagramas, fuentes, decisiones y límites; consolidar comentarios del docente si existen.
+4. **Cierre técnico**: ejecutar lint, 27 pruebas, build PWA y `npm audit` desde Ubuntu; guardar versiones y resultados.
+5. **Entrega Git**: revisar cambios, commit Conventional Commit en la rama documental y abrir PR solo si el grupo confirma el remoto y base.
+6. **Producción futura**: QR, fotos/S3, worker/Casa Central, AWS, performance, hardening y DR se planifican como fases separadas con dueños y prerequisitos.
 
 ## 5. Repositorio Git y commits
 
-El workspace contiene `.git` y está en `develop`, pero aún no tiene commits ni remoto. Git for Windows no pudo escribir en el repositorio alojado en WSL; Git dentro de Ubuntu/WSL sí pudo leer el estado. Por eso las operaciones siguientes deben ejecutarse desde Ubuntu/WSL. El contenido de trabajo está presente, así que no se debe borrar ni clonar encima.
+El workspace conserva commits y ramas locales de trabajo. Este bloque se trabaja en la rama `docs/S1-academic-closeout`, creada desde el estado que contiene el commit `8c8fdab`; los cambios documentales de este bloque aún no están comprometidos. No afirmar que la rama esté publicada ni que exista PR hasta confirmar remoto/estado desde Ubuntu/WSL. Las instrucciones antiguas que describían un repo vacío en `develop` quedaron superadas.
 
 ### Opción recomendada si ya existe un repositorio remoto
 
 1. Compartir la URL del repositorio (HTTPS/SSH, sin contraseña/token) y confirmar cuál es la rama base (`develop` según las instrucciones del proyecto).
-2. No clonar encima del workspace actual: ya contiene los archivos y un `.git` inicializado. Se configura el remoto sobre esta historia vacía solo si el grupo confirma que es la ruta correcta.
+2. No clonar encima del workspace actual: ya contiene archivos y commits. Comparar el remoto y su historial antes de integrar; no reemplazar la historia grupal.
 3. Configurar el nombre y correo que deben figurar como autor **dentro de Ubuntu/WSL** si aún no están puestos. No enviar credenciales; SSH/credenciales HTTPS se configuran localmente.
 4. Yo compruebo `git status`, ramas y remoto desde WSL, creo la rama de tarea que acordemos y hago commits atómicos con formato Conventional Commits. Antes de push/PR verifico el diff y pruebas.
 
 ### Si todavía no existe repositorio remoto
 
 1. Crear un repo privado en GitHub/GitLab institucional sin plantilla que sobrescriba archivos y sin subir secretos ni `.env` reales.
-2. Ya no ejecutar `git init`: esta carpeta ya tiene el repositorio local vacío en `develop`. Añadirle `origin` desde WSL cuando se confirme que no existe una historia grupal previa.
+2. Ya no ejecutar `git init`: esta carpeta contiene una historia local con commits y ramas. Añadir o cambiar `origin` solo después de comparar el repositorio del grupo, sin sobreescribir ni mezclar historias automáticamente.
 3. Decirme la URL y la rama base. No necesito contraseñas ni tokens en el chat.
 
 No crear una segunda historia ni subir a un remoto hasta confirmar el repositorio grupal. Si no existe uno, podemos usar este `develop` como baseline local, hacer el commit inicial y después añadir el remoto.
@@ -157,7 +186,9 @@ No crear una segunda historia ni subir a un remoto hasta confirmar el repositori
 | 1.0 | 09-10-2026 | Consolidación de diseño, implementación Sprint 1, alcance fijo/adaptable, meta de prototipo local y plan de entrega al 14-10-2026. |
 | 1.1 | 09-10-2026 | Se aclara la procedencia del modelo de datos como propuesta inicial del proyecto, se agrega justificación para defensa oral y se actualiza el contexto técnico para distinguir prototipo de integración institucional. |
 | 1.2 | 09-10-2026 | Se registra frontend PWA local, vista inicial KPI y endpoint agregado, y se replanifica la verificación integrada. |
-| 1.3 | 09-10-2026 | Se agrega la vista KPI conectada, la guía reproducible de ejecución local y se precisa que el build integrado sigue pendiente por restricciones de acceso a WSL/Docker. |
+| 1.3 | 09-10-2026 | Se agrega la vista KPI conectada y la guía reproducible de ejecución local. |
+| 1.4 | 09-10-2026 | Se registran la aceptación visual, la auditoría de dependencias y la verificación del contrato de logout. |
+| 1.5 | 09-10-2026 | Se incorpora explicación ACID y matriz de cierre académico; se actualizan contradicciones entre anexos y estado actual. |
 
 ---
 
@@ -211,6 +242,14 @@ El alta hace la escritura local y responde con `estado_sync = PENDIENTE_SINC`; l
 #### La base también valida transiciones
 
 La API ofrece un error 409 entendible para el cliente. El trigger de base de datos sigue siendo la barrera definitiva: impide saltarse `EN_PROCESO` aunque otra aplicación escriba directamente. La actualización se ejecuta en transacción con bloqueo de la incidencia para reducir carreras.
+
+#### Propiedades ACID aplicadas al ciclo de incidencias
+
+En el cambio de estado, `PATCH /api/incidencias/:id/estado` obtiene una conexión del pool y ejecuta `BEGIN`, bloquea la fila con `SELECT ... FOR UPDATE`, actualiza el estado y confirma con `COMMIT`; si la operación falla, ejecuta `ROLLBACK`. El trigger fija las fechas del ciclo y agrega el evento de historial como parte de la misma transacción. En la creación, un único `INSERT` dispara el evento inicial mediante trigger; PostgreSQL trata la sentencia y sus efectos como una unidad atómica aunque la ruta no abra una transacción explícita.
+
+La consistencia se refuerza con enums, restricciones y triggers del esquema además de validación de API. Para concurrencia, el bloqueo de fila evita que dos cambios simultáneos de la misma incidencia avancen sobre una lectura obsoleta. El nivel de aislamiento no se configura en el código: se utiliza el `READ COMMITTED` predeterminado de PostgreSQL; no se declara `SERIALIZABLE`. La respuesta de éxito al cambio se entrega tras el `COMMIT`, mientras que la resiliencia ante pérdida de infraestructura depende de respaldos y configuración del entorno objetivo, aún no desplegado. La llamada a Casa Central queda fuera de la transacción: el prototipo solo conserva el estado `PENDIENTE_SINC` y un adaptador mock.
+
+La suite existente valida reglas e integridad funcional, pero no constituye prueba de concurrencia bajo carga, caída abrupta o recuperación ante desastre. Esas pruebas y la configuración de respaldos deberán definirse para una etapa productiva. La justificación detallada está en `docs/justificacion-modelo-datos.md`.
 
 #### Se limita información personal
 
@@ -376,7 +415,7 @@ No corregir ninguno de estos puntos en silencio. Proponer, registrar el impacto 
 “Las restricciones y triggers de DB vuelven a validar consistencia y transición; la interfaz y API no son la única barrera.”
 
 **¿Qué está listo y qué no?**  
-“El modelo y backend cubren registro, prioridad, usuarios, estados e historial. La PWA, adjuntos reales, KPI API y sincronizador todavía son trabajo de la siguiente fase del prototipo.”
+“El prototipo local tiene backend, PWA de formulario JSON y gestión, KPI, persistencia, autenticación, prioridad e historial, verificados con pruebas y un recorrido sintético. QR gráfico y fotos no están implementados; sincronización real, AWS productivo y DR son fases posteriores.”
 
 ### 10. Forma correcta de presentarlo en el informe universitario
 
@@ -426,7 +465,7 @@ La guía de proyecto fija Node.js 20, Express, PostgreSQL, Zod, bcrypt, JWT, Mul
 | Chart.js | Gráficos convencionales para KPI y dashboard | Personalización avanzada manual | Seleccionado por stack |
 | ECharts | Amplia variedad de visualizaciones | Más capacidades que las necesarias al inicio | Alternativa no adoptada |
 
-El frontend aún no está implementado en el Sprint 1. La selección no equivale a una PWA funcional.
+El frontend Vite/PWA está implementado como prototipo local: formulario JSON, login Jefatura, cola, filtros, detalle/historial y panel KPI. No procesa fotografías ni genera un QR gráfico distribuible; el build local no implica publicación productiva.
 
 ### 5. Plataforma de ejecución y servicios TI
 
@@ -449,7 +488,7 @@ El frontend aún no está implementado en el Sprint 1. La selección no equivale
 
 - Notebook/PC de 4 núcleos, 8 GB RAM (16 GB recomendados), 10 GB libres, navegador moderno y conexión a Internet.
 - Docker Desktop con backend WSL2 para PostgreSQL local; Node.js 20 y npm; editor de código; Git y cliente PostgreSQL para el trabajo grupal.
-- Repositorio Git compartido con ramas/PR, revisión de código y permisos. El checkout ya tiene Git local en `develop`, pero aún necesita remoto y commits para habilitar colaboración real.
+- Repositorio Git compartido con ramas/PR y revisión de código. El checkout local tiene commits y ramas de trabajo, pero no se debe afirmar que estén publicados ni que exista PR: confirmar remoto/estado de publicación desde Ubuntu antes de coordinar el equipo.
 
 #### Producción objetivo (sin dimensionamiento aún)
 
@@ -469,7 +508,7 @@ Los tres procesos se representan con notación de flujo compatible con la lectur
 
 ### 1. BPMN — Reportar y priorizar incidencia
 
-**Objetivo:** capturar una falla de forma rápida y dejar evidencia trazable con prioridad determinista. **Participantes/carriles:** Operario, PWA (pendiente), API, PostgreSQL y Casa Central (mock/pendiente). El QR identifica el punto de acceso al formulario; su generación y la PWA no están en Sprint 1.
+**Objetivo:** capturar una falla de forma rápida y dejar evidencia trazable con prioridad determinista. **Participantes/carriles:** Operario, PWA local implementada, API, PostgreSQL y Casa Central (mock/pendiente). El QR distribuible no está implementado; actualmente se accede al formulario desde una ruta web local.
 
 ```mermaid
 flowchart LR
@@ -478,8 +517,8 @@ flowchart LR
     B --> C[Completa RUT, ubicación, tipo y factores]
     C --> D[Envía reporte]
   end
-  subgraph F[Lane: PWA futura]
-    E[Presenta formulario móvil] --> F1[Valida campos y fotos 0..3]
+  subgraph F[Lane: PWA local]
+    E[Presenta formulario móvil] --> F1[Valida campos del reporte JSON]
   end
   subgraph API[Lane: API Sprint 1]
     G[Valida formato, módulo 11 y catálogos] --> H{¿Entrada válida?}
@@ -500,7 +539,7 @@ flowchart LR
   N --> Z([Fin: reporte trazable])
 ```
 
-**Subprocesos:** escaneo y acceso; captura/validación; cálculo de prioridad; persistencia e historial; sincronización posterior. Regla ejecutada: (1) impacto y alto tránsito → Crítica; (2) riesgo o terceros → Alta; (3) alto tránsito o impacto → Media; (4) Baja. `tipo_falla` no cambia el resultado. En Sprint 1, API acepta JSON y no fotos; el diagrama muestra el destino funcional completo.
+**Subprocesos:** acceso por enlace/QR futuro; captura/validación; cálculo de prioridad; persistencia e historial; sincronización posterior. Regla ejecutada: (1) impacto y alto tránsito → Crítica; (2) riesgo o terceros → Alta; (3) alto tránsito o impacto → Media; (4) Baja. `tipo_falla` no cambia el resultado. El prototipo actual usa formulario web y API JSON, sin procesamiento de fotos.
 
 ### 2. BPMN — Gestionar cola priorizada y cerrar
 
@@ -576,7 +615,7 @@ flowchart LR
 
 ### 4. UML — Casos de uso
 
-Diagrama PlantUML para reproducir en un renderizador compatible. `PWA` y `Dashboard` son casos de uso objetivo, no funciones entregadas en Sprint 1.
+Diagrama PlantUML para reproducir en un renderizador compatible. `PWA` y `Dashboard` corresponden a capacidades del prototipo local actual; QR distribuible y fotografías permanecen en evolución.
 
 ```plantuml
 @startuml
@@ -627,10 +666,10 @@ component "Auth middleware\nJWT + cookie" as AUTH
 component "Reglas de prioridad" as RULES
 component "Módulo de incidencias" as INC
 component "CasaCentralClient\nmock Sprint 1" as CC
-component "Worker / cola\n(roadmap)" as WORKER
+component "Worker / cola\n(pendiente)" as WORKER
 database "PostgreSQL / RDS" as DB
-cloud "S3 evidencias\n(roadmap)" as S3
-component "Dashboard KPI\n(vista pendiente)" as DASH
+cloud "S3 evidencias\n(pendiente)" as S3
+component "Dashboard KPI\n(local)" as DASH
 Operario --> PWA : HTTPS / QR
 Jefatura --> PWA : HTTPS
 PWA --> API : REST/JSON
@@ -646,7 +685,7 @@ DASH --> API : GET /api/dashboard/kpis
 @enduml
 ```
 
-En Sprint 1 existen API, auth, reglas, módulo de incidencias, PostgreSQL local, auditoría base y cliente mock. En la iteración posterior se agregó la PWA local y el endpoint KPI; el build, pruebas y revisión visual del panel se verificaron localmente. No existen worker ni bucket S3.
+En el prototipo actual existen PWA local, API, auth, reglas, módulo de incidencias, PostgreSQL local, dashboard KPI, auditoría base y cliente mock. No existen worker ni bucket S3 provisionado.
 
 ### 6. Topología de comunicación
 
@@ -909,7 +948,7 @@ Estos SLA TI son una propuesta académica para traducir expectativas a medicione
 
 ### 1. Plan de pruebas
 
-El plan combina pruebas unitarias, integración y aceptación. Las pruebas existentes cubren el backend de Sprint 1; las filas marcadas “pendiente” son necesarias para liberar el sistema completo, en especial PWA, archivos, KPI, carga y producción.
+El plan combina pruebas unitarias, integración y aceptación. El backend y el recorrido local principal tienen verificaciones registradas; las filas pendientes indican lo necesario antes de liberar el sistema productivo, en particular archivos, QR, seguridad/performance y operación AWS.
 
 | Tipo | Casos/criterio de salida | Estado |
 |---|---|---|
@@ -920,12 +959,12 @@ El plan combina pruebas unitarias, integración y aceptación. Las pruebas exist
 | Integración API + PostgreSQL | Login/logout/me; 401 genérico; alta; privacidad en lista/detalle; transición; historial; 404/409. | Implementado con Supertest y PostgreSQL local. |
 | Seguridad | Rate limit, cookies, bcrypt/JWT, SQL parametrizado, secretos y RUT fuera de logs. | Cobertura básica implementada; falta análisis de seguridad externo/penetración. |
 | Auditoría de Casa Central | Resultados OK/HTTP/timeout/red; número correlativo, inmutabilidad y detalle sanitizado. | Pruebas unitarias de mock/auditoría; worker real pendiente. |
-| Dashboard/KPI | Fórmulas, zona horaria, cohorte de fecha, denominadores cero y filtros. | Endpoint y vista inicial incorporados; pendiente validar con PostgreSQL y aceptación. |
+| Dashboard/KPI | Fórmulas, zona horaria, cohorte de fecha, denominadores cero y filtros. | Implementado, cubierto por pruebas y revisado localmente con datos sintéticos; metas requieren aceptación de negocio. |
 | Fotos | 0–3 archivos, tamaño 2 MB, MIME, nombres seguros, S3 privado, URL y autorización. | Pendiente; restricciones están parcialmente en esquema. |
-| PWA/usabilidad | QR en Android/iOS, cámara, teclado, accesibilidad, errores, reintento de red. | Interfaz inicial implementada; pendiente build Linux y revisión de navegador/dispositivos. |
+| PWA/usabilidad | Formulario, login, cola, filtros, detalle e historial; QR en Android/iOS, cámara, accesibilidad, errores y reintento de red. | Recorrido principal probado localmente en navegador; QR gráfico, fotos, accesibilidad/dispositivos amplios y manejo offline siguen pendientes. |
 | Rendimiento/carga | Pico estimado, p95, pool, conexión RDS y límites. | Pendiente de volumen acordado y ambiente parecido a producción. |
 | Resiliencia/DR | Caída de AZ/DB, restauración, DNS/deploy rollback, RTO/RPO demostrados. | Pendiente de infraestructura y simulacro. |
-| Aceptación usuario | Operario reporta en menos de objetivo acordado; Jefatura gestiona cola y KPI; cliente firma UAT. | Pendiente de prototipo funcional y usuarios de prueba. |
+| Aceptación usuario | Operario reporta en menos de objetivo acordado; Jefatura gestiona cola y KPI; cliente firma UAT. | Recorrido técnico local completado; no hubo UAT con Mallplaza, firma del cliente ni meta de tiempo validada. |
 
 #### Estrategia de ejecución
 
@@ -945,7 +984,7 @@ El plan combina pruebas unitarias, integración y aceptación. Las pruebas exist
 | ISO/IEC 25010 (calidad del producto) | Estructura requisitos no funcionales en seguridad, confiabilidad, rendimiento, mantenibilidad, compatibilidad/usabilidad. Facilita convertir adjetivos en KPI/SLO verificables. | Criterios propuestos; baseline de rendimiento y usabilidad pendientes. |
 | TLS 1.2 o superior | Protege datos en tránsito entre móvil, API, RDS e integración. HTTPS obligatorio en diseño productivo. | No existe despliegue productivo que validar. |
 | OWASP API Security | Complementa controles de autorización por objeto, autenticación, consumo de recursos, configuración y exposición de datos en endpoints. | Rate limit, validación y autorización Jefatura parcial; revisar todos los endpoints previo a producción. |
-| Accesibilidad WCAG 2.2 AA (objetivo de interfaz) | Formulario QR debe ser operable con teclado/lector, etiquetas/contraste y mensajes entendibles. Es relevante para operarios con dispositivos diversos. | Interfaz inicial implementada; revisar contraste, teclado y lector en pruebas de aceptación. |
+| Accesibilidad WCAG 2.2 AA (objetivo de interfaz) | Formulario QR debe ser operable con teclado/lector, etiquetas/contraste y mensajes entendibles. Es relevante para operarios con dispositivos diversos. | PWA local implementada; auditoría formal y pruebas con tecnologías de asistencia pendientes. |
 | Convención Conventional Commits / PR | Hace cambios auditables y facilita revisión grupal y rollback. | Commits locales en ramas feature/chore; PR y publicación remota pendientes de revisión grupal. |
 
 La mención de norma no implica auditoría ni conformidad certificada. Antes de entrega académica, citar edición exacta/fecha de consulta de estándares en bibliografía formal y validar con el docente cuál espera el curso.
@@ -1085,6 +1124,6 @@ Requiere sesión Jefatura. Acepta filtros opcionales `desde` y `hasta` en format
 
 - **Fotos:** implementar `multipart/form-data` con 0–3 imágenes, 2 MB cada una, JPEG/PNG/WebP y almacenamiento privado S3. Aunque el esquema ya contiene metadatos, el endpoint todavía no guarda archivos.
 - **Casa Central:** el alta deja `estado_sync = PENDIENTE_SINC`. La interfaz mock no se invoca como integración productiva; en la etapa de integración se conectará el worker y se configurará el conector con la especificación institucional correspondiente.
-- **Dashboard:** el recorrido visual local de cola y KPI ya se verificó con el caso #2; aún falta revisar casos sin cierres/períodos vacíos y definir si se requieren gráficos adicionales.
+- **Dashboard:** el recorrido visual local de cola y KPI ya se verificó con el caso #2; las pruebas KPI cubren denominadores sin cierres y rangos. Gráficos adicionales dependen de necesidades validadas con Jefatura.
 - **PWA:** el recorrido funcional local de formulario y gestión se verificó en navegador; la generación del QR final, fotos y aceptación con usuarios siguen pendientes.
 

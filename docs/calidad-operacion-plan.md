@@ -2,7 +2,7 @@
 
 ## 1. Plan de pruebas
 
-El plan combina pruebas unitarias, integración y aceptación. Las pruebas existentes cubren el backend de Sprint 1; las filas marcadas “pendiente” son necesarias para liberar el sistema completo, en especial PWA, archivos, KPI, carga y producción.
+El plan combina pruebas unitarias, integración y aceptación. El backend y el recorrido local principal tienen verificaciones registradas; las filas pendientes indican lo necesario antes de liberar el sistema productivo, en particular archivos, QR, seguridad/rendimiento y operación AWS.
 
 | Tipo | Casos/criterio de salida | Estado |
 |---|---|---|
@@ -13,12 +13,12 @@ El plan combina pruebas unitarias, integración y aceptación. Las pruebas exist
 | Integración API + PostgreSQL | Login/logout/me; 401 genérico; alta; privacidad en lista/detalle; transición; historial; 404/409. | Implementado con Supertest y PostgreSQL local. |
 | Seguridad | Rate limit, cookies, bcrypt/JWT, SQL parametrizado, secretos y RUT fuera de logs. | Cobertura básica implementada; falta análisis de seguridad externo/penetración. |
 | Auditoría de Casa Central | Resultados OK/HTTP/timeout/red; número correlativo, inmutabilidad y detalle sanitizado. | Pruebas unitarias de mock/auditoría; worker real pendiente. |
-| Dashboard/KPI | Fórmulas, zona horaria, cohorte de fecha, denominadores cero y filtros. | Pendiente de endpoint y PWA/dashboard. |
+| Dashboard/KPI | Fórmulas, zona horaria, cohorte de fecha, denominadores cero y filtros. | Implementado y cubierto por pruebas; revisado localmente en navegador con datos sintéticos. No reemplaza validación de metas con Jefatura. |
 | Fotos | 0–3 archivos, tamaño 2 MB, MIME, nombres seguros, S3 privado, URL y autorización. | Pendiente; restricciones están parcialmente en esquema. |
-| PWA/usabilidad | QR en Android/iOS, cámara, teclado, accesibilidad, errores, reintento de red. | Pendiente de frontend. |
+| PWA/usabilidad | Formulario de reporte JSON, login Jefatura, cola, filtros, detalle e historial en navegador móvil/escritorio; QR en Android/iOS, cámara, teclado, accesibilidad, errores y reintento de red. | Recorrido local de los flujos principales completado en navegador con datos sintéticos. QR gráfico, fotos, pruebas amplias de accesibilidad/dispositivos y manejo offline siguen pendientes. |
 | Rendimiento/carga | Pico estimado, p95, pool, conexión RDS y límites. | Pendiente de volumen acordado y ambiente parecido a producción. |
 | Resiliencia/DR | Caída de AZ/DB, restauración, DNS/deploy rollback, RTO/RPO demostrados. | Pendiente de infraestructura y simulacro. |
-| Aceptación usuario | Operario reporta en menos de objetivo acordado; Jefatura gestiona cola y KPI; cliente firma UAT. | Pendiente de prototipo funcional y usuarios de prueba. |
+| Aceptación usuario | Operario reporta en menos de objetivo acordado; Jefatura gestiona cola y KPI; cliente firma UAT. | Aceptación visual técnica local del recorrido principal completada; no hubo UAT con Mallplaza ni firma de cliente, y no hay meta de tiempo validada. |
 
 ### Estrategia de ejecución
 
@@ -38,7 +38,7 @@ El plan combina pruebas unitarias, integración y aceptación. Las pruebas exist
 | ISO/IEC 25010 (calidad del producto) | Estructura requisitos no funcionales en seguridad, confiabilidad, rendimiento, mantenibilidad, compatibilidad/usabilidad. Facilita convertir adjetivos en KPI/SLO verificables. | Criterios propuestos; baseline de rendimiento y usabilidad pendientes. |
 | TLS 1.2 o superior | Protege datos en tránsito entre móvil, API, RDS e integración. HTTPS obligatorio en diseño productivo. | No existe despliegue productivo que validar. |
 | OWASP API Security | Complementa controles de autorización por objeto, autenticación, consumo de recursos, configuración y exposición de datos en endpoints. | Rate limit, validación y autorización Jefatura parcial; revisar todos los endpoints previo a producción. |
-| Accesibilidad WCAG 2.2 AA (objetivo de interfaz) | Formulario QR debe ser operable con teclado/lector, etiquetas/contraste y mensajes entendibles. Es relevante para operarios con dispositivos diversos. | PWA no implementada; incorporar en diseño y pruebas de aceptación. |
+| Accesibilidad WCAG 2.2 AA (objetivo de interfaz) | Formulario QR debe ser operable con teclado/lector, etiquetas/contraste y mensajes entendibles. Es relevante para operarios con dispositivos diversos. | PWA local implementada; auditoría formal y pruebas con tecnologías de asistencia pendientes. |
 | Convención Conventional Commits / PR | Hace cambios auditables y facilita revisión grupal y rollback. | Imposible aplicar en checkout sin `.git`; implementar al mover el trabajo al repo compartido. |
 
 La mención de norma no implica auditoría ni conformidad certificada. Antes de entrega académica, citar edición exacta/fecha de consulta de estándares en bibliografía formal y validar con el docente cuál espera el curso.

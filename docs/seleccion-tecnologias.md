@@ -41,7 +41,7 @@ La guía de proyecto fija Node.js 20, Express, PostgreSQL, Zod, bcrypt, JWT, Mul
 | Chart.js | Gráficos convencionales para KPI y dashboard | Personalización avanzada manual | Seleccionado por stack |
 | ECharts | Amplia variedad de visualizaciones | Más capacidades que las necesarias al inicio | Alternativa no adoptada |
 
-El frontend aún no está implementado en el Sprint 1. La selección no equivale a una PWA funcional.
+El frontend Vite/PWA sí está implementado como prototipo local: formulario de reporte JSON, ingreso Jefatura, cola, filtros, detalle/historial y panel KPI. No carga fotografías ni genera un QR gráfico distribuible. El build local produce manifest y service worker; esto no equivale a publicación ni operación en AWS.
 
 ## 5. Plataforma de ejecución y servicios TI
 
@@ -64,7 +64,7 @@ El frontend aún no está implementado en el Sprint 1. La selección no equivale
 
 - Notebook/PC de 4 núcleos, 8 GB RAM (16 GB recomendados), 10 GB libres, navegador moderno y conexión a Internet.
 - Docker Desktop con backend WSL2 para PostgreSQL local; Node.js 20 y npm; editor de código; Git y cliente PostgreSQL para el trabajo grupal.
-- Repositorio Git compartido con ramas/PR, revisión de código y permisos. El checkout ya tiene Git local en `develop`, pero aún necesita remoto y commits para habilitar colaboración real.
+- Repositorio Git compartido con ramas/PR y revisión de código. El checkout local tiene commits y ramas de trabajo, pero no se debe afirmar que estén publicados ni que exista PR: confirmar remoto/estado de publicación desde Ubuntu antes de coordinar el equipo.
 
 ### Producción objetivo (sin dimensionamiento aún)
 
