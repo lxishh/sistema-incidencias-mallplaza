@@ -162,7 +162,7 @@ Cada tarea tendrá: objetivo, fuera de alcance, archivos esperados, criterios de
 
 ## 5. Repositorio Git y commits
 
-El workspace conserva commits y ramas locales de trabajo. Este bloque se trabaja en la rama `docs/S1-academic-closeout`, creada desde el estado que contiene el commit `8c8fdab`; los cambios documentales de este bloque aún no están comprometidos. No afirmar que la rama esté publicada ni que exista PR hasta confirmar remoto/estado desde Ubuntu/WSL. Las instrucciones antiguas que describían un repo vacío en `develop` quedaron superadas.
+El workspace conserva commits y ramas locales de trabajo. Este bloque se trabaja en la rama `docs/S1-academic-closeout`, creada desde el estado que contiene el commit `8c8fdab`; el cierre documental quedó comprometido en `b6812f0`. No afirmar que la rama esté publicada ni que exista PR hasta confirmar remoto/estado desde Ubuntu/WSL. Las instrucciones antiguas que describían un repo vacío en `develop` quedaron superadas.
 
 ### Opción recomendada si ya existe un repositorio remoto
 

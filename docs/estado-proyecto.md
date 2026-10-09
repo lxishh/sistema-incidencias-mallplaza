@@ -53,7 +53,7 @@ Prototipo local para reportar fallas operativas de Mallplaza Copiapó, calcular 
 
 ### Verificación transversal
 
-- La rama activa es `docs/S1-academic-closeout`, creada desde `8c8fdab`; `origin` está configurado. Este bloque documental aún no está comprometido ni publicado. Las ramas `feature/S1-dashboard-kpis` y `chore/S1-dev-dependency-audit` conservan sus commits locales previos.
+- La rama activa es `docs/S1-academic-closeout`, creada desde `8c8fdab`; `origin` está configurado. El cierre documental está comprometido en `b6812f0`; no se ha publicado. Las ramas `feature/S1-dashboard-kpis` y `chore/S1-dev-dependency-audit` conservan sus commits locales previos.
 - El archivo de migración coincide con el identificador histórico `20261009000100-initial-schema`. Los comandos de migración terminan sin cambios; el runner muestra una advertencia de timestamp por el separador legado con guion.
 - bcrypt 6.0.0, Vitest 4.1.11 y node-pg-migrate 8.0.4 se validaron en Node 20.20.2. `npm audit` completo reporta cero vulnerabilidades; lint y 27 pruebas pasan.
 
