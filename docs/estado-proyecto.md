@@ -180,3 +180,18 @@ Las variables locales de prueba están excluidas con `.gitignore`. En un clon li
   - `npm run build:frontend`: compilación PWA exitosa con Vite 7 y vite-plugin-pwa.
 - Decisiones: cero dependencias externas añadidas a `package.json`, preservando el stack y la auditoría de vulnerabilidades intacta.
 - Próxima tarea: ensayo guiado y coordinación de publicación Git con el equipo.
+
+## Registro de avance — 2026-10-09 (compatibilidad universal del código QR para iPhone y Android)
+
+- Tarea completada: corrección del codificador QR ISO/IEC 18004 utilizando la implementación de referencia estándar (Project Nayuki, MIT, cero dependencias) para garantizar lectura instantánea desde la cámara nativa de iPhone (iOS 15-18) y Android/Google Lens.
+- Causa raíz resuelta: la transposición de coordenadas de la información de formato (BCH 15,5) alrededor de los patrones de posición (finders) y el desajuste en el salto de columna de temporización causaban que los decodificadores móviles descartaran el símbolo como inválido. Con la corrección estricta de la norma ISO/IEC 18004, los 15 bits de formato y corrección de error coinciden bit por bit con la especificación.
+- Archivos actualizados:
+  - `backend/src/utils/qr.js` y `frontend/src/qr.js`: codificador QR estándar con interfaz unificada (`generateQr`, `generateQrSvg`, `generateQrAscii`).
+  - `docs/demo-qr.html` y `frontend/public/demo-qr.svg`: ficha técnica y SVG regenerados con la matriz ISO válida.
+  - `frontend/dist/`: build de producción actualizado.
+- Verificación y resultado:
+  - `npm run lint`: código de salida 0 (ESLint y Prettier limpios).
+  - `npm test`: 33 pruebas aprobadas en 9 archivos (100% en verde).
+  - `npm run build:frontend`: compilación exitosa (PWA con service worker y manifest).
+  - `npm run qr`: CLI operativo con detección de IP local y emisión SVG/HTML.
+- Próximo paso: probar el escaneo con la cámara del iPhone 13 en la red local y guiar al usuario.
