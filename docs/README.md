@@ -20,6 +20,7 @@ Esta documentación sirve como memoria técnica y como base de coordinación del
 8. [Calidad, operación y planificación](calidad-operacion-plan.md): plan de pruebas, estándares, continuidad, cambios y fases.
 9. [Contrato API Sprint 1](api.md) y [Preguntas abiertas](preguntas.md) para el equipo técnico.
 10. [Ejecución local](ejecucion-local.md): arranque de PostgreSQL, migración, seed ficticio, API, frontend y compilación.
+11. [Guion de demostración local](guion-demostracion-local.md): escenario sintético, pasos, resultados esperados y aceptación manual pendiente.
 
 ## Alcance real a la fecha
 

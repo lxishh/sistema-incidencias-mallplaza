@@ -105,3 +105,9 @@ Las variables locales de prueba están excluidas con `.gitignore`. En un clon li
 - Verificación adicional: con el API aislado en una copia temporal de `mallplaza_dev`, el alta devolvió HTTP 201, prioridad `CRITICA`, estado `PENDIENTE` y `PENDIENTE_SINC`; la respuesta no expuso el RUT. La copia se eliminó al terminar.
 - Hallazgos abiertos: advertencia informativa por formato legado del timestamp de migración; cinco hallazgos en dependencias de desarrollo pendientes de triage. No hay vulnerabilidades en dependencias de producción según `npm audit --omit=dev`.
 - Próxima tarea: revisar visualmente envío, detalle y transición desde la interfaz; preparar instrucciones de demo con datos ficticios y decidir triage de dependencias de desarrollo.
+
+## Registro de avance — 2026-10-09 (guion de aceptación)
+
+- Tarea completada: documentado el recorrido repetible del prototipo, datos sintéticos, resultados esperados, reglas de prioridad y criterios de aceptación.
+- Límite: falta ejecutar la secuencia completa en navegador y conservar evidencia visual; las pruebas HTTP y automatizadas no se presentan como sustituto de aceptación UI.
+- Próximo paso: repetir el guion en un perfil de navegador limpio y anotar hallazgos; revisar los cinco hallazgos de dependencias de desarrollo.
