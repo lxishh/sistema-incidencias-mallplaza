@@ -40,7 +40,7 @@ Prototipo local para reportar fallas operativas de Mallplaza Copiapó, calcular 
 
 ### Frontend implementado y verificado en entorno local
 
-- Frontend con Vite y configuración PWA, formulario público JSON, login Jefatura, listado, filtros, detalle/historial, transición de estados y modal interactivo para escaneo de código QR en terreno.
+- Frontend con Vite y configuración PWA, formulario público JSON, login Jefatura, listado, filtros, detalle/historial, transición de estados y modal interactivo para escaneo de código QR en terreno. El panel refresca cola, KPI y detalle automáticamente cada 10 segundos mientras está visible; el sondeo se pausa en segundo plano.
 - `npm ci` y `npm run build` ejecutados desde Ubuntu/WSL con Node 20; Vite produjo el bundle PWA, manifest, service worker y precache.
 - Se revisó el panel en navegador contra PostgreSQL. El filtro de un día mostró tres incidencias y dos resueltas; el listado conserva su propio alcance de filtros.
 - Los artefactos compilados no se versionan como resultado de esta tarea; el build es reproducible desde el código fuente.
@@ -206,3 +206,12 @@ Las variables locales de prueba están excluidas con `.gitignore`. En un clon li
 - Decisiones cambiadas: se añaden valores de cuenta y JWT solo para desarrollo local; no son credenciales institucionales ni deben usarse fuera de esta configuración.
 - Riesgos/bloqueos actuales: las credenciales locales de demo no son adecuadas para producción; la semilla es idempotente y no cambia una cuenta ya creada.
 - Próxima tarea: levantar con `docker compose up --build` en el equipo de demo y continuar el ensayo sin borrar el volumen.
+
+## Registro de avance — 2026-10-09 (actualización automática de cola y KPI)
+
+- Tarea completada: agregar actualización periódica de la cola, los indicadores y el detalle abierto de Jefatura para reflejar altas y cambios realizados desde otras sesiones.
+- Archivos/capacidades: `frontend/src/main.js` implementa sondeo cada 10 segundos solo mientras Jefatura está en la ruta de gestión y la pestaña está visible; no repinta si los datos no cambian. La actualización manual y el refresco inmediato al cambiar un estado se conservan.
+- KPI: MTTR y cumplimiento SLA usan la cohorte por fecha de creación. Cuando el período no contiene cierres, ambos valores son `null` en la API y se presentan como `—`; con una resolución dentro del período, el panel los obtiene en el siguiente ciclo de refresco (o al refrescar manualmente).
+- Pruebas: `npm run lint`, `npm test` (33 pruebas / 9 archivos) y `npm run build:frontend` pasaron. En el primer intento la base no estaba iniciada (`ECONNREFUSED 127.0.0.1:5432`); se inició el servicio Compose existente sin borrar el volumen y la suite quedó aprobada.
+- Decisiones/riesgos: sondeo HTTP cada 10 segundos, no WebSocket; es una actualización casi en tiempo real para este prototipo y no una garantía de entrega instantánea.
+- Próxima tarea: completar suite con PostgreSQL disponible y verificar el panel de gestión.

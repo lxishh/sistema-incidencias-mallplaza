@@ -2,7 +2,7 @@
 
 ## Sistema de Gestión y Trazabilidad de Incidencias — Mallplaza Copiapó
 
-**Versión:** 1.9 — 9 de octubre de 2026
+**Versión:** 2.0 — 9 de octubre de 2026
 **Fecha objetivo de entrega académica:** 14 de octubre de 2026  
 **Estado:** informe vivo; se actualizará en cada avance relevante.  
 **Alcance de esta versión:** prototipo local con backend, PWA, KPI, generador QR de demostración y arranque integrado de PostgreSQL/API/frontend con Docker Compose; recorrido visual de punta a punta con datos sintéticos. Producción AWS, carga de fotografías e integración real externa continúan pendientes.
@@ -44,6 +44,7 @@ Estos puntos se consideran cerrados en el prototipo, salvo que el dueño del req
 - Login Jefatura con bcrypt/JWT en cookie `httpOnly`, `SameSite=Strict`, duración 8 h y `Secure` en producción.
 - Alta pública calcula prioridad y deja `estado_sync = PENDIENTE_SINC`; el endpoint responde sin esperar Casa Central.
 - Jefatura lista/filtra incidencias, ve detalle/historial y avanza estados.
+- El panel de Jefatura refresca automáticamente cola, KPI y detalle abierto cada 10 segundos mientras la pestaña está visible; las transiciones realizadas desde el mismo panel siguen actualizando los datos inmediatamente.
 - El frontend PWA incluye formulario de reporte JSON, login de Jefatura, cola, filtros, detalle e historial. El formulario no carga fotos.
 - Se agregó `GET /api/dashboard/kpis` con filtro por período, MTTR, cumplimiento SLA, abiertas vencidas y conteos categorizados; pruebas y recorrido visual local aprobaron su uso en el prototipo.
 - El RUT no aparece en lista ni respuesta pública; el detalle autenticado sí lo incluye bajo el contrato actual y requiere validar necesidad/retención.
@@ -191,6 +192,7 @@ No crear una segunda historia ni subir a un remoto hasta confirmar el repositori
 | 1.4 | 09-10-2026 | Se registran la aceptación visual, la auditoría de dependencias y la verificación del contrato de logout. |
 | 1.5 | 09-10-2026 | Se incorpora explicación ACID y matriz de cierre académico; se actualizan contradicciones entre anexos y estado actual. |
 | 1.9 | 09-10-2026 | Se amplía Docker Compose para construir e iniciar PostgreSQL, API y frontend con un solo comando; migración/seed automáticos y guía de ejecución actualizada. |
+| 2.0 | 09-10-2026 | Se añade refresco HTTP periódico en Jefatura y prueba de integración que confirma la actualización de MTTR/SLA después de resolver una incidencia. |
 
 ---
 

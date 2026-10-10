@@ -40,7 +40,7 @@ La empresa objetivo del proyecto académico es Mallplaza Copiapó. No hay consta
 
 ### Frontend
 
-- PWA responsiva Vite: formulario JSON público, inicio de sesión, cola, filtros, detalle, historial, transición de estados y tablero KPI.
+- PWA responsiva Vite: formulario JSON público, inicio de sesión, cola, filtros, detalle, historial, transición de estados y tablero KPI. Jefatura sondea lista, KPI y detalle abierto cada 10 segundos mientras la pestaña de gestión está visible; el sondeo se pausa cuando pasa a segundo plano.
 - No hay QR gráfico distribuible ni carga de imágenes.
 - `frontend/dist` está ignorado/no es fuente de verdad; compilar desde el código fuente.
 

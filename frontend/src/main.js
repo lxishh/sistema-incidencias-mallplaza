@@ -22,6 +22,9 @@ const state = {
   qrModalOpen: false,
   qrUrl: "",
 };
+const MANAGEMENT_REFRESH_INTERVAL_MS = 10_000;
+let managementRefreshTimer = null;
+let managementRefreshInProgress = false;
 
 const labels = {
   ubicacion: {
@@ -324,7 +327,7 @@ function renderManagement() {
   const end = Math.min(state.page * state.limit, state.total);
   const pages = Math.max(1, Math.ceil(state.total / state.limit));
   app.innerHTML = pageShell(
-    `<section class="manage-heading"><div><p class="eyebrow">Panel de gestión</p><h1>Hola, ${escapeHtml(state.user.nombre.split(" ")[0])}.</h1><p class="muted">Revisa la cola y mantén el seguimiento de cada incidencia.</p></div><div class="user-menu"><span class="avatar">${escapeHtml(state.user.nombre.trim().slice(0, 1).toUpperCase())}</span><span class="user-name">${escapeHtml(state.user.nombre)}<small>Jefatura</small></span><button class="button button-ghost" data-action="logout" type="button">Salir</button></div></section>
+    `<section class="manage-heading"><div><p class="eyebrow">Panel de gestión</p><h1>Hola, ${escapeHtml(state.user.nombre.split(" ")[0])}.</h1><p class="muted">Cola e indicadores se actualizan automáticamente cada 10 segundos mientras este panel está abierto.</p></div><div class="user-menu"><span class="avatar">${escapeHtml(state.user.nombre.trim().slice(0, 1).toUpperCase())}</span><span class="user-name">${escapeHtml(state.user.nombre)}<small>Jefatura</small></span><button class="button button-ghost" data-action="logout" type="button">Salir</button></div></section>
     ${state.error ? `<div class="notice notice-error" role="alert">${escapeHtml(state.error)}</div>` : ""}
     <section class="summary-strip"><div class="summary-intro"><span class="summary-icon">▤</span><div><strong>${state.total}</strong><small>incidencias encontradas</small></div></div><div class="summary-note"><span class="summary-dot"></span>Prioridad automática<span class="summary-divider">·</span>Ordenadas por prioridad y antigüedad</div></section>
     <section class="table-card"><div class="table-heading"><div><h2>Cola de incidencias</h2><p>Abre un registro para revisar los antecedentes y actualizar su estado.</p></div><button class="button button-secondary" data-action="refresh" type="button">↻ <span>Actualizar</span></button></div>
@@ -464,11 +467,13 @@ async function loadSession() {
   }
 }
 
-async function loadIncidents() {
+async function loadIncidents({ render = true } = {}) {
   if (!state.user) return;
-  state.loading = true;
-  state.error = "";
-  renderManagement();
+  if (render) {
+    state.loading = true;
+    state.error = "";
+    renderManagement();
+  }
   const params = new URLSearchParams({ page: String(state.page), limit: String(state.limit) });
   for (const [key, value] of Object.entries(state.filters))
     if (value) params.set(key, value);
@@ -481,12 +486,14 @@ async function loadIncidents() {
     state.total = 0;
     state.error = error.message;
   } finally {
-    state.loading = false;
-    renderManagement();
+    if (render) {
+      state.loading = false;
+      renderManagement();
+    }
   }
 }
 
-async function loadKpis() {
+async function loadKpis({ render = true } = {}) {
   if (!state.user) return;
   state.kpiError = "";
   try {
@@ -498,7 +505,68 @@ async function loadKpis() {
   } catch (error) {
     state.kpiError = error.message;
   }
-  renderManagement();
+  if (render) renderManagement();
+}
+
+async function refreshManagement() {
+  if (
+    !state.user ||
+    location.hash !== "#/manage" ||
+    document.visibilityState === "hidden" ||
+    managementRefreshInProgress
+  ) {
+    return;
+  }
+
+  managementRefreshInProgress = true;
+  const before = JSON.stringify({
+    incidents: state.incidents,
+    total: state.total,
+    kpis: state.kpis,
+    kpiError: state.kpiError,
+    detail: state.detail,
+    error: state.error,
+  });
+  try {
+    const refreshes = [
+      loadIncidents({ render: false }),
+      loadKpis({ render: false }),
+    ];
+    if (state.detail) {
+      refreshes.push(
+        api(`/api/incidencias/${encodeURIComponent(state.detail.id)}`)
+          .then((detail) => {
+            state.detail = detail;
+          })
+          .catch((error) => {
+            state.error = error.message;
+          }),
+      );
+    }
+    await Promise.all(refreshes);
+  } finally {
+    managementRefreshInProgress = false;
+  }
+  const after = JSON.stringify({
+    incidents: state.incidents,
+    total: state.total,
+    kpis: state.kpis,
+    kpiError: state.kpiError,
+    detail: state.detail,
+    error: state.error,
+  });
+  if (before !== after) renderManagement();
+}
+
+function syncManagementRefresh() {
+  window.clearInterval(managementRefreshTimer);
+  managementRefreshTimer = null;
+  if (state.user && location.hash === "#/manage") {
+    managementRefreshTimer = window.setInterval(
+      refreshManagement,
+      MANAGEMENT_REFRESH_INTERVAL_MS,
+    );
+  }
 }
 
 async function openDetail(id) {
@@ -572,6 +640,7 @@ async function onSubmit(event) {
         }),
       });
       state.page = 1;
+      syncManagementRefresh();
       location.hash = "#/manage";
       await loadIncidents();
       await loadKpis();
@@ -661,6 +730,8 @@ async function onClick(event) {
     try {
       await api("/api/auth/logout", { method: "POST" });
     } finally {
+      window.clearInterval(managementRefreshTimer);
+      managementRefreshTimer = null;
       state.user = null;
       state.detail = null;
       state.error = "";
@@ -703,6 +774,7 @@ function renderCurrentView() {
 
 function renderRoute() {
   state.error = "";
+  syncManagementRefresh();
   if (location.hash === "#/manage") {
     if (!state.user) renderLogin();
     else {
@@ -736,6 +808,9 @@ app.addEventListener("input", (event) => {
 app.addEventListener("submit", onSubmit);
 app.addEventListener("click", onClick);
 window.addEventListener("hashchange", renderRoute);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") refreshManagement();
+});
 
 registerSW({ immediate: true });
 

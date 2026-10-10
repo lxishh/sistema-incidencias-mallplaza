@@ -21,6 +21,8 @@ Compose construye la API y el frontend, espera a que PostgreSQL esté saludable,
 - API: `http://localhost:3000`
 - Verificación: `http://localhost:3000/health`
 
+Con Jefatura conectada, la cola, los KPI y el detalle abierto se actualizan automáticamente cada 10 segundos mientras la pestaña está visible. MTTR y cumplimiento SLA aparecen cuando el período consultado contiene incidencias resueltas; la fecha usada para incluirlas en el período es su fecha de creación.
+
 Para dejar los servicios ejecutándose en segundo plano:
 
 ```bash

@@ -105,6 +105,16 @@ describe("incidencias", () => {
     });
     expect(created.status).toBe(201);
     expect(created.body.estado_sync).toBe("PENDIENTE_SINC");
+    const initialKpis = await request(app)
+      .get("/api/dashboard/kpis")
+      .set("Cookie", cookie)
+      .expect(200);
+    expect(initialKpis.body).toMatchObject({
+      total: 1,
+      resueltas: 0,
+      mttr_minutos: null,
+      cumplimiento_sla_porcentaje: null,
+    });
     expect(
       (
         await request(app)
@@ -134,6 +144,18 @@ describe("incidencias", () => {
       .expect(200);
     expect(detail.body.rut_operario).toBe(rutValido);
     expect(detail.body.historial).toHaveLength(3);
+    const resolvedKpis = await request(app)
+      .get("/api/dashboard/kpis")
+      .set("Cookie", cookie)
+      .expect(200);
+    expect(resolvedKpis.body).toMatchObject({
+      total: 1,
+      resueltas: 1,
+      abiertas: 0,
+      mttr_minutos: expect.any(Number),
+      cumplimiento_sla_porcentaje: 100,
+      resueltas_en_sla: 1,
+    });
   });
   it("rechaza filtros inválidos y limita envíos públicos", async () => {
     const userId = await createUser();

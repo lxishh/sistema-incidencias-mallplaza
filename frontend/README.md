@@ -42,5 +42,7 @@ npm run preview
 - Jefatura puede iniciar sesión, filtrar/listar incidencias, revisar detalle e historial y avanzar el estado.
 - La PWA precachea la interfaz; las rutas API no se guardan en caché.
 - Los KPI se consultan desde `GET /api/dashboard/kpis` y se muestran en una vista de resumen con filtro de fechas.
+- Mientras Jefatura mantiene abierto el panel, la cola, los KPI y el detalle visible se consultan automáticamente cada 10 segundos; el sondeo se pausa cuando la pestaña queda oculta. Los cambios de estado ejecutados desde ese mismo panel siguen refrescando al instante.
+- MTTR y cumplimiento SLA muestran `—` hasta que exista al menos una incidencia resuelta en el período consultado. El filtro del KPI usa cohorte de fecha de creación; si se mantiene un rango que no incluye esa incidencia, seguirá sin aparecer en esas métricas.
 - Casa Central sigue siendo una integración futura; los registros nuevos quedan con sincronización pendiente.
 - No usar con RUT o información operativa real. Es una demostración académica local.
