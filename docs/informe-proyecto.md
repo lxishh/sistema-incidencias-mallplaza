@@ -2,10 +2,10 @@
 
 ## Sistema de Gestión y Trazabilidad de Incidencias — Mallplaza Copiapó
 
-**Versión:** 1.8 — 9 de octubre de 2026
+**Versión:** 1.9 — 9 de octubre de 2026
 **Fecha objetivo de entrega académica:** 14 de octubre de 2026  
 **Estado:** informe vivo; se actualizará en cada avance relevante.  
-**Alcance de esta versión:** prototipo local con backend, PWA, KPI, generador QR de demostración (modal interactivo y ficha de demostración) y recorrido visual de punta a punta con datos sintéticos; 33 pruebas, lint, build PWA y auditoría completa de dependencias reportados en verde. Producción AWS, carga de fotografías e integración real externa continúan pendientes.
+**Alcance de esta versión:** prototipo local con backend, PWA, KPI, generador QR de demostración y arranque integrado de PostgreSQL/API/frontend con Docker Compose; recorrido visual de punta a punta con datos sintéticos. Producción AWS, carga de fotografías e integración real externa continúan pendientes.
 
 ## Resumen ejecutivo
 
@@ -48,6 +48,7 @@ Estos puntos se consideran cerrados en el prototipo, salvo que el dueño del req
 - Se agregó `GET /api/dashboard/kpis` con filtro por período, MTTR, cumplimiento SLA, abiertas vencidas y conteos categorizados; pruebas y recorrido visual local aprobaron su uso en el prototipo.
 - El RUT no aparece en lista ni respuesta pública; el detalle autenticado sí lo incluye bajo el contrato actual y requiere validar necesidad/retención.
 - PostgreSQL local corre por Docker Compose; la migración replica el modelo inicial del prototipo en `db/schema.sql`.
+- PostgreSQL, API y frontend de desarrollo se pueden levantar juntos con `docker compose up --build`; Compose espera la salud de la base, aplica migraciones y crea el usuario ficticio de Jefatura antes de iniciar Vite.
 - El modelo de datos está explicado y sujeto a revisión técnica/académica; no se afirma que sea una especificación entregada o aprobada por Mallplaza.
 - Lint y 27 pruebas de backend pasaron. El build PWA y flujos KPI/alta se verificaron localmente con datos sintéticos; el 9 de octubre se completó la prueba visual de punta a punta del caso #2 en `feature/S1-dashboard-kpis`, commit `61b48e4`. bcrypt 6.0.0, Vitest 4.1.11 y node-pg-migrate 8.0.4 pasaron en Node 20.20.2; `npm audit` completo informa cero vulnerabilidades. La actualización de dependencias está en la rama local `chore/S1-dev-dependency-audit`, sin publicar.
 
@@ -189,6 +190,7 @@ No crear una segunda historia ni subir a un remoto hasta confirmar el repositori
 | 1.3 | 09-10-2026 | Se agrega la vista KPI conectada y la guía reproducible de ejecución local. |
 | 1.4 | 09-10-2026 | Se registran la aceptación visual, la auditoría de dependencias y la verificación del contrato de logout. |
 | 1.5 | 09-10-2026 | Se incorpora explicación ACID y matriz de cierre académico; se actualizan contradicciones entre anexos y estado actual. |
+| 1.9 | 09-10-2026 | Se amplía Docker Compose para construir e iniciar PostgreSQL, API y frontend con un solo comando; migración/seed automáticos y guía de ejecución actualizada. |
 
 ---
 
@@ -214,7 +216,7 @@ Entregar una primera base ejecutable del sistema de incidencias operativas de Ma
 | Casa Central | Interfaz `crearOrdenTrabajo` con mock local y resultados simulables | Aísla el dominio y permite desarrollar el prototipo sin presentar una llamada mock como integración productiva. |
 | Auditoría y logs | Tabla/helper de auditoría con resultados controlados para futuros intentos; redacción de RUT, credenciales, cookies y cabeceras | Prepara trazabilidad sin guardar secretos o datos personales en logs. El alta actual todavía no invoca Casa Central ni genera intentos reales. |
 | Calidad | ESLint/Prettier y Vitest/Supertest, tabla de verdad y pruebas de integración | Automatiza revisión de reglas, validación, seguridad básica, DB y flujos HTTP. |
-| Desarrollo local | Docker Compose con PostgreSQL 15 y base separada para pruebas | Reduce diferencias entre entornos y evita probar sobre la base de desarrollo. |
+| Desarrollo local | Docker Compose con PostgreSQL, API y frontend; base de pruebas separada | Reduce pasos manuales y diferencias entre entornos; evita probar sobre la base de desarrollo. |
 
 ### 3. Archivos principales
 
@@ -226,7 +228,7 @@ Entregar una primera base ejecutable del sistema de incidencias operativas de Ma
 - `backend/src/integrations/casaCentralClient.js`, `auditoriaApi.js`: frontera con el mock y registro de intentos.
 - `db/schema.sql`: esquema de referencia; `db/migrations/20261009000100-initial-schema.js`: migración equivalente al identificador ya aplicado.
 - `backend/test/`: pruebas unitarias, integración, privacidad de logs y equivalencia de esquema.
-- `docker-compose.yml`, `db/docker-init/01-create-test-db.sql`: entorno local y DB de pruebas.
+- `docker-compose.yml`, `backend/Dockerfile`, `frontend/Dockerfile`, `db/docker-init/01-create-test-db.sql`: entorno local y DB de pruebas.
 - `docs/api.md`, `docs/preguntas.md`: contrato disponible y decisiones abiertas.
 
 ### 4. Decisiones y razones
@@ -265,7 +267,7 @@ El workspace tiene `.git`; `origin` y la identidad Git están configurados en Ub
 - `npm test`: **27 pruebas aprobadas en 8 archivos**, incluidas KPI, autenticación e integración HTTP/PostgreSQL. La prueba de logout comprueba HTTP 204, cookie vaciada y rechazo 401 posterior en `/api/auth/me`.
 - `npm run db:migrate` y `npm run db:migrate:test`: no hay migraciones pendientes; ambos comandos terminan correctamente y advierten que el identificador legado con guion no permite determinar timestamp.
 - `npm audit`: cero vulnerabilidades en el árbol completo después de actualizar Vitest, node-pg-migrate y bcrypt.
-- PostgreSQL local quedó iniciado en Docker Desktop para el trabajo posterior.
+- **Arranque integrado Docker Compose (2026-10-09):** `docker compose config --quiet` validó la configuración y `docker compose up --build -d` construyó backend/frontend, reutilizó PostgreSQL local y dejó los tres servicios saludables/en ejecución. `GET /health` respondió `{ "status": "ok" }` por el puerto de API y el proxy frontend; `GET /api/catalogos` respondió con los catálogos. `npm run lint`, `npm test` (33 pruebas en 9 archivos) y `npm run build:frontend` pasaron. La base local no se eliminó.
 - **Prueba visual local (2026-10-09, `61b48e4`):** el reporte sintético #2 se confirmó como `CRITICA`/`PENDIENTE`; Jefatura lo localizó y abrió, y el historial registró `PENDIENTE → EN_PROCESO → RESUELTA`. La cola mostró #2 Resuelta. Los KPI visibles quedaron en 2 incidencias del período, 1 abierta, 1 resuelta, MTTR 0,8 min, SLA 100 % (1/1) y 0 vencidas. La sincronización permaneció `PENDIENTE_SINC`, sin conexión real a Casa Central. La incidencia #1 preexistente se conservó y no se guardó captura. El navegador informó `ERR_ABORTED` durante logout; después de recargar, la ruta pidió autenticación. La prueba API confirma que se emitió la cookie vaciada; la causa exacta del evento de red no quedó capturada.
 
 Los comandos se verificaron desde una copia local del workspace porque el shell de Windows no ejecuta scripts npm desde una ruta UNC de WSL. La prueba usa el mismo código sincronizado del proyecto y PostgreSQL local.
@@ -1126,4 +1128,3 @@ Requiere sesión Jefatura. Acepta filtros opcionales `desde` y `hasta` en format
 - **Casa Central:** el alta deja `estado_sync = PENDIENTE_SINC`. La interfaz mock no se invoca como integración productiva; en la etapa de integración se conectará el worker y se configurará el conector con la especificación institucional correspondiente.
 - **Dashboard:** el recorrido visual local de cola y KPI ya se verificó con el caso #2; las pruebas KPI cubren denominadores sin cierres y rangos. Gráficos adicionales dependen de necesidades validadas con Jefatura.
 - **PWA:** el recorrido funcional local de formulario y gestión se verificó en navegador; se incorporó el generador de QR local para demostraciones operativas (modal reactivo en PWA y ficha imprimible `docs/demo-qr.html`). La carga de fotos y aceptación formal con usuarios siguen pendientes.
-

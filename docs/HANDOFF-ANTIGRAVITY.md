@@ -46,7 +46,7 @@ La empresa objetivo del proyecto académico es Mallplaza Copiapó. No hay consta
 
 ### Base de datos
 
-- PostgreSQL 15+ en Docker Compose local; migración `db/migrations/20261009000100-initial-schema.js` reproduce el modelo de `db/schema.sql`.
+- PostgreSQL 15+ en Docker Compose local; migración `db/migrations/20261009000100-initial-schema.js` reproduce el modelo de `db/schema.sql`. Docker Compose también construye API y frontend; el arranque completo es `docker compose up --build`.
 - El esquema se creó en el diseño del prototipo con asistencia de IA. No proviene de Mallplaza ni está aprobado por la empresa. Leer `docs/justificacion-modelo-datos.md` antes de modificarlo.
 - La base de demo puede conservar incidencias sintéticas #1 y #2. No borrar volúmenes ni reinicializarla sin que el usuario/equipo lo pida explícitamente.
 

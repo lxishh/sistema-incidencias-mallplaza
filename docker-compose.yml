@@ -16,5 +16,51 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://mallplaza:mallplaza_dev@postgres:5432/mallplaza_dev
+      JWT_SECRET: ${JWT_SECRET:-local-development-only-jwt-secret-change-before-deployment}
+      REPORT_TZ: America/Santiago
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-jefatura@example.test}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-LocalDemo-2026-Only!}
+      SEED_ADMIN_NOMBRE: ${SEED_ADMIN_NOMBRE:-Jefatura Demo}
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://127.0.0.1:3000/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:3000
+    ports:
+      - "5173:5173"
+
 volumes:
   mallplaza-postgres:

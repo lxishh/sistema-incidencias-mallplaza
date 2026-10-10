@@ -10,7 +10,7 @@ El recorrido presenta el registro de una falla, su priorización determinista, l
 
 ## Preparación
 
-1. Seguir [Ejecución local](ejecucion-local.md) para iniciar PostgreSQL, API y Vite.
+1. Seguir [Ejecución local](ejecucion-local.md) y ejecutar `docker compose up --build` para iniciar PostgreSQL, API y Vite.
 2. Verificar `GET /health` y que el usuario semilla ficticio se haya creado.
 3. Abrir `http://localhost:5173/#/report` en una ventana privada o perfil limpio, para que la sesión de Jefatura no cambie la pantalla inicial.
 4. Confirmar que la base usada es local y descartable. En una exposición grupal, acordar antes quién conserva o limpia esos datos.

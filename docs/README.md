@@ -22,7 +22,7 @@ El informe consolidado editable se mantiene en Markdown y también se entrega co
 8. [Datos, KPI y SLA](datos-kpi-sla.md): modelo relacional, diccionario, indicadores y niveles de servicio.
 9. [Calidad, operación y planificación](calidad-operacion-plan.md): plan de pruebas, estándares, continuidad, cambios y fases.
 10. [Contrato API Sprint 1](api.md) y [Preguntas abiertas](preguntas.md) para el equipo técnico.
-11. [Ejecución local](ejecucion-local.md): arranque de PostgreSQL, migración, seed ficticio, API, frontend y compilación.
+11. [Ejecución local](ejecucion-local.md): arranque de PostgreSQL, API y frontend con un solo comando Docker Compose.
 12. [Guion de demostración local](guion-demostracion-local.md): escenario sintético, pasos, resultados esperados y aceptación visual local ya realizada.
 
 ## Alcance real a la fecha

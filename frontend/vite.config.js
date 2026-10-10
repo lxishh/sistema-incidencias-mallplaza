@@ -2,13 +2,15 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 const localOnly = process.env.VITE_LOCAL_ONLY === "true";
+const apiProxyTarget =
+  process.env.VITE_API_PROXY_TARGET || "http://127.0.0.1:3000";
 
 export default defineConfig({
   server: {
     host: "0.0.0.0",
     proxy: {
-      "/api": "http://127.0.0.1:3000",
-      "/health": "http://127.0.0.1:3000",
+      "/api": apiProxyTarget,
+      "/health": apiProxyTarget,
     },
   },
   plugins: [

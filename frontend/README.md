@@ -1,6 +1,6 @@
 # Frontend local
 
-Aplicación web con Vite y `vite-plugin-pwa`. La vista consume la API bajo el mismo origen `/api`; el servidor de desarrollo reenvía esas rutas a `http://127.0.0.1:3000`.
+Aplicación web con Vite y `vite-plugin-pwa`. La vista consume la API bajo el mismo origen `/api`; el servidor de desarrollo reenvía esas rutas por defecto a `http://127.0.0.1:3000`. Docker Compose establece el proxy interno a `http://backend:3000`.
 
 ## Requisitos e instalación
 
@@ -21,6 +21,8 @@ npm run dev
 ```
 
 Vite muestra la dirección local, normalmente `http://localhost:5173`. En desarrollo el service worker está desactivado para evitar que una caché antigua oculte cambios.
+
+Para iniciar PostgreSQL, API y frontend juntos con Docker, consulta [`docs/ejecucion-local.md`](../docs/ejecucion-local.md).
 
 ## Compilación
 

@@ -1,113 +1,66 @@
 # Ejecución local del prototipo
 
-Esta guía levanta la API, PostgreSQL y el frontend de desarrollo en Ubuntu/WSL. Está pensada para datos ficticios y revisión académica; no es una instalación de producción.
+Esta guía levanta PostgreSQL, la API y el frontend de desarrollo con Docker Compose. Está pensada para datos ficticios y revisión académica; no es una instalación de producción.
 
-## 1. Requisitos
+## Requisitos
 
-- Ubuntu/WSL con Node.js 20 (20.19 o superior) y npm instalados en Linux.
-- Docker Desktop iniciado y con integración habilitada para la distribución Ubuntu.
-- En WSL, trabajar desde `/home/localdev/sistema-incidencias-mallplaza`; no instalar dependencias desde Git Bash, PowerShell ni una ruta `\\wsl.localhost`.
+- Docker Engine con el plugin Docker Compose v2 (o Docker Desktop con integración WSL habilitada).
+- No es necesario instalar Node.js ni npm en el equipo anfitrión para levantar la aplicación.
 
-Verificar desde la terminal Ubuntu:
+## Iniciar todos los servicios
 
-```bash
-cd /home/localdev/sistema-incidencias-mallplaza
-node --version
-npm --version
-docker version
-```
-
-## 2. Iniciar PostgreSQL
-
-Desde la raíz del repositorio:
+Desde la raíz del repositorio, ejecuta:
 
 ```bash
-docker compose up -d postgres
-docker compose ps
+docker compose up --build
 ```
 
-La base de desarrollo del Compose es `mallplaza_dev`, usuario `mallplaza`, puerto local `5432`. La contraseña incluida en `docker-compose.yml` es únicamente para la base descartable de desarrollo local; nunca se reutiliza en AWS.
+Compose construye la API y el frontend, espera a que PostgreSQL esté saludable, ejecuta las migraciones y crea la cuenta ficticia de Jefatura antes de iniciar la aplicación. Vite espera a que la API responda en `/health`.
 
-## 3. Configurar entorno y preparar base de datos
+- Aplicación: `http://localhost:5173`
+- API: `http://localhost:3000`
+- Verificación: `http://localhost:3000/health`
 
-Desde la raíz, se exportan variables en la terminal actual. Cambia la contraseña semilla por otra de prueba, de al menos 12 caracteres; no uses una contraseña personal o corporativa.
+Para dejar los servicios ejecutándose en segundo plano:
 
 ```bash
-export NODE_ENV=development
-export DATABASE_URL='postgres://mallplaza:mallplaza_dev@localhost:5432/mallplaza_dev'
-export JWT_SECRET='desarrollo-local-reemplazar-por-una-frase-aleatoria-larga'
-export REPORT_TZ='America/Santiago'
-export SEED_ADMIN_EMAIL='jefatura@example.test'
-export SEED_ADMIN_PASSWORD='LocalDemo-2026-Only!'
-export SEED_ADMIN_NOMBRE='Jefatura Demo'
+docker compose up --build -d
+docker compose logs -f
 ```
 
-Aplicar migraciones y crear el usuario ficticio:
+Detener los contenedores, conservando los datos:
 
 ```bash
-cd backend
-npm ci
-npm run db:migrate
-npm run db:seed
+docker compose down
 ```
 
-Las variables existen solo en esta terminal y no se escriben en el repositorio. El seed es idempotente respecto del correo: no sobrescribe una cuenta ya existente.
+No usar `docker compose down -v` salvo que se quiera borrar deliberadamente el volumen local y todos sus datos. La base local que se usó para la aceptación visual puede conservar las incidencias sintéticas #1 y #2.
 
-## 4. Levantar backend
+## Cuenta de demostración
 
-En la misma terminal, desde `backend/`:
+Por defecto se crea una cuenta ficticia:
+
+- Email: `jefatura@example.test`
+- Password: `LocalDemo-2026-Only!`
+
+Estos valores y la clave JWT predeterminada son solo para el perfil local desechable. No usar información real, contraseñas reutilizadas ni reportes operativos. Para personalizar la cuenta, configura `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` y, opcionalmente, `SEED_ADMIN_NOMBRE` en el archivo `.env` local (ignorado por Git) antes del primer seed. La semilla no sobrescribe una cuenta existente con el mismo correo.
+
+La base usa el volumen `mallplaza-postgres` y mantiene `mallplaza_dev` y la base de pruebas local. Las migraciones se aplican en cada inicio de la API y no recrean la base.
+
+## Desarrollo y compilación fuera de Docker
+
+Para trabajar con hot reload ejecutando frontend/backend desde el anfitrión, sigue los pasos separados de instalación, variables de entorno y arranque definidos en `frontend/README.md` y los scripts npm de la raíz. La configuración de proxy de Vite conserva por defecto `127.0.0.1:3000`; Compose le asigna `http://backend:3000` dentro de la red Docker.
+
+Para compilar el frontend fuera de Docker:
 
 ```bash
-node src/server.js
+npm run build:frontend
 ```
 
-Debe indicar que escucha en el puerto `3000`. En una segunda terminal Ubuntu puede verificarse:
+## Límites
 
-```bash
-curl -i http://localhost:3000/health
-```
-
-## 5. Levantar frontend
-
-En otra terminal Ubuntu:
-
-```bash
-cd /home/localdev/sistema-incidencias-mallplaza/frontend
-npm ci
-npm run dev
-```
-
-Abrir la dirección que informa Vite, habitualmente `http://localhost:5173`. El proxy de desarrollo redirige `/api` y `/health` al backend en el puerto `3000`. La PWA desactiva su service worker durante el modo de desarrollo para que no interfiera con las actualizaciones locales.
-
-Credenciales de demostración: correo y contraseña configurados por `SEED_ADMIN_EMAIL` y `SEED_ADMIN_PASSWORD` en el paso 3. La pantalla no consulta cuentas Mallplaza.
-
-## 6. Compilar frontend
-
-Detener Vite con `Ctrl+C` o abrir otra terminal Ubuntu:
-
-```bash
-cd /home/localdev/sistema-incidencias-mallplaza/frontend
-npm run build
-```
-
-El resultado esperado es `frontend/dist/` con `index.html`, manifiesto y service worker. El modo de desarrollo es el camino de demo local descrito en esta guía; `preview` no incluye todavía un reverse proxy al backend.
-
-## 7. Limpiar los datos de demostración
-
-El volumen de PostgreSQL conserva datos al detener Compose. Para borrar completamente la base local y recrearla desde cero:
-
-```bash
-cd /home/localdev/sistema-incidencias-mallplaza
-docker compose down -v
-docker compose up -d postgres
-```
-
-Después repite los pasos 3 y 4. `down -v` elimina de manera irreversible solo el volumen de esta base local: usar únicamente si se desea descartar todos los datos ficticios.
-
-## Limitaciones
-
-- No cargar información real, RUT operativo ni secretos del cliente.
-- Fotos, QR gráfico distribuible, S3, despliegue AWS y envío a Casa Central no forman parte del arranque local actual.
-- El endpoint KPI y su vista ya se validaron con pruebas y datos sintéticos; las metas SLA siguen siendo propuesta del prototipo y requieren validación de negocio.
-- Para pruebas automatizadas del backend se requiere una base de pruebas separada; no apuntar la suite a una base con información que se quiera conservar.
-- La base local que se usó para la aceptación visual conserva las incidencias sintéticas #1 y #2. No ejecutar `docker compose down -v` si se quiere preservar ese escenario de exposición.
+- Esta es una configuración de desarrollo local; no debe usarse en producción.
+- No cargar RUT reales ni secretos del cliente.
+- Fotos, almacenamiento S3, despliegue AWS y envío a Casa Central no forman parte del arranque local.
+- `docker compose down` conserva los datos; `docker compose down -v` los elimina de manera irreversible.
+- La suite automatizada del backend requiere su base de pruebas separada; seguir las instrucciones del backend y no apuntar pruebas a una base que se quiera conservar.

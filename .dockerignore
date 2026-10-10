@@ -1,0 +1,8 @@
+.git
+.vscode
+.env
+.env.*
+**/node_modules
+**/dist
+**/coverage
+*.Zone.Identifier

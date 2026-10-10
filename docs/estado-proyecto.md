@@ -34,6 +34,7 @@ Prototipo local para reportar fallas operativas de Mallplaza Copiapó, calcular 
 - Catálogos y POST público JSON para crear incidencia.
 - Función de prioridad pura, validación Zod/RUT, filtro/listado/detalle, cambio de estado y consulta de historial.
 - PostgreSQL por Docker Compose, esquema y migración equivalentes.
+- Docker Compose también construye/inicia API y frontend; migraciones y seed ficticio se ejecutan al iniciar la API.
 - Interfaz `CasaCentralClient` mock y helper de auditoría; no se ejecutan desde un worker.
 - ESLint y Vitest/Supertest: lint aprobado y 27 pruebas aprobadas en 8 archivos, incluidos cálculos KPI y validación de rangos.
 
@@ -195,3 +196,13 @@ Las variables locales de prueba están excluidas con `.gitignore`. En un clon li
   - `npm run build:frontend`: compilación exitosa (PWA con service worker y manifest).
   - `npm run qr`: CLI operativo con detección de IP local y emisión SVG/HTML.
 - Próximo paso: probar el escaneo con la cámara del iPhone 13 en la red local y guiar al usuario.
+
+## Registro de avance — 2026-10-09 (arranque integrado con Docker Compose)
+
+- Tarea completada: incorporar contenedores de desarrollo para API y frontend al Compose existente, para levantar toda la aplicación con `docker compose up --build`.
+- Archivos/capacidades: `backend/Dockerfile`, `frontend/Dockerfile`, `docker-compose.yml`; migración y seed ficticio automáticos, healthchecks y proxy Vite a la API dentro de la red Docker. Se conservan los puertos locales `3000` y `5173` y el volumen de PostgreSQL.
+- Documentación: instrucciones de ejecución y guion de demo actualizados. `docker compose down` conserva la base; no se debe usar `down -v` si se quieren mantener incidencias sintéticas.
+- Verificación y resultado: `docker compose config --quiet` válido; `docker compose up --build -d` construyó API/frontend, reutilizó el PostgreSQL y los tres servicios quedaron en ejecución. `GET /health` respondió OK desde API y a través del proxy Vite; `GET /api/catalogos` respondió con HTTP 200. `npm run lint`, `npm test` (33 pruebas / 9 archivos) y `npm run build:frontend` pasaron.
+- Decisiones cambiadas: se añaden valores de cuenta y JWT solo para desarrollo local; no son credenciales institucionales ni deben usarse fuera de esta configuración.
+- Riesgos/bloqueos actuales: las credenciales locales de demo no son adecuadas para producción; la semilla es idempotente y no cambia una cuenta ya creada.
+- Próxima tarea: levantar con `docker compose up --build` en el equipo de demo y continuar el ensayo sin borrar el volumen.
