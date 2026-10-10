@@ -759,7 +759,7 @@ export function generateQr(text) {
   function toSvg({
     sizePx = 240,
     margin = 4,
-    darkColor = "#bd1737",
+    darkColor = "#000000",
     lightColor = "#ffffff",
   } = {}) {
     const totalSize = size + margin * 2;

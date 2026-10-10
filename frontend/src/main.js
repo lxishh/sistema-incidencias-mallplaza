@@ -102,10 +102,13 @@ function renderQrModal() {
   let svg = "";
   let errorMsg = "";
   try {
-    svg = generateQrSvg(currentUrl, { sizePx: 220, darkColor: "#bd1737" });
+    svg = generateQrSvg(currentUrl, { sizePx: 260, darkColor: "#000000" });
   } catch (e) {
     errorMsg = e.message;
   }
+  const isLocalhost =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1";
   return `
     <div class="modal-backdrop" data-action="close-qr">
       <section class="qr-modal-card" role="dialog" aria-modal="true" aria-labelledby="qr-modal-title" data-qr-panel>
@@ -124,6 +127,13 @@ function renderQrModal() {
             <span>URL de destino (editable para red local / IP LAN):</span>
             <input type="text" id="qr-url-input" value="${escapeHtml(currentUrl)}" placeholder="http://192.168.1.X:5173/#/report" autocomplete="off" />
           </label>
+          ${
+            isLocalhost
+              ? `<div class="notice notice-warning" style="padding:8px 12px;font-size:11px;border-radius:8px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;">
+                  ⚠️ <strong>Aviso para móvil:</strong> Estás en <code>localhost</code>. Tu celular no puede resolver "localhost". Reemplázalo en el campo superior por la IP de tu equipo (ej. <code>http://192.168.x.x:5173/#/report</code>).
+                </div>`
+              : ""
+          }
           <div class="qr-hint">
             <strong>¿Cómo probar desde tu teléfono?</strong>
             <p>1. Conecta el teléfono al mismo Wi-Fi que este equipo.</p>
@@ -713,8 +723,8 @@ app.addEventListener("input", (event) => {
     if (container) {
       try {
         container.innerHTML = generateQrSvg(state.qrUrl.trim(), {
-          sizePx: 220,
-          darkColor: "#bd1737",
+          sizePx: 260,
+          darkColor: "#000000",
         });
       } catch (err) {
         container.innerHTML = `<p class="notice notice-error">${escapeHtml(err.message)}</p>`;

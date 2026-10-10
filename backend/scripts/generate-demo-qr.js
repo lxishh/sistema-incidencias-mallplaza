@@ -62,7 +62,10 @@ function main() {
     "Código QR para escaneo con cámara móvil (misma red local):\n\n",
   );
   process.stdout.write(qr.toAscii({ margin: 2 }));
-  process.stdout.write("\n");
+  process.stdout.write(
+    "\n💡 Nota: Para escanear con la cámara del teléfono, se recomienda abrir la ficha gráfica en el navegador:\n" +
+      "   xdg-open docs/demo-qr.html (o en Windows abrir docs/demo-qr.html)\n\n",
+  );
 
   const repoRoot = path.resolve(__dirname, "..", "..");
   const publicDir = path.join(repoRoot, "frontend", "public");
@@ -71,7 +74,7 @@ function main() {
   const svgContent = qr.toSvg({
     sizePx: 320,
     margin: 4,
-    darkColor: "#bd1737",
+    darkColor: "#000000",
     lightColor: "#ffffff",
   });
 
