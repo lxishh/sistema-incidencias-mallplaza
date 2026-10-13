@@ -35,7 +35,7 @@ La empresa objetivo del proyecto académico es Mallplaza Copiapó. No hay consta
 - Node.js 20, Express, PostgreSQL con `pg` y SQL parametrizado, Zod, bcrypt, JWT, `pino` y `express-rate-limit`.
 - Prioridad como función pura en `backend/src/rules/prioridad.js`.
 - RUT módulo 11 validado; el alta pública no devuelve RUT y el logging lo redacta.
-- Login/logout/sesión de Jefatura; cookie `httpOnly`, `SameSite=Strict`, 8 horas y `Secure` en producción. Solo existe el rol `JEFATURA`.
+- Login/logout/sesión de Jefatura; cookie `httpOnly`, `SameSite=Strict`, configurable con `SESSION_TTL_MINUTES` (30 minutos por defecto) y `Secure` en producción. Solo existe el rol `JEFATURA`.
 - API de catálogos, alta pública JSON, consulta/listado, detalle e historial, transiciones de estado y KPI.
 - Trigger de PostgreSQL protege la transición de estados y genera historial. La API responde conflicto para transiciones inválidas.
 - El cambio de estado usa transacción explícita y bloqueo de fila. PostgreSQL queda en `READ COMMITTED` predeterminado; no se probó concurrencia de carga ni recuperación ante desastre.

@@ -1102,7 +1102,7 @@ Público, JSON. Rate limit de 60 solicitudes por IP (ventana de 15 minutos, conf
 Responde `201 { id, prioridad, estado, estado_sync, fecha_creacion }`.
 
 ### `POST /api/auth/login`
-Público, JSON `{ "email", "password" }`. Rate limit por IP de 10 intentos por ventana de 15 minutos (configurable). En éxito responde `200 { id, nombre, email, rol }` y establece una cookie JWT `httpOnly`, `SameSite=Strict`, de 8 horas; en producción también `Secure`. Credenciales incorrectas o usuario inactivo responden `401` con `Credenciales inválidas`.
+Público, JSON `{ "email", "password" }`. Rate limit por IP de 10 intentos por ventana de 15 minutos (configurable). En éxito responde `200 { id, nombre, email, rol }` y establece una cookie JWT `httpOnly`, `SameSite=Strict`, configurable con `SESSION_TTL_MINUTES` (30 minutos por defecto); en producción también `Secure`. Credenciales incorrectas o usuario inactivo responden `401` con `Credenciales inválidas`.
 
 ### `POST /api/auth/logout`
 Público. Elimina la cookie de sesión y responde `204`. La suite verifica `Set-Cookie` vacía y que `/api/auth/me` rechace esa cookie con HTTP 401.

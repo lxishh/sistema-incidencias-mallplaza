@@ -45,7 +45,7 @@ Antes de cambiar código, leer `docs/estado-proyecto.md` para distinguir capacid
 Implementado en el backend actual: `GET /health` · `GET /api/catalogos` · `POST /api/incidencias` (público, JSON; aún no multipart) · `POST /api/auth/login|logout`, `GET /api/auth/me` · `GET /api/incidencias` · `GET /api/incidencias/:id` · `PATCH /api/incidencias/:id/estado` · `GET /api/dashboard/kpis` (endpoint recién incorporado; validar durante verificación integrada).
 
 Diseño objetivo, todavía pendiente: `POST /api/incidencias` con carga de fotos y `POST /api/incidencias/:id/reenviar`.
-Errores: `{ "error": { "code", "message", "details" } }`. Sesión Jefatura en cookie httpOnly + SameSite=Strict (JWT, 8 h). Solo existe el rol Jefatura.
+Errores: `{ "error": { "code", "message", "details" } }`. Sesión Jefatura en cookie httpOnly + SameSite=Strict (JWT, configurable con SESSION_TTL_MINUTES, 30 min por defecto). Solo existe el rol Jefatura.
 
 ## Integración con Casa Central
 El prototipo conserva la frontera `CasaCentralClient.crearOrdenTrabajo(incidencia)` con un mock local. `POST /api/incidencias` deja la incidencia en `PENDIENTE_SINC` y responde 201 sin enviar una orden real; no hay worker que consuma la cola ni intentos automáticos. La conexión institucional se configurará en la etapa de integración usando el contrato técnico aprobado. Credenciales solo en almacenes de secretos/variables de entorno; nunca inventar payloads.
