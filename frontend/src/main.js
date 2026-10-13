@@ -50,6 +50,11 @@ const labels = {
     EN_PROCESO: "En proceso",
     RESUELTA: "Resuelta",
   },
+  estado_sync: {
+    PENDIENTE_SINC: "Pendiente sinc.",
+    SINCRONIZADO: "Sincronizado",
+    ERROR_SINC: "Error sinc.",
+  },
 };
 
 function escapeHtml(value) {
@@ -271,9 +276,9 @@ function selectFilter(name, title, values, lookup, selected) {
 
 function renderIncidentRows() {
   if (state.loading)
-    return `<tr><td colspan="6" class="empty-state">Cargando incidencias…</td></tr>`;
+    return `<tr><td colspan="7" class="empty-state">Cargando incidencias…</td></tr>`;
   if (state.incidents.length === 0)
-    return `<tr><td colspan="6" class="empty-state"><span class="empty-icon">⌕</span><strong>No hay incidencias para mostrar</strong><small>Prueba con otros filtros o registra un nuevo reporte.</small></td></tr>`;
+    return `<tr><td colspan="7" class="empty-state"><span class="empty-icon">⌕</span><strong>No hay incidencias para mostrar</strong><small>Prueba con otros filtros o registra un nuevo reporte.</small></td></tr>`;
   return state.incidents
     .map(
       (item) => `
@@ -282,6 +287,7 @@ function renderIncidentRows() {
           <td><span class="priority-pill priority-${item.prioridad.toLowerCase()}"><i></i>${escapeHtml(labels.prioridad[item.prioridad] || item.prioridad)}</span></td>
           <td><span class="cell-main">${escapeHtml(labels.tipo_falla[item.tipo_falla] || item.tipo_falla)}</span><small>${escapeHtml(labels.ubicacion[item.ubicacion] || item.ubicacion)}</small></td>
           <td><span class="status-pill status-${item.estado.toLowerCase()}">${escapeHtml(labels.estado[item.estado] || item.estado)}</span></td>
+          <td><span class="sync-pill sync-${(item.estado_sync || "pendiente_sinc").toLowerCase()}">${escapeHtml(labels.estado_sync[item.estado_sync] || item.estado_sync || "Pendiente sinc.")}</span></td>
           <td>${escapeHtml(formatDate(item.fecha_creacion))}</td>
           <td><button class="icon-button" type="button" data-open="${escapeHtml(item.id)}" aria-label="Ver detalle de incidencia ${escapeHtml(item.id)}">↗</button></td>
         </tr>`,
@@ -312,7 +318,7 @@ function renderDetail() {
   return `<div class="modal-backdrop" data-action="close-detail"><section class="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detail-title" data-detail-panel>
     <div class="detail-header"><div><p class="eyebrow">Detalle de incidencia</p><h2 id="detail-title">#${escapeHtml(item.id)}</h2></div><button class="icon-button close-button" data-action="close-detail" type="button" aria-label="Cerrar detalle">×</button></div>
     <div class="detail-status"><span class="priority-pill priority-${item.prioridad.toLowerCase()}"><i></i>${escapeHtml(labels.prioridad[item.prioridad] || item.prioridad)}</span><span class="status-pill status-${item.estado.toLowerCase()}">${escapeHtml(labels.estado[item.estado] || item.estado)}</span></div>
-    <dl class="detail-grid"><div><dt>Tipo de falla</dt><dd>${escapeHtml(labels.tipo_falla[item.tipo_falla] || item.tipo_falla)}</dd></div><div><dt>Ubicación</dt><dd>${escapeHtml(labels.ubicacion[item.ubicacion] || item.ubicacion)}</dd></div><div><dt>Creada</dt><dd>${escapeHtml(formatDate(item.fecha_creacion))}</dd></div><div><dt>RUT del operario</dt><dd>${escapeHtml(item.rut_operario)}</dd></div><div><dt>Impacto operativo</dt><dd>${item.impacto_operativo ? "Sí" : "No"}</dd></div><div><dt>Riesgo de accidente</dt><dd>${item.riesgo_accidente ? "Sí" : "No"}</dd></div><div><dt>Afecta a terceros</dt><dd>${item.afecta_terceros ? "Sí" : "No"}</dd></div><div><dt>Sincronización</dt><dd>${escapeHtml(item.sync?.estado || item.estado_sync)}</dd></div></dl>
+    <dl class="detail-grid"><div><dt>Tipo de falla</dt><dd>${escapeHtml(labels.tipo_falla[item.tipo_falla] || item.tipo_falla)}</dd></div><div><dt>Ubicación</dt><dd>${escapeHtml(labels.ubicacion[item.ubicacion] || item.ubicacion)}</dd></div><div><dt>Creada</dt><dd>${escapeHtml(formatDate(item.fecha_creacion))}</dd></div><div><dt>RUT del operario</dt><dd>${escapeHtml(item.rut_operario)}</dd></div><div><dt>Impacto operativo</dt><dd>${item.impacto_operativo ? "Sí" : "No"}</dd></div><div><dt>Riesgo de accidente</dt><dd>${item.riesgo_accidente ? "Sí" : "No"}</dd></div><div><dt>Afecta a terceros</dt><dd>${item.afecta_terceros ? "Sí" : "No"}</dd></div><div><dt>Sincronización</dt><dd><span class="sync-pill sync-${(item.sync?.estado || item.estado_sync || "pendiente_sinc").toLowerCase()}">${escapeHtml(labels.estado_sync[item.sync?.estado || item.estado_sync] || item.sync?.estado || item.estado_sync || "Pendiente sinc.")}</span></dd></div></dl>
     <div class="detail-comment"><h3>Comentario</h3><p>${item.comentario ? escapeHtml(item.comentario) : "Sin comentario adicional."}</p></div>
     <div class="detail-history"><h3>Historial</h3><ol class="timeline">${history || "<li>Sin eventos registrados.</li>"}</ol></div>
     ${state.error ? `<div class="notice notice-error" role="alert">${escapeHtml(state.error)}</div>` : ""}
@@ -339,7 +345,7 @@ function renderManagement() {
         <button class="button button-filter" type="submit">Filtrar</button>
         <button class="reset-link" type="button" data-action="clear-filters">Limpiar</button>
       </form>
-      <div class="table-scroll"><table class="incidents-table"><thead><tr><th>ID</th><th>Prioridad</th><th>Falla / ubicación</th><th>Estado</th><th>Fecha de creación</th><th><span class="sr-only">Abrir detalle</span></th></tr></thead><tbody>${renderIncidentRows()}</tbody></table></div>
+      <div class="table-scroll"><table class="incidents-table"><thead><tr><th>ID</th><th>Prioridad</th><th>Falla / ubicación</th><th>Estado</th><th>Sincronización</th><th>Fecha de creación</th><th><span class="sr-only">Abrir detalle</span></th></tr></thead><tbody>${renderIncidentRows()}</tbody></table></div>
       <div class="pagination"><span>Mostrando ${start}–${end} de ${state.total}</span><div><button class="page-button" type="button" data-page="${state.page - 1}" ${state.page <= 1 ? "disabled" : ""} aria-label="Página anterior">←</button><span>Página ${state.page} de ${pages}</span><button class="page-button" type="button" data-page="${state.page + 1}" ${state.page >= pages ? "disabled" : ""} aria-label="Página siguiente">→</button></div></div>
     </section><p class="form-footnote">Panel de demostración local. Los datos deben ser ficticios.</p>${renderDetail()}`,
     "manage",

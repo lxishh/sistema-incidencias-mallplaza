@@ -225,3 +225,24 @@ Las variables locales de prueba están excluidas con `.gitignore`. En un clon li
 - Pruebas: `npm run lint`, `npm test` (33 pruebas / 9 archivos) y `npm run build:frontend` pasaron. En el primer intento la base no estaba iniciada (`ECONNREFUSED 127.0.0.1:5432`); se inició el servicio Compose existente sin borrar el volumen y la suite quedó aprobada.
 - Decisiones/riesgos: sondeo HTTP cada 10 segundos, no WebSocket; es una actualización casi en tiempo real para este prototipo y no una garantía de entrega instantánea.
 - Próxima tarea: completar suite con PostgreSQL disponible y verificar el panel de gestión.
+
+## Registro de avance — 2026-10-13 (mitigación TC-46 y visualización de sincronización RF-40)
+
+- Tarea completada:
+  1. Integración del paquete de entregables académicos (`paquete_antigravity.zip`, parches 01 a 04, capítulo en Word, planilla de trazabilidad, diagramas BPMN/UML) en la nueva rama `docs/entregables-10-oct`.
+  2. Mitigación de seguridad TC-46: acortamiento de vigencia del token de sesión JWT de 8 horas a 30 minutos (`expiresIn: "30m"`, `maxAge: 30 * 60 * 1000`) en `backend/src/routes/auth.js`. Esto reduce la ventana temporal de exposición tras logout sin requerir migraciones de base de datos para la entrega de avances de mañana. La solución definitiva (Opción B: revocación por `token_version` en base de datos) queda planificada como tarea T14 para el Sprint 2.
+  3. Requisito RF-40: visualización legible del estado de sincronización (`estado_sync`) en la cola de incidencias y en el panel de detalle de Jefatura (`frontend/src/main.js` y `frontend/src/styles.css`), con badges distintivos para `PENDIENTE_SINC` ("Pendiente sinc."), `SINCRONIZADO` ("Sincronizado") y `ERROR_SINC` ("Error sinc."), sin alterar contratos de API ni esquema.
+- Archivos modificados:
+  - `backend/src/routes/auth.js`: vigencia de sesión acortada a 30 min.
+  - `frontend/src/main.js`: etiquetas de `estado_sync` y columna en la tabla de incidencias.
+  - `frontend/src/styles.css`: estilos visuales `.sync-pill` para los estados de sincronización.
+  - `docs/estado-proyecto.md`: registro de avance y decisiones.
+- Verificación y resultado:
+  - `npm run lint`: código de salida 0 (limpio, sin errores de estilo ni ESLint).
+  - `npm --prefix backend run test:unit`: 22 pruebas unitarias aprobadas en 7 archivos.
+  - `npm run build:frontend`: compilación exitosa (Vite 7.3.7, service worker y manifest generados).
+- Matriz de trazabilidad:
+  - TC-46: Mitigado (vigencia acortada a 30 min). No resuelto de fondo; solución definitiva B (`token_version`) planificada para Sprint 2.
+  - RF-40: Cumplido a nivel de interfaz de usuario (cola de incidencias con indicador visual y etiquetas legibles).
+- Próximo paso: Ensayo de demostración con celular y preparación de la entrega de avances de mañana.
+

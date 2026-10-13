@@ -60,13 +60,13 @@ function authRouter({ config, pool }) {
       const token = jwt.sign({ rol: user.rol }, config.JWT_SECRET, {
         subject: String(user.id),
         algorithm: "HS256",
-        expiresIn: "8h",
+        expiresIn: "30m",
       });
       res.cookie("mallplaza_session", token, {
         httpOnly: true,
         sameSite: "strict",
         secure: config.NODE_ENV === "production",
-        maxAge: 8 * 60 * 60 * 1000,
+        maxAge: 30 * 60 * 1000,
         path: "/",
       });
       res.status(200).json({
