@@ -226,25 +226,37 @@ Las variables locales de prueba están excluidas con `.gitignore`. En un clon li
 - Decisiones/riesgos: sondeo HTTP cada 10 segundos, no WebSocket; es una actualización casi en tiempo real para este prototipo y no una garantía de entrega instantánea.
 - Próxima tarea: completar suite con PostgreSQL disponible y verificar el panel de gestión.
 
-## Registro de avance — 2026-10-13 (mitigación TC-46, vigencia configurable, manejo 401 y sincronización RF-40)
+## Registro de avance — 2026-10-13 (vigencia configurable, mitigación TC-46, manejo 401, tarjeta de sincronización y verificación completa)
 
-- Tarea completada:
+- Tareas completadas:
   1. Integración del paquete de entregables académicos (`paquete_antigravity.zip`, parches 01 a 04, capítulo en Word, planilla de trazabilidad, diagramas BPMN/UML) en la nueva rama `docs/entregables-10-oct`.
-  2. Mitigación de seguridad TC-46: vigencia de sesión de Jefatura configurable mediante variable de entorno `SESSION_TTL_MINUTES` (por defecto 30 minutos, acortada desde las 8 horas originales), sincronizada en `jwt.sign` y en el `maxAge` de la cookie `mallplaza_session`. Agregada a `backend/.env.example`, `docker-compose.yml` y documentada en `docs/ejecucion-local.md`. TC-46 queda registrado como "mitigado, no resuelto"; la solución de fondo (Opción B: revocación con `token_version` en base de datos) queda planificada, no diseñada, para el Sprint 2 (tarea T14).
-  3. Pruebas unitarias de vigencia (`backend/test/auth-session.test.js` y `backend/test/config.test.js`): verifican que tanto el `exp` del JWT como el `Max-Age` de la cookie coinciden exactamente con `SESSION_TTL_MINUTES * 60` segundos (probando valor personalizado de 15 minutos y valor por defecto de 30 minutos). No se modificó TC-46 ni `scripts/ejecutar-casos-api.js`.
-  4. Manejo de sesión expirada (401) en frontend (`frontend/src/main.js` y `frontend/src/styles.css`): cuando la API responde 401 con el panel de Jefatura abierto (incluyendo la actualización automática periódica cada 10s), el temporizador se detiene de inmediato evitando solicitudes repetidas, se suprimen avisos de error técnicos y se retorna a la pantalla de acceso mostrando el mensaje "Tu sesión expiró", sin errores visibles.
-  5. Requisito RF-40: visualización legible del estado de sincronización (`estado_sync`) en la cola de incidencias y en el panel de detalle de Jefatura (`frontend/src/main.js` y `frontend/src/styles.css`), con badges distintivos para `PENDIENTE_SINC` ("Pendiente sinc."), `SINCRONIZADO` ("Sincronizado") y `ERROR_SINC` ("Error sinc."), sin alterar contratos de API ni esquema.
-- Archivos modificados / creados:
-  - `backend/src/config.js`, `backend/src/routes/auth.js`, `backend/.env.example`, `docker-compose.yml`, `docs/ejecucion-local.md`.
-  - `backend/test/auth-session.test.js`, `backend/test/config.test.js`, `backend/vitest.unit.config.js`.
-  - `frontend/src/main.js`, `frontend/src/styles.css`.
-  - `docs/estado-proyecto.md`: actualización de estado y decisiones.
-- Verificación y resultado:
-  - `npm run lint`: código de salida 0 (sin errores de estilo ni ESLint).
-  - `npm --prefix backend run test:unit`: 25 pruebas unitarias aprobadas en 8 archivos.
-  - `npm run build:frontend`: compilación exitosa (Vite 7.3.7, PWA generada).
-- Matriz de trazabilidad:
+  2. Mitigación de seguridad TC-46: vigencia de sesión de Jefatura configurable mediante variable de entorno `SESSION_TTL_MINUTES` (30 minutos por defecto, sincronizada en token JWT y cookie `maxAge`). Documentada en `backend/.env.example`, `docker-compose.yml`, `docs/ejecucion-local.md`, `AGENTS.md`, `docs/api.md` y `docs/informe-proyecto.md`. TC-46 queda calificado como "mitigado, no resuelto"; la solución de fondo (Opción B: revocación con `token_version` en base de datos) queda planificada, no diseñada, para el Sprint 2 (tarea T14).
+  3. Pruebas automatizadas de vigencia (`backend/test/auth-session.test.js` y `backend/test/config.test.js`): verifican que `exp` del JWT y `Max-Age` de la cookie coinciden con `SESSION_TTL_MINUTES * 60` segundos (15m personalizado y 30m por defecto). No se modificó el script de casos API ni TC-46.
+  4. Manejo de sesión expirada (401) en frontend (`frontend/src/main.js` y `frontend/src/styles.css`): cuando la API responde 401 con el panel de Jefatura abierto (incluyendo refresco automático), el intervalo de sondeo se detiene inmediatamente previniendo peticiones repetidas, se limpian errores técnicos y se redirige a login mostrando el mensaje "Tu sesión expiró", sin errores visibles. El aviso solo se muestra si había sesión activa previa (`state.user` previo).
+  5. Tarjeta de sincronización en dashboard de KPI (`frontend/src/main.js`): mapeo de etiquetas legibles ("Pendiente sinc.", "Sincronizado", "Error sinc.") aplicado a la distribución de sincronización del dashboard, alineado con la cola y el detalle.
+- Verificación automatizada completa (ejecutada con PostgreSQL activo en Docker):
+  - `npm run lint`: código de salida 0 (limpio, sin errores de estilo ni ESLint).
+  - `npm test`: 36 pruebas aprobadas en 10 archivos (duración 4.91 s):
+    - `test/integrations.test.js`: 4 pruebas aprobadas.
+    - `test/migration.test.js`: 1 prueba aprobada.
+    - `test/rules.test.js`: 1 prueba aprobada.
+    - `test/qr.test.js`: 6 pruebas aprobadas.
+    - `test/logger.test.js`: 1 prueba aprobada.
+    - `test/config.test.js`: 3 pruebas aprobadas.
+    - `test/filters.test.js`: 7 pruebas aprobadas.
+    - `test/health.test.js`: 1 prueba aprobada.
+    - `test/auth-session.test.js`: 2 pruebas aprobadas.
+    - `test/integration.test.js`: 10 pruebas aprobadas (todas las pruebas de integración ejecutadas contra PostgreSQL en Docker).
+  - `npm run build:frontend`: compilación exitosa (Vite 7.3.7, service worker y manifest PWA generados sin advertencias).
+  - Restauración de entorno: backend reiniciado (`docker compose up -d backend`); `docker compose exec backend printenv SESSION_TTL_MINUTES` devuelve `30` (no 1).
+- Verificación manual en navegador (realizada por el usuario):
+  - El acceso a login sin sesión no muestra ningún aviso de expiración.
+  - Con `SESSION_TTL_MINUTES=1`, el panel de Jefatura redirige automáticamente al login con el mensaje "Tu sesión expiró" al vencer el plazo.
+  - En la pestaña de red del navegador se constató un único par de respuestas HTTP 401 y ninguna solicitud repetida ni reintento en bucle.
+  - Al iniciar sesión nuevamente, el aviso de expiración desaparece y la actualización periódica cada 10 segundos se reanuda con normalidad.
+  - La interfaz del panel se visualiza de forma completa y responsiva en una ventana emulada de 400 píxeles de ancho (verificación emulada en navegador, no en dispositivo móvil real).
+- Matriz de trazabilidad y estado:
   - TC-46: Mitigado, no resuelto (vigencia acortada a 30 min, configurable vía `SESSION_TTL_MINUTES`). Solución B (`token_version` en base de datos) planificada para Sprint 2 (tarea T14).
-  - RF-40: Cumplido a nivel de interfaz de usuario (cola de incidencias con indicador visual y etiquetas legibles).
-- Próximo paso: Ensayo de demostración con celular y preparación de la entrega de avances de mañana.
+  - RF-40: Cumplido a nivel de interfaz de usuario en tabla de incidencias, detalle y tarjeta de sincronización de KPI.
+- Próximo paso: Ensayo de demostración en terreno y preparación de la entrega de avances.
 
