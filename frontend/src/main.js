@@ -77,6 +77,7 @@ function handleSessionExpired() {
     managementRefreshTimer = null;
   }
   managementRefreshInProgress = false;
+  if (!state.user) return;
   state.user = null;
   state.detail = null;
   state.incidents = [];
