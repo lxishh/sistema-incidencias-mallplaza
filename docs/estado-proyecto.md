@@ -81,7 +81,7 @@ Al 14 de octubre se prioriza un prototipo local reproducible: interfaz de report
 
 - **Cobertura:** 31 de 40 RF construidos (77,5 %); pendientes: fotos (RF-12, RF-13, RF-35), reintentos asíncronos (RF-39), integración real con Casa Central (RF-36 a RF-40, hoy simulada) y verificación en celulares (RF-04, RF-33, RF-34). Detalle en `docs/entregables/Matriz_trazabilidad_RF_RNF.xlsx`.
 - **Pruebas:** 33 pruebas automatizadas aprobadas y 46 casos de API ejecutados con `scripts/ejecutar-casos-api.js` (45 aprobados y 1 hallazgo). Quedan 10 casos manuales y 8 bloqueados por funcionalidad pendiente.
-- **Hallazgo TC-46:** el token de sesión no se revoca al cerrar sesión y dura 8 horas; una cookie copiada antes del cierre sigue siendo válida. Acortar la vigencia o agregar revocación.
+- **Hallazgo TC-46:** mitigado, no resuelto. La cookie copiada antes de cerrar sesión sigue siendo válida hasta que expira; su vigencia se redujo provisionalmente de 8 horas a 30 minutos (configurable vía `SESSION_TTL_MINUTES`). La solución B (`token_version` en base de datos con migración) queda planificada, no diseñada, para el Sprint 2 (tarea T14).
 - **Entregables nuevos** en `docs/entregables/`: capítulo de análisis y diseño (BPMN, UML, topología, infraestructura, arquitectura, KPI, SLA, plan de pruebas), matriz de trazabilidad, diagramas y archivos `.bpmn` editables.
 - **Decisiones pendientes** con el cliente o el equipo: D1 a D12 en `docs/preguntas.md`.
 
@@ -226,23 +226,25 @@ Las variables locales de prueba están excluidas con `.gitignore`. En un clon li
 - Decisiones/riesgos: sondeo HTTP cada 10 segundos, no WebSocket; es una actualización casi en tiempo real para este prototipo y no una garantía de entrega instantánea.
 - Próxima tarea: completar suite con PostgreSQL disponible y verificar el panel de gestión.
 
-## Registro de avance — 2026-10-13 (mitigación TC-46 y visualización de sincronización RF-40)
+## Registro de avance — 2026-10-13 (mitigación TC-46, vigencia configurable, manejo 401 y sincronización RF-40)
 
 - Tarea completada:
   1. Integración del paquete de entregables académicos (`paquete_antigravity.zip`, parches 01 a 04, capítulo en Word, planilla de trazabilidad, diagramas BPMN/UML) en la nueva rama `docs/entregables-10-oct`.
-  2. Mitigación de seguridad TC-46: acortamiento de vigencia del token de sesión JWT de 8 horas a 30 minutos (`expiresIn: "30m"`, `maxAge: 30 * 60 * 1000`) en `backend/src/routes/auth.js`. Esto reduce la ventana temporal de exposición tras logout sin requerir migraciones de base de datos para la entrega de avances de mañana. La solución definitiva (Opción B: revocación por `token_version` en base de datos) queda planificada como tarea T14 para el Sprint 2.
-  3. Requisito RF-40: visualización legible del estado de sincronización (`estado_sync`) en la cola de incidencias y en el panel de detalle de Jefatura (`frontend/src/main.js` y `frontend/src/styles.css`), con badges distintivos para `PENDIENTE_SINC` ("Pendiente sinc."), `SINCRONIZADO` ("Sincronizado") y `ERROR_SINC` ("Error sinc."), sin alterar contratos de API ni esquema.
-- Archivos modificados:
-  - `backend/src/routes/auth.js`: vigencia de sesión acortada a 30 min.
-  - `frontend/src/main.js`: etiquetas de `estado_sync` y columna en la tabla de incidencias.
-  - `frontend/src/styles.css`: estilos visuales `.sync-pill` para los estados de sincronización.
-  - `docs/estado-proyecto.md`: registro de avance y decisiones.
+  2. Mitigación de seguridad TC-46: vigencia de sesión de Jefatura configurable mediante variable de entorno `SESSION_TTL_MINUTES` (por defecto 30 minutos, acortada desde las 8 horas originales), sincronizada en `jwt.sign` y en el `maxAge` de la cookie `mallplaza_session`. Agregada a `backend/.env.example`, `docker-compose.yml` y documentada en `docs/ejecucion-local.md`. TC-46 queda registrado como "mitigado, no resuelto"; la solución de fondo (Opción B: revocación con `token_version` en base de datos) queda planificada, no diseñada, para el Sprint 2 (tarea T14).
+  3. Pruebas unitarias de vigencia (`backend/test/auth-session.test.js` y `backend/test/config.test.js`): verifican que tanto el `exp` del JWT como el `Max-Age` de la cookie coinciden exactamente con `SESSION_TTL_MINUTES * 60` segundos (probando valor personalizado de 15 minutos y valor por defecto de 30 minutos). No se modificó TC-46 ni `scripts/ejecutar-casos-api.js`.
+  4. Manejo de sesión expirada (401) en frontend (`frontend/src/main.js` y `frontend/src/styles.css`): cuando la API responde 401 con el panel de Jefatura abierto (incluyendo la actualización automática periódica cada 10s), el temporizador se detiene de inmediato evitando solicitudes repetidas, se suprimen avisos de error técnicos y se retorna a la pantalla de acceso mostrando el mensaje "Tu sesión expiró", sin errores visibles.
+  5. Requisito RF-40: visualización legible del estado de sincronización (`estado_sync`) en la cola de incidencias y en el panel de detalle de Jefatura (`frontend/src/main.js` y `frontend/src/styles.css`), con badges distintivos para `PENDIENTE_SINC` ("Pendiente sinc."), `SINCRONIZADO` ("Sincronizado") y `ERROR_SINC` ("Error sinc."), sin alterar contratos de API ni esquema.
+- Archivos modificados / creados:
+  - `backend/src/config.js`, `backend/src/routes/auth.js`, `backend/.env.example`, `docker-compose.yml`, `docs/ejecucion-local.md`.
+  - `backend/test/auth-session.test.js`, `backend/test/config.test.js`, `backend/vitest.unit.config.js`.
+  - `frontend/src/main.js`, `frontend/src/styles.css`.
+  - `docs/estado-proyecto.md`: actualización de estado y decisiones.
 - Verificación y resultado:
-  - `npm run lint`: código de salida 0 (limpio, sin errores de estilo ni ESLint).
-  - `npm --prefix backend run test:unit`: 22 pruebas unitarias aprobadas en 7 archivos.
-  - `npm run build:frontend`: compilación exitosa (Vite 7.3.7, service worker y manifest generados).
+  - `npm run lint`: código de salida 0 (sin errores de estilo ni ESLint).
+  - `npm --prefix backend run test:unit`: 25 pruebas unitarias aprobadas en 8 archivos.
+  - `npm run build:frontend`: compilación exitosa (Vite 7.3.7, PWA generada).
 - Matriz de trazabilidad:
-  - TC-46: Mitigado (vigencia acortada a 30 min). No resuelto de fondo; solución definitiva B (`token_version`) planificada para Sprint 2.
+  - TC-46: Mitigado, no resuelto (vigencia acortada a 30 min, configurable vía `SESSION_TTL_MINUTES`). Solución B (`token_version` en base de datos) planificada para Sprint 2 (tarea T14).
   - RF-40: Cumplido a nivel de interfaz de usuario (cola de incidencias con indicador visual y etiquetas legibles).
 - Próximo paso: Ensayo de demostración con celular y preparación de la entrega de avances de mañana.
 
