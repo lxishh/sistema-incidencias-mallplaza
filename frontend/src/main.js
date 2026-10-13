@@ -55,6 +55,8 @@ const labels = {
     PENDIENTE_SINC: "Pendiente sinc.",
     SINCRONIZADO: "Sincronizado",
     ERROR_SINC: "Error sinc.",
+    ENVIADO: "Sincronizado",
+    ERROR_ENVIO: "Error sinc.",
   },
 };
 
@@ -443,7 +445,12 @@ function renderKpiPanel() {
   }
   section.append(cards);
 
-  const lookup = { ...labels.prioridad, ...labels.tipo_falla, ...labels.ubicacion };
+  const lookup = {
+    ...labels.prioridad,
+    ...labels.tipo_falla,
+    ...labels.ubicacion,
+    ...labels.estado_sync,
+  };
   const groups = [
     ["Por prioridad", data?.por_prioridad],
     ["Por tipo de falla", data?.por_tipo_falla],
