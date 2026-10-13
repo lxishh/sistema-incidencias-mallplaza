@@ -7,6 +7,7 @@ const state = {
   catalogs: null,
   catalogError: "",
   user: null,
+  sessionNotice: "",
   filters: {},
   page: 1,
   limit: 20,
@@ -70,6 +71,26 @@ function escapeHtml(value) {
   });
 }
 
+function handleSessionExpired() {
+  if (managementRefreshTimer) {
+    window.clearInterval(managementRefreshTimer);
+    managementRefreshTimer = null;
+  }
+  managementRefreshInProgress = false;
+  state.user = null;
+  state.detail = null;
+  state.incidents = [];
+  state.total = 0;
+  state.kpis = null;
+  state.error = "";
+  state.kpiError = "";
+  state.loading = false;
+  state.sessionNotice = "Tu sesión expiró";
+  if (location.hash === "#/manage") {
+    renderLogin();
+  }
+}
+
 async function api(path, options = {}) {
   const headers = new Headers(options.headers || {});
   if (options.body && !headers.has("Content-Type"))
@@ -88,6 +109,13 @@ async function api(path, options = {}) {
     error.status = response.status;
     error.code = body?.error?.code;
     error.details = body?.error?.details || [];
+    if (
+      response.status === 401 &&
+      path !== "/api/auth/login" &&
+      (path !== "/api/auth/me" || state.user)
+    ) {
+      handleSessionExpired();
+    }
     throw error;
   }
   return body;
@@ -261,6 +289,7 @@ function renderLogin() {
     `<section class="login-layout">
       <div class="login-aside"><p class="eyebrow eyebrow-light">Panel de gestión</p><h1>Una vista clara<br />para cada <em>prioridad.</em></h1><p>Ingresa con la cuenta de Jefatura para revisar la cola y actualizar el estado de las incidencias.</p><div class="login-aside-note"><span>01</span><p>La prioridad se calcula de forma automática según las reglas del proyecto.</p></div></div>
       <div class="login-card"><div class="login-icon" aria-hidden="true">↗</div><p class="eyebrow">Acceso de Jefatura</p><h2>Iniciar sesión</h2><p class="muted">Usa las credenciales de desarrollo configuradas para este prototipo.</p>
+        ${state.sessionNotice ? `<div class="notice notice-warning" role="status">${escapeHtml(state.sessionNotice)}</div>` : ""}
         ${state.error ? `<div class="notice notice-error" role="alert">${escapeHtml(state.error)}</div>` : ""}
         <form id="login-form"><label class="field"><span>Correo electrónico</span><input type="email" name="email" autocomplete="username" required maxlength="254" placeholder="jefatura@mallplaza.cl" /></label><label class="field"><span>Contraseña</span><input type="password" name="password" autocomplete="current-password" required maxlength="200" placeholder="••••••••••••" /></label><button class="button button-primary button-full" type="submit">Entrar al panel <span aria-hidden="true">→</span></button></form>
         <p class="login-disclaimer">El acceso es para demostración local. No se validan cuentas corporativas.</p>
@@ -488,11 +517,12 @@ async function loadIncidents({ render = true } = {}) {
     state.incidents = result.data;
     state.total = result.total;
   } catch (error) {
+    if (error.status === 401) return;
     state.incidents = [];
     state.total = 0;
     state.error = error.message;
   } finally {
-    if (render) {
+    if (render && state.user) {
       state.loading = false;
       renderManagement();
     }
@@ -509,9 +539,10 @@ async function loadKpis({ render = true } = {}) {
     const suffix = params.size ? `?${params.toString()}` : "";
     state.kpis = await api(`/api/dashboard/kpis${suffix}`);
   } catch (error) {
+    if (error.status === 401) return;
     state.kpiError = error.message;
   }
-  if (render) renderManagement();
+  if (render && state.user) renderManagement();
 }
 
 async function refreshManagement() {
@@ -545,6 +576,7 @@ async function refreshManagement() {
             state.detail = detail;
           })
           .catch((error) => {
+            if (error.status === 401) return;
             state.error = error.message;
           }),
       );
@@ -553,6 +585,7 @@ async function refreshManagement() {
   } finally {
     managementRefreshInProgress = false;
   }
+  if (!state.user) return;
   const after = JSON.stringify({
     incidents: state.incidents,
     total: state.total,
@@ -580,9 +613,10 @@ async function openDetail(id) {
   try {
     state.detail = await api(`/api/incidencias/${encodeURIComponent(id)}`);
   } catch (error) {
+    if (error.status === 401) return;
     state.error = error.message;
   }
-  renderManagement();
+  if (state.user) renderManagement();
 }
 
 function announce(message) {
@@ -632,6 +666,7 @@ async function onSubmit(event) {
   } else if (form.id === "login-form") {
     event.preventDefault();
     state.error = "";
+    state.sessionNotice = "";
     if (!form.reportValidity()) return;
     const values = new FormData(form);
     const submit = form.querySelector('[type="submit"]');
@@ -728,8 +763,9 @@ async function onClick(event) {
       await loadKpis();
       announce(`Estado actualizado a ${labels.estado[state.detail.estado]}.`);
     } catch (error) {
+      if (error.status === 401) return;
       state.error = error.message;
-      renderManagement();
+      if (state.user) renderManagement();
     }
   }
   if (button.dataset.action === "logout") {
@@ -741,6 +777,7 @@ async function onClick(event) {
       state.user = null;
       state.detail = null;
       state.error = "";
+      state.sessionNotice = "";
       renderLogin();
     }
   }
