@@ -2,7 +2,7 @@
 
 **Proyecto:** Sistema de Gestión y Trazabilidad de Incidencias — Mallplaza Copiapó
 
-**Fecha de actualización:** 9 de octubre de 2026
+**Fecha de actualización:** 10 de octubre de 2026
 
 **Propósito:** permitir que otro agente continúe el trabajo desde el repositorio sin depender del historial de chat.
 
@@ -16,6 +16,9 @@ En este orden:
 4. Este traspaso: mapa de trabajo, Git y orden recomendado.
 5. `docs/informe-proyecto.md`: fuente consolidada para el informe académico; `docs/informe-proyecto.docx` es su entrega Word.
 6. `docs/ejecucion-local.md` y `docs/guion-demostracion-local.md` antes de iniciar servicios o manipular datos de demo.
+7. `docs/preguntas.md`, al final: decisiones D1 a D12 pendientes con el cliente o el usuario. No resolverlas por inferencia.
+8. `docs/entregables/Matriz_trazabilidad_RF_RNF.xlsx` (hojas Resumen, Matriz RF y Casos de prueba): qué RF están construidos, con qué prueba, y qué falta.
+9. `docs/entregables/capitulo-analisis-diseno.md`: capítulo académico (BPMN, UML, topología, KPI, pruebas). Es documentación; no modificar su contenido técnico sin evidencia.
 
 No tratar el texto del informe como prueba superior a la implementación: confirmar rutas y comportamiento en el código. Si hay discrepancias, investigar y actualizar ambos documentos con evidencia.
 
@@ -81,7 +84,7 @@ Obligatorios: RUT válido (`12345678-5` módulo 11), ubicación, tipo de falla y
 
 En avances previos, documentados el 9 de octubre:
 
-- Lint, build PWA, 27 pruebas backend en 8 archivos, migraciones y `npm audit` completo reportados aprobados / cero vulnerabilidades.
+- Lint, build PWA, 33 pruebas backend en 9 archivos, migraciones y `npm audit` completo reportados aprobados / cero vulnerabilidades.
 - Recorrido UI local con datos ficticios: caso #2 `CRITICA`, `PENDIENTE → EN_PROCESO → RESUELTA`; KPI observados MTTR 0,8 min, SLA 100 % (1/1), una abierta, una resuelta, cero vencidas. La incidencia #1 se conservó.
 - Prueba de logout de backend: HTTP 204, cookie vaciada y posterior 401 en `/api/auth/me`.
 - Navegador mostró `ERR_ABORTED` en petición logout al cambiar vista. La sesión quedó cerrada al recargar; la causa exacta del evento no se diagnosticó.
@@ -92,27 +95,29 @@ El DOCX tiene 27 páginas y se inspeccionó visualmente tras exportarlo desde Mi
 
 ## 6. Pendientes ordenados por prioridad
 
-### P0 — antes de nuevas funcionalidades
+### P0 — verificar el estado recibido (sin cambiar código)
 
-1. Revisar `git status`, rama actual y cambios sin commit.
-2. Configurar Node 20 + npm nativos en Ubuntu; evitar el `npm` de Windows desde rutas UNC.
-3. Ejecutar `npm run lint`, `npm test` y `npm run build:frontend` desde la raíz; guardar versión Node y salida/fecha en `docs/estado-proyecto.md`.
-4. Si falla, aislar el fallo y corregir solo lo necesario. No actualizar paquetes masivamente ni borrar lockfiles por defecto.
-5. Seguir `docs/ejecucion-local.md` y repetir la demo de forma controlada, preservando la base si se usa `mallplaza_dev`.
+1. Revisar `git status`, rama actual y `git log --oneline -8`. Debe existir la rama `docs/entregables-10-oct` con el paquete de documentación ya aplicado; no cambiar de rama ni hacer reset.
+2. Node 20 y npm nativos en Ubuntu (no el `npm` de Windows desde rutas UNC). Ejecutar `npm run lint`, `npm test` y `npm run build:frontend` desde la raíz y guardar versión de Node, fecha y salida resumida en `docs/estado-proyecto.md`. Línea base conocida: 33 pruebas en 9 archivos aprobadas el 10-oct-2026.
+3. Confirmar que existe `docs/entregables/` con la planilla, el Word y `diagramas/` (12 imágenes referenciadas por `capitulo-analisis-diseno.md`). Si falta algo, avisar; no recrearlo.
+4. Revisar `.github/workflows/ci.yml` (no se ha ejecutado aún en GitHub) y reportar cualquier incoherencia con los scripts reales, sin cambiar la lógica de las pruebas.
 
-### P1 — cierre académico
+### P1 — tareas de código acotadas (en este orden, una por vez, detenerse tras cada una)
 
-1. Confirmar con pauta/profesor si Mermaid/PlantUML como fuente basta o si se necesitan BPMN 2.0/UML exportados.
-2. Revisar fuentes bibliográficas, citas, fechas, nombre de curso/equipo y formato institucional; no inventar integrantes o aprobaciones.
-3. Leer y practicar la explicación del modelo en `docs/justificacion-modelo-datos.md`, especialmente prioridad, triggers, historial, datos personales y ACID.
-4. Si hay tiempo, crear QR de demostración que apunte a un host local accesible en la red de demo y documentar sus límites; no afirmar que existe hoy.
+1. **TC-46, token de sesión.** Hallazgo: la cookie copiada antes de cerrar sesión sigue siendo válida hasta 8 horas. Proponer por escrito dos opciones: (a) acortar la vigencia del JWT (sin cambios de esquema), o (b) revocación con una versión de token por usuario (requiere migración: aprobación explícita). Esperar la elección del usuario antes de implementar. Con la elección, agregar prueba que reproduzca TC-46 (`scripts/ejecutar-casos-api.js` ya lo detecta).
+2. **RF-40, estado de sincronización en la cola.** Verificar en `frontend/src/main.js` que la cola muestre por incidencia el estado de sincronización con etiquetas legibles (Enviado a Casa Central, Pendiente de sincronización, Error de envío). Si no lo hace, implementarlo solo en el frontend, sin cambiar la API, con su verificación.
+3. **Documentar** cada tarea cerrada en `docs/estado-proyecto.md` con fecha, pruebas ejecutadas, límites y siguiente paso, e indicar qué filas de la matriz de trazabilidad cambian (el usuario actualiza la planilla).
 
-### P2 — fases posteriores, no bloquear la entrega local
+### P2 — solo con aprobación explícita y decisiones previas
 
-- Fotos: definir autorización/retención, endpoint multipart seguro, almacenamiento local/S3, tipos reales, límites, acceso y pruebas. El stack incluye Multer, pero no está implementado en la ruta actual.
-- Casa Central: obtener contrato técnico aprobado (endpoint, auth, payload, idempotencia, timeout, errores, sandbox), luego implementar worker/reintentos/reconciliación con auditoría sin secretos.
-- AWS: cuenta, presupuesto, región, responsables, dominio, IAM y política operativa; diseñar/desplegar VPC/EB/RDS/S3/secretos/monitorización conforme a aprobación. No desplegar por inferencia.
-- Producción: pruebas de carga, seguridad, accesibilidad, respaldos/restauración, HA/DR, TLS y observabilidad.
+- Fotos (RF-12, RF-13, RF-35, RNF-11): antes de programar, el usuario debe definir retención, quién puede verlas, almacenamiento (local o S3), formatos y tamaño. Validar el contenido real del archivo, no solo el tipo MIME. El requisito RF-12 es ambiguo (opcional pero mínimo 1): decisión D5.
+- Worker de reintentos (RF-39) y cliente real de Casa Central (RF-36 a RF-40): requieren contrato técnico aprobado (decisión D2/D11 y cuestionario de integración). Hoy solo existe el cliente simulado.
+- QR por sector o tabla de zonas: **no implementar.** `docs/propuesta-ubicaciones-qr.md` es opcional y cambiaría RF-04 y RF-05 (decisiones D3 y D4).
+- AWS, HTTPS y producción: no desplegar por inferencia; hay decisiones de presupuesto abiertas (D9, D10, D11, D12).
+
+### No son tareas del agente
+
+Resolver las decisiones D1 a D12 con Mallplaza, probar el QR en iPhone y Android reales, la aceptación (UAT) con la Jefatura, la bibliografía, la portada y el formato institucional del informe, y publicar cambios al remoto.
 
 ## 7. Comandos locales
 
@@ -131,12 +136,11 @@ Para levantar la demo completa, seguir `docs/ejecucion-local.md` (requiere varia
 
 ## 8. Git actual y cuidado de ramas
 
-- Rama activa del checkout: `docs/S1-academic-closeout`.
-- `origin` configurado: `https://github.com/lxishh/sistema-incidencias-mallplaza.git`.
-- Último bloque documental está local y limpio al crear este traspaso. No se hizo push ni PR.
-- Commits anteriores en el estado actual: `303f153`, `de67d96`, `b6812f0`, `8c8fdab`, `cd9cd57`, `61b48e4`, `894d49f`, `00f4e4f`.
-- Ramas visibles: `develop` apunta a `00f4e4f`; `feature/S1-dashboard-kpis` a `cd9cd57`; `chore/S1-dev-dependency-audit` a `8c8fdab`; `docs/S1-academic-closeout` contiene el cierre documental sobre `8c8fdab`.
-- No cambiar a `develop`, hacer merge, rebase, reset, push o PR sin revisar primero el grafo/diff y confirmar qué rama remota es la base del grupo. El código implementado vive en la historia común anterior a `8c8fdab`; no asumir que todos los commits están publicados.
+- `origin`: `https://github.com/lxishh/sistema-incidencias-mallplaza.git`.
+- Publicado: una sola rama, `feature/S1-demo-qr` (por defecto), 15 commits lineales del 9-oct-2026, todos del mismo autor. No hay PR abiertos.
+- `develop`, `feature/S1-dashboard-kpis`, `chore/S1-dev-dependency-audit` y `docs/S1-academic-closeout` existieron localmente; no están publicadas y sus commits ya están dentro de la historia de `feature/S1-demo-qr`.
+- `frontend/dist` no se versiona (está en `.gitignore`); se genera con `npm run build:frontend`.
+- No hacer merge, rebase, reset ni force-push sin revisar antes el grafo/diff y confirmar con el grupo qué rama es la base.
 - Convención: tarea acotada, rama identificable, Conventional Commit y pruebas. No subir `.env`, dumps, tokens ni datos personales.
 
 ## 9. Cambios y aprobaciones reservadas
@@ -147,4 +151,4 @@ Nunca afirmar aprobación de Mallplaza, conexión real, producción AWS, cumplim
 
 ## 10. Prompt inicial sugerido para Antigravity
 
-> Continúa el proyecto desde el checkout existente. Lee primero `AGENTS.md`, `docs/estado-proyecto.md`, `docs/justificacion-modelo-datos.md` y `docs/HANDOFF-ANTIGRAVITY.md`. No clones encima ni cambies de rama: verifica `git status`, `git branch -vv` y `git log --graph --all`. Primero resuelve/verifica Node 20 nativo en Ubuntu y ejecuta lint, tests y build PWA. Si el entorno no permite hacerlo, documenta el bloqueo sin declarar tests verdes. No cambies prioridad, stack, payload institucional ni `db/schema.sql` sin aprobación. Preserva la base sintética y no publiques cambios al remoto. Después de verificar, actualiza `docs/estado-proyecto.md` y `docs/informe-proyecto.md` con evidencia y propone la siguiente tarea de menor riesgo.
+El texto vigente para pegar está en `docs/PROMPT-ANTIGRAVITY.md`.

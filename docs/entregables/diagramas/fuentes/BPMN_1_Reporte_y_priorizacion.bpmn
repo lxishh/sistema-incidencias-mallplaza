@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_P1" targetNamespace="http://mallplaza-copiapo/incidencias">
+  <bpmn:collaboration id="Collab_P1">
+    <bpmn:participant id="Pool_P1" name="Reporte y priorización" processRef="Process_P1"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_P1" name="Reporte y priorización de incidencias" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_P1">
+      <bpmn:lane id="Lane_P1_op" name="Operario"><bpmn:flowNodeRef>P1_inicio</bpmn:flowNodeRef><bpmn:flowNodeRef>P1_qr</bpmn:flowNodeRef><bpmn:flowNodeRef>P1_completar</bpmn:flowNodeRef><bpmn:flowNodeRef>P1_corregir</bpmn:flowNodeRef><bpmn:flowNodeRef>P1_fin</bpmn:flowNodeRef></bpmn:lane>
+      <bpmn:lane id="Lane_P1_sis" name="Sistema"><bpmn:flowNodeRef>P1_validar</bpmn:flowNodeRef><bpmn:flowNodeRef>P1_gw</bpmn:flowNodeRef><bpmn:flowNodeRef>P1_prio</bpmn:flowNodeRef><bpmn:flowNodeRef>P1_reg</bpmn:flowNodeRef><bpmn:flowNodeRef>P1_conf</bpmn:flowNodeRef></bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="P1_inicio" name="Falla detectada"/>
+    <bpmn:task id="P1_qr" name="Escanear el QR y abrir el formulario"/>
+    <bpmn:subProcess id="P1_completar" name="Completar y enviar reporte">
+      <bpmn:startEvent id="c_s" name=""/>
+      <bpmn:task id="c_1" name="Ingresar el RUT"/>
+      <bpmn:task id="c_2" name="Seleccionar ubicación y tipo de falla"/>
+      <bpmn:task id="c_3" name="Indicar impacto operativo, riesgo y terceros"/>
+      <bpmn:exclusiveGateway id="c_g" name="¿Agregar comentario o fotos?"/>
+      <bpmn:task id="c_4" name="Escribir comentario y adjuntar de 1 a 3 fotos"/>
+      <bpmn:task id="c_5" name="Enviar el formulario"/>
+      <bpmn:endEvent id="c_e" name="Reporte enviado"/>
+      <bpmn:sequenceFlow id="F_SP_completar_0" sourceRef="c_s" targetRef="c_1"/>
+      <bpmn:sequenceFlow id="F_SP_completar_1" sourceRef="c_1" targetRef="c_2"/>
+      <bpmn:sequenceFlow id="F_SP_completar_2" sourceRef="c_2" targetRef="c_3"/>
+      <bpmn:sequenceFlow id="F_SP_completar_3" sourceRef="c_3" targetRef="c_g"/>
+      <bpmn:sequenceFlow id="F_SP_completar_4" name="Sí" sourceRef="c_g" targetRef="c_4"/>
+      <bpmn:sequenceFlow id="F_SP_completar_5" name="No" sourceRef="c_g" targetRef="c_5"/>
+      <bpmn:sequenceFlow id="F_SP_completar_6" sourceRef="c_4" targetRef="c_5"/>
+      <bpmn:sequenceFlow id="F_SP_completar_7" sourceRef="c_5" targetRef="c_e"/>
+    </bpmn:subProcess>
+    <bpmn:task id="P1_corregir" name="Corregir los datos indicados"/>
+    <bpmn:endEvent id="P1_fin" name="Reporte confirmado"/>
+    <bpmn:subProcess id="P1_validar" name="Validar reporte">
+      <bpmn:startEvent id="v_s" name=""/>
+      <bpmn:task id="v_1" name="Aplicar el límite de envíos por origen"/>
+      <bpmn:task id="v_2" name="Verificar los campos obligatorios"/>
+      <bpmn:task id="v_3" name="Validar el RUT con módulo 11"/>
+      <bpmn:task id="v_4" name="Validar los valores contra los catálogos"/>
+      <bpmn:exclusiveGateway id="v_g" name="¿Todo correcto?"/>
+      <bpmn:endEvent id="v_e1" name="Reporte válido"/>
+      <bpmn:endEvent id="v_e2" name="Reporte inválido"/>
+      <bpmn:sequenceFlow id="F_SP_validar_0" sourceRef="v_s" targetRef="v_1"/>
+      <bpmn:sequenceFlow id="F_SP_validar_1" sourceRef="v_1" targetRef="v_2"/>
+      <bpmn:sequenceFlow id="F_SP_validar_2" sourceRef="v_2" targetRef="v_3"/>
+      <bpmn:sequenceFlow id="F_SP_validar_3" sourceRef="v_3" targetRef="v_4"/>
+      <bpmn:sequenceFlow id="F_SP_validar_4" sourceRef="v_4" targetRef="v_g"/>
+      <bpmn:sequenceFlow id="F_SP_validar_5" name="Sí" sourceRef="v_g" targetRef="v_e1"/>
+      <bpmn:sequenceFlow id="F_SP_validar_6" name="No" sourceRef="v_g" targetRef="v_e2"/>
+    </bpmn:subProcess>
+    <bpmn:exclusiveGateway id="P1_gw" name="¿Datos válidos?"/>
+    <bpmn:subProcess id="P1_prio" name="Calcular prioridad">
+      <bpmn:startEvent id="p_s" name=""/>
+      <bpmn:exclusiveGateway id="p_g1" name="¿Impacto operativo y alto tránsito?"/>
+      <bpmn:exclusiveGateway id="p_g2" name="¿Riesgo de accidente o afecta a terceros?"/>
+      <bpmn:exclusiveGateway id="p_g3" name="¿Alto tránsito o impacto operativo?"/>
+      <bpmn:task id="p_c" name="Asignar prioridad Crítica"/>
+      <bpmn:task id="p_a" name="Asignar prioridad Alta"/>
+      <bpmn:task id="p_m" name="Asignar prioridad Media"/>
+      <bpmn:task id="p_b" name="Asignar prioridad Baja"/>
+      <bpmn:endEvent id="p_e" name="Prioridad asignada"/>
+      <bpmn:sequenceFlow id="F_SP_prioridad_0" sourceRef="p_s" targetRef="p_g1"/>
+      <bpmn:sequenceFlow id="F_SP_prioridad_1" name="No" sourceRef="p_g1" targetRef="p_g2"/>
+      <bpmn:sequenceFlow id="F_SP_prioridad_2" name="No" sourceRef="p_g2" targetRef="p_g3"/>
+      <bpmn:sequenceFlow id="F_SP_prioridad_3" name="No" sourceRef="p_g3" targetRef="p_b"/>
+      <bpmn:sequenceFlow id="F_SP_prioridad_4" name="Sí" sourceRef="p_g1" targetRef="p_c"/>
+      <bpmn:sequenceFlow id="F_SP_prioridad_5" name="Sí" sourceRef="p_g2" targetRef="p_a"/>
+      <bpmn:sequenceFlow id="F_SP_prioridad_6" name="Sí" sourceRef="p_g3" targetRef="p_m"/>
+      <bpmn:sequenceFlow id="F_SP_prioridad_7" sourceRef="p_b" targetRef="p_e"/>
+      <bpmn:sequenceFlow id="F_SP_prioridad_8" sourceRef="p_c" targetRef="p_e"/>
+      <bpmn:sequenceFlow id="F_SP_prioridad_9" sourceRef="p_a" targetRef="p_e"/>
+      <bpmn:sequenceFlow id="F_SP_prioridad_10" sourceRef="p_m" targetRef="p_e"/>
+    </bpmn:subProcess>
+    <bpmn:task id="P1_reg" name="Registrar la incidencia (Pendiente, fecha e historial)"/>
+    <bpmn:task id="P1_conf" name="Confirmar al operario con número y prioridad"/>
+    <bpmn:sequenceFlow id="P1_f1" sourceRef="P1_inicio" targetRef="P1_qr"/>
+    <bpmn:sequenceFlow id="P1_f2" sourceRef="P1_qr" targetRef="P1_completar"/>
+    <bpmn:sequenceFlow id="P1_f3" sourceRef="P1_completar" targetRef="P1_validar"/>
+    <bpmn:sequenceFlow id="P1_f4" sourceRef="P1_validar" targetRef="P1_gw"/>
+    <bpmn:sequenceFlow id="P1_f5" name="Sí" sourceRef="P1_gw" targetRef="P1_prio"/>
+    <bpmn:sequenceFlow id="P1_f6" sourceRef="P1_prio" targetRef="P1_reg"/>
+    <bpmn:sequenceFlow id="P1_f7" sourceRef="P1_reg" targetRef="P1_conf"/>
+    <bpmn:sequenceFlow id="P1_f8" sourceRef="P1_conf" targetRef="P1_fin"/>
+    <bpmn:sequenceFlow id="P1_f9" name="No" sourceRef="P1_gw" targetRef="P1_corregir"/>
+    <bpmn:sequenceFlow id="P1_f10" sourceRef="P1_corregir" targetRef="P1_completar"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_P1"><bpmndi:BPMNPlane id="Plane_P1" bpmnElement="Collab_P1">
+      <bpmndi:BPMNShape id="Pool_P1_di" bpmnElement="Pool_P1" isHorizontal="true"><dc:Bounds x="20" y="20" width="1440" height="400"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_P1_op_di" bpmnElement="Lane_P1_op" isHorizontal="true"><dc:Bounds x="48" y="20" width="1412" height="200"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_P1_sis_di" bpmnElement="Lane_P1_sis" isHorizontal="true"><dc:Bounds x="48" y="220" width="1412" height="200"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_inicio_di" bpmnElement="P1_inicio"><dc:Bounds x="132" y="102" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_qr_di" bpmnElement="P1_qr"><dc:Bounds x="238" y="87" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_completar_di" bpmnElement="P1_completar" isExpanded="false"><dc:Bounds x="388" y="87" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_corregir_di" bpmnElement="P1_corregir"><dc:Bounds x="688" y="87" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_fin_di" bpmnElement="P1_fin"><dc:Bounds x="1332" y="102" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_validar_di" bpmnElement="P1_validar" isExpanded="false"><dc:Bounds x="538" y="287" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_gw_di" bpmnElement="P1_gw"><dc:Bounds x="725" y="295" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_prio_di" bpmnElement="P1_prio" isExpanded="false"><dc:Bounds x="838" y="287" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_reg_di" bpmnElement="P1_reg"><dc:Bounds x="988" y="287" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_conf_di" bpmnElement="P1_conf"><dc:Bounds x="1138" y="287" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="P1_f1_di" bpmnElement="P1_f1"><di:waypoint x="168" y="120"/><di:waypoint x="238" y="120"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_f2_di" bpmnElement="P1_f2"><di:waypoint x="362" y="120"/><di:waypoint x="388" y="120"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_f3_di" bpmnElement="P1_f3"><di:waypoint x="512" y="120"/><di:waypoint x="525" y="120"/><di:waypoint x="525" y="320"/><di:waypoint x="538" y="320"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_f4_di" bpmnElement="P1_f4"><di:waypoint x="662" y="320"/><di:waypoint x="725" y="320"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_f5_di" bpmnElement="P1_f5"><di:waypoint x="775" y="320"/><di:waypoint x="838" y="320"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_f6_di" bpmnElement="P1_f6"><di:waypoint x="962" y="320"/><di:waypoint x="988" y="320"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_f7_di" bpmnElement="P1_f7"><di:waypoint x="1112" y="320"/><di:waypoint x="1138" y="320"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_f8_di" bpmnElement="P1_f8"><di:waypoint x="1262" y="320"/><di:waypoint x="1350" y="320"/><di:waypoint x="1350" y="138"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_f9_di" bpmnElement="P1_f9"><di:waypoint x="750" y="295"/><di:waypoint x="750" y="153"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_f10_di" bpmnElement="P1_f10"><di:waypoint x="750" y="87"/><di:waypoint x="750" y="53"/><di:waypoint x="450" y="53"/><di:waypoint x="450" y="87"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_P1_completar"><bpmndi:BPMNPlane id="Plane_P1_completar" bpmnElement="P1_completar">
+      <bpmndi:BPMNShape id="c_s_di" bpmnElement="c_s"><dc:Bounds x="62" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="c_1_di" bpmnElement="c_1"><dc:Bounds x="168" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="c_2_di" bpmnElement="c_2"><dc:Bounds x="318" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="c_3_di" bpmnElement="c_3"><dc:Bounds x="468" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="c_g_di" bpmnElement="c_g"><dc:Bounds x="655" y="75" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="c_4_di" bpmnElement="c_4"><dc:Bounds x="768" y="172" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="c_5_di" bpmnElement="c_5"><dc:Bounds x="918" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="c_e_di" bpmnElement="c_e"><dc:Bounds x="1112" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F_SP_completar_0_di" bpmnElement="F_SP_completar_0"><di:waypoint x="98" y="100"/><di:waypoint x="168" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_completar_1_di" bpmnElement="F_SP_completar_1"><di:waypoint x="292" y="100"/><di:waypoint x="318" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_completar_2_di" bpmnElement="F_SP_completar_2"><di:waypoint x="442" y="100"/><di:waypoint x="468" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_completar_3_di" bpmnElement="F_SP_completar_3"><di:waypoint x="592" y="100"/><di:waypoint x="655" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_completar_4_di" bpmnElement="F_SP_completar_4"><di:waypoint x="680" y="125"/><di:waypoint x="680" y="205"/><di:waypoint x="768" y="205"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_completar_5_di" bpmnElement="F_SP_completar_5"><di:waypoint x="705" y="100"/><di:waypoint x="918" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_completar_6_di" bpmnElement="F_SP_completar_6"><di:waypoint x="892" y="205"/><di:waypoint x="980" y="205"/><di:waypoint x="980" y="133"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_completar_7_di" bpmnElement="F_SP_completar_7"><di:waypoint x="1042" y="100"/><di:waypoint x="1112" y="100"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_P1_validar"><bpmndi:BPMNPlane id="Plane_P1_validar" bpmnElement="P1_validar">
+      <bpmndi:BPMNShape id="v_s_di" bpmnElement="v_s"><dc:Bounds x="62" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="v_1_di" bpmnElement="v_1"><dc:Bounds x="168" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="v_2_di" bpmnElement="v_2"><dc:Bounds x="318" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="v_3_di" bpmnElement="v_3"><dc:Bounds x="468" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="v_4_di" bpmnElement="v_4"><dc:Bounds x="618" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="v_g_di" bpmnElement="v_g"><dc:Bounds x="805" y="75" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="v_e1_di" bpmnElement="v_e1"><dc:Bounds x="962" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="v_e2_di" bpmnElement="v_e2"><dc:Bounds x="812" y="187" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F_SP_validar_0_di" bpmnElement="F_SP_validar_0"><di:waypoint x="98" y="100"/><di:waypoint x="168" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_validar_1_di" bpmnElement="F_SP_validar_1"><di:waypoint x="292" y="100"/><di:waypoint x="318" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_validar_2_di" bpmnElement="F_SP_validar_2"><di:waypoint x="442" y="100"/><di:waypoint x="468" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_validar_3_di" bpmnElement="F_SP_validar_3"><di:waypoint x="592" y="100"/><di:waypoint x="618" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_validar_4_di" bpmnElement="F_SP_validar_4"><di:waypoint x="742" y="100"/><di:waypoint x="805" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_validar_5_di" bpmnElement="F_SP_validar_5"><di:waypoint x="855" y="100"/><di:waypoint x="962" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_validar_6_di" bpmnElement="F_SP_validar_6"><di:waypoint x="830" y="125"/><di:waypoint x="830" y="187"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_P1_prio"><bpmndi:BPMNPlane id="Plane_P1_prio" bpmnElement="P1_prio">
+      <bpmndi:BPMNShape id="p_s_di" bpmnElement="p_s"><dc:Bounds x="62" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p_g1_di" bpmnElement="p_g1"><dc:Bounds x="205" y="75" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p_g2_di" bpmnElement="p_g2"><dc:Bounds x="505" y="75" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p_g3_di" bpmnElement="p_g3"><dc:Bounds x="805" y="75" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p_c_di" bpmnElement="p_c"><dc:Bounds x="168" y="198" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p_a_di" bpmnElement="p_a"><dc:Bounds x="468" y="198" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p_m_di" bpmnElement="p_m"><dc:Bounds x="768" y="198" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p_b_di" bpmnElement="p_b"><dc:Bounds x="1068" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="p_e_di" bpmnElement="p_e"><dc:Bounds x="1112" y="213" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F_SP_prioridad_0_di" bpmnElement="F_SP_prioridad_0"><di:waypoint x="98" y="100"/><di:waypoint x="205" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_prioridad_1_di" bpmnElement="F_SP_prioridad_1"><di:waypoint x="255" y="100"/><di:waypoint x="505" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_prioridad_2_di" bpmnElement="F_SP_prioridad_2"><di:waypoint x="555" y="100"/><di:waypoint x="805" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_prioridad_3_di" bpmnElement="F_SP_prioridad_3"><di:waypoint x="855" y="100"/><di:waypoint x="1068" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_prioridad_4_di" bpmnElement="F_SP_prioridad_4"><di:waypoint x="230" y="125"/><di:waypoint x="230" y="198"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_prioridad_5_di" bpmnElement="F_SP_prioridad_5"><di:waypoint x="530" y="125"/><di:waypoint x="530" y="198"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_prioridad_6_di" bpmnElement="F_SP_prioridad_6"><di:waypoint x="830" y="125"/><di:waypoint x="830" y="198"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_prioridad_7_di" bpmnElement="F_SP_prioridad_7"><di:waypoint x="1130" y="133"/><di:waypoint x="1130" y="213"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_prioridad_8_di" bpmnElement="F_SP_prioridad_8"><di:waypoint x="230" y="264"/><di:waypoint x="230" y="298"/><di:waypoint x="1130" y="298"/><di:waypoint x="1130" y="249"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_prioridad_9_di" bpmnElement="F_SP_prioridad_9"><di:waypoint x="530" y="264"/><di:waypoint x="530" y="298"/><di:waypoint x="1130" y="298"/><di:waypoint x="1130" y="249"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_prioridad_10_di" bpmnElement="F_SP_prioridad_10"><di:waypoint x="892" y="231"/><di:waypoint x="1112" y="231"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>

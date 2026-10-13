@@ -51,7 +51,7 @@ Estos puntos se consideran cerrados en el prototipo, salvo que el dueño del req
 - PostgreSQL local corre por Docker Compose; la migración replica el modelo inicial del prototipo en `db/schema.sql`.
 - PostgreSQL, API y frontend de desarrollo se pueden levantar juntos con `docker compose up --build`; Compose espera la salud de la base, aplica migraciones y crea el usuario ficticio de Jefatura antes de iniciar Vite.
 - El modelo de datos está explicado y sujeto a revisión técnica/académica; no se afirma que sea una especificación entregada o aprobada por Mallplaza.
-- Lint y 27 pruebas de backend pasaron. El build PWA y flujos KPI/alta se verificaron localmente con datos sintéticos; el 9 de octubre se completó la prueba visual de punta a punta del caso #2 en `feature/S1-dashboard-kpis`, commit `61b48e4`. bcrypt 6.0.0, Vitest 4.1.11 y node-pg-migrate 8.0.4 pasaron en Node 20.20.2; `npm audit` completo informa cero vulnerabilidades. La actualización de dependencias está en la rama local `chore/S1-dev-dependency-audit`, sin publicar.
+- Lint y 33 pruebas de backend pasaron. El build PWA y flujos KPI/alta se verificaron localmente con datos sintéticos; el 9 de octubre se completó la prueba visual de punta a punta del caso #2 (commit `61b48e4`). bcrypt 6.0.0, Vitest 4.1.11 y node-pg-migrate 8.0.4 pasaron en Node 20.20.2; `npm audit` completo informa cero vulnerabilidades. La actualización de dependencias está en el commit `8c8fdab`.
 
 Si el frontend necesita cambiar contratos, primero actualizamos `docs/api.md`, definimos compatibilidad, sumamos pruebas y recién después modificamos consumidores/servidor.
 
@@ -111,7 +111,7 @@ La tabla separa entregables documentales del prototipo ejecutable. Un diagrama d
 | Topología de comunicación e infraestructura | Documentado como diseño objetivo | El diagrama de AWS es una propuesta; no hay VPC/EB/RDS/S3 productivos desplegados. |
 | Arquitectura con infraestructura software/hardware | Documentado como arquitectura lógica y objetivo | Implementado local: navegador/PWA, Express y PostgreSQL Docker; producción depende de accesos, costo, DNS e IAM. |
 | KPI SMART y SLA | Fórmulas/KPIs implementados; metas SMART y SLA TI son propuestas | KPI locales probados. Objetivos operacionales requieren baseline, horario y validación de Jefatura/cliente. |
-| Plan de pruebas | Diseñado y pruebas backend ejecutadas | 27 pruebas, lint y build reportados en verde; faltan accesibilidad/dispositivos, carga, pentest, concurrencia intensiva y DR. |
+| Plan de pruebas | Diseñado y pruebas backend ejecutadas | 33 pruebas, lint y build reportados en verde; faltan accesibilidad/dispositivos, carga, pentest, concurrencia intensiva y DR. |
 | Normas y estándares | Referencias y motivos documentados | No implica certificación ni dictamen legal. Confirmar versiones/citas exigidas por docente y actualizar análisis normativo antes de producción. |
 | Servicios TI y disponibilidad | Catálogo y metas propuestos | No existen SLO/SLA productivos, guardia, monitoreo ni redundancia activos. |
 | Continuidad proactiva/reactiva | Procedimientos documentados | RTO/RPO propuestos; respaldos y restauración no se han demostrado en AWS. |
@@ -158,13 +158,13 @@ Cada tarea tendrá: objetivo, fuera de alcance, archivos esperados, criterios de
 1. **Entorno reproducible**: confirmar Docker, Node 20/npm, API, frontend y usuario demo en el equipo de exposición.
 2. **Ensayo final**: reutilizar el caso sintético #2 sin alterar datos; revisar logout y anotar errores observables.
 3. **Revisión grupal/documental**: cada integrante valida su sección, diagramas, fuentes, decisiones y límites; consolidar comentarios del docente si existen.
-4. **Cierre técnico**: ejecutar lint, 27 pruebas, build PWA y `npm audit` desde Ubuntu; guardar versiones y resultados.
+4. **Cierre técnico**: ejecutar lint, la suite completa (33 pruebas), build PWA y `npm audit` desde Ubuntu; guardar versiones y resultados.
 5. **Entrega Git**: revisar cambios, commit Conventional Commit en la rama documental y abrir PR solo si el grupo confirma el remoto y base.
 6. **Producción futura**: QR, fotos/S3, worker/Casa Central, AWS, performance, hardening y DR se planifican como fases separadas con dueños y prerequisitos.
 
 ## 5. Repositorio Git y commits
 
-El workspace conserva commits y ramas locales de trabajo. Este bloque se trabaja en la rama `docs/S1-academic-closeout`, creada desde el estado que contiene el commit `8c8fdab`; el informe quedó comprometido en `b6812f0`, el estado actualizado en `de67d96` y el traspaso a Antigravity en `af5af8d`. La rama no se publicó ni se abrió PR. Al retomar el proyecto en Antigravity se resolvió la ruta nativa de Node 20 en Ubuntu (NVM Node v20.20.2 / npm 10.8.2) y se completó la verificación técnica: `npm run lint` en verde, `npm test` con 27 pruebas aprobadas en 8 archivos contra PostgreSQL local en Docker, migraciones al día y compilación PWA reproducible con Vite 7 y vite-plugin-pwa. Las instrucciones antiguas que describían un repo vacío en `develop` quedaron superadas.
+El historial publicado está en la rama `feature/S1-demo-qr` (15 commits lineales, 9-oct-2026); el cierre documental quedó en `b6812f0`, `de67d96` y `af5af8d`. No se ha abierto PR. Al retomar el proyecto en Antigravity se resolvió la ruta nativa de Node 20 en Ubuntu (NVM Node v20.20.2 / npm 10.8.2) y se completó la verificación técnica: `npm run lint` en verde, `npm test` aprobado contra PostgreSQL local en Docker (hoy 33 pruebas en 9 archivos), migraciones al día y compilación PWA reproducible con Vite 7 y vite-plugin-pwa. Las instrucciones antiguas que describían un repo vacío en `develop` quedaron superadas.
 
 ### Opción recomendada si ya existe un repositorio remoto
 
@@ -261,7 +261,7 @@ El alta responde con ID, prioridad, estado y fecha; el RUT no aparece en la list
 
 #### Estado de Git
 
-El workspace tiene `.git`; `origin` y la identidad Git están configurados en Ubuntu/WSL. La aceptación visual y su registro están en `feature/S1-dashboard-kpis`; la actualización de dependencias se revisa en `chore/S1-dev-dependency-audit`. Ninguna rama se ha publicado ni abierto como PR. No se incluyeron artefactos compilados de `frontend/dist`.
+El workspace tiene `.git`; `origin` y la identidad Git están configurados en Ubuntu/WSL. El historial publicado vive en `feature/S1-demo-qr`; la aceptación visual (`61b48e4`) y la actualización de dependencias (`8c8fdab`) forman parte de esa historia. No se ha abierto PR. `frontend/dist` no se versiona (se genera con `npm run build:frontend`).
 
 ### 5. Verificación realizada
 

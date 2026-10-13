@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_P3" targetNamespace="http://mallplaza-copiapo/incidencias">
+  <bpmn:collaboration id="Collab_P3">
+    <bpmn:participant id="Pool_CC" name="Casa Central"/>
+    <bpmn:participant id="Pool_P3" name="Sistema de incidencias" processRef="Process_P3"/>
+    <bpmn:messageFlow id="P3_m1" name="Petición POST (JSON por HTTPS)" sourceRef="Pool_CC" targetRef="P3_post"/>
+    <bpmn:messageFlow id="P3_m2" name="Respuesta: id de la orden o error" sourceRef="P3_aud" targetRef="Pool_CC"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_P3" name="Sincronización con Casa Central" isExecutable="false">
+    <bpmn:startEvent id="P3_inicio" name="Incidencia pendiente de sincronizar"/>
+    <bpmn:subProcess id="P3_prep" name="Preparar el envío">
+      <bpmn:startEvent id="r_s" name=""/>
+      <bpmn:task id="r_1" name="Leer dirección y credenciales de las variables de entorno"/>
+      <bpmn:task id="r_2" name="Armar el JSON con prioridad, ubicación y tipo de falla"/>
+      <bpmn:endEvent id="r_e" name="Mensaje listo"/>
+      <bpmn:sequenceFlow id="F_SP_preparar_0" sourceRef="r_s" targetRef="r_1"/>
+      <bpmn:sequenceFlow id="F_SP_preparar_1" sourceRef="r_1" targetRef="r_2"/>
+      <bpmn:sequenceFlow id="F_SP_preparar_2" sourceRef="r_2" targetRef="r_e"/>
+    </bpmn:subProcess>
+    <bpmn:task id="P3_post" name="Enviar la petición POST cifrada (HTTPS)"/>
+    <bpmn:subProcess id="P3_aud" name="Registrar intento en auditoría">
+      <bpmn:startEvent id="u_s" name=""/>
+      <bpmn:task id="u_1" name="Guardar fecha, hora y resultado del intento"/>
+      <bpmn:task id="u_2" name="Guardar el código HTTP o el tipo de error"/>
+      <bpmn:task id="u_3" name="Sanitizar el detalle (sin datos sensibles)"/>
+      <bpmn:endEvent id="u_e" name="Intento registrado"/>
+      <bpmn:sequenceFlow id="F_SP_auditar_0" sourceRef="u_s" targetRef="u_1"/>
+      <bpmn:sequenceFlow id="F_SP_auditar_1" sourceRef="u_1" targetRef="u_2"/>
+      <bpmn:sequenceFlow id="F_SP_auditar_2" sourceRef="u_2" targetRef="u_3"/>
+      <bpmn:sequenceFlow id="F_SP_auditar_3" sourceRef="u_3" targetRef="u_e"/>
+    </bpmn:subProcess>
+    <bpmn:exclusiveGateway id="P3_gr" name="¿Respuesta exitosa con id de orden?"/>
+    <bpmn:task id="P3_guardar" name="Guardar el id y marcar como Enviado"/>
+    <bpmn:endEvent id="P3_fin" name="Incidencia sincronizada"/>
+    <bpmn:intermediateCatchEvent id="P3_timer" name="Esperar el intervalo de reintento"><bpmn:timerEventDefinition id="P3_timer_def"/></bpmn:intermediateCatchEvent>
+    <bpmn:exclusiveGateway id="P3_gq" name="¿Quedan reintentos?"/>
+    <bpmn:task id="P3_error" name="Marcar como Error de envío (visible en el dashboard)"/>
+    <bpmn:endEvent id="P3_fin2" name="Envío con error"/>
+    <bpmn:sequenceFlow id="P3_f1" sourceRef="P3_inicio" targetRef="P3_prep"/>
+    <bpmn:sequenceFlow id="P3_f2" sourceRef="P3_prep" targetRef="P3_post"/>
+    <bpmn:sequenceFlow id="P3_f3" sourceRef="P3_post" targetRef="P3_aud"/>
+    <bpmn:sequenceFlow id="P3_f4" sourceRef="P3_aud" targetRef="P3_gr"/>
+    <bpmn:sequenceFlow id="P3_f5" name="Sí" sourceRef="P3_gr" targetRef="P3_guardar"/>
+    <bpmn:sequenceFlow id="P3_f6" sourceRef="P3_guardar" targetRef="P3_fin"/>
+    <bpmn:sequenceFlow id="P3_f7" name="No" sourceRef="P3_gr" targetRef="P3_gq"/>
+    <bpmn:sequenceFlow id="P3_f8" name="Sí" sourceRef="P3_gq" targetRef="P3_timer"/>
+    <bpmn:sequenceFlow id="P3_f9" sourceRef="P3_timer" targetRef="P3_post"/>
+    <bpmn:sequenceFlow id="P3_f10" name="No" sourceRef="P3_gq" targetRef="P3_error"/>
+    <bpmn:sequenceFlow id="P3_f11" sourceRef="P3_error" targetRef="P3_fin2"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_P3"><bpmndi:BPMNPlane id="Plane_P3" bpmnElement="Collab_P3">
+      <bpmndi:BPMNShape id="Pool_CC_di" bpmnElement="Pool_CC" isHorizontal="true"><dc:Bounds x="20" y="20" width="1140" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Pool_P3_di" bpmnElement="Pool_P3" isHorizontal="true"><dc:Bounds x="20" y="185" width="1140" height="330"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P3_inicio_di" bpmnElement="P3_inicio"><dc:Bounds x="132" y="257" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P3_prep_di" bpmnElement="P3_prep" isExpanded="false"><dc:Bounds x="238" y="242" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P3_post_di" bpmnElement="P3_post"><dc:Bounds x="388" y="242" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P3_aud_di" bpmnElement="P3_aud" isExpanded="false"><dc:Bounds x="538" y="242" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P3_gr_di" bpmnElement="P3_gr"><dc:Bounds x="725" y="250" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P3_guardar_di" bpmnElement="P3_guardar"><dc:Bounds x="838" y="242" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P3_fin_di" bpmnElement="P3_fin"><dc:Bounds x="1032" y="257" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P3_timer_di" bpmnElement="P3_timer"><dc:Bounds x="582" y="417" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P3_gq_di" bpmnElement="P3_gq"><dc:Bounds x="725" y="410" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P3_error_di" bpmnElement="P3_error"><dc:Bounds x="838" y="402" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P3_fin2_di" bpmnElement="P3_fin2"><dc:Bounds x="1032" y="417" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="P3_f1_di" bpmnElement="P3_f1"><di:waypoint x="168" y="275"/><di:waypoint x="238" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P3_f2_di" bpmnElement="P3_f2"><di:waypoint x="362" y="275"/><di:waypoint x="388" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P3_f3_di" bpmnElement="P3_f3"><di:waypoint x="512" y="275"/><di:waypoint x="538" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P3_f4_di" bpmnElement="P3_f4"><di:waypoint x="662" y="275"/><di:waypoint x="725" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P3_f5_di" bpmnElement="P3_f5"><di:waypoint x="775" y="275"/><di:waypoint x="838" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P3_f6_di" bpmnElement="P3_f6"><di:waypoint x="962" y="275"/><di:waypoint x="1032" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P3_f7_di" bpmnElement="P3_f7"><di:waypoint x="750" y="300"/><di:waypoint x="750" y="410"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P3_f8_di" bpmnElement="P3_f8"><di:waypoint x="725" y="435"/><di:waypoint x="618" y="435"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P3_f9_di" bpmnElement="P3_f9"><di:waypoint x="582" y="435"/><di:waypoint x="450" y="435"/><di:waypoint x="450" y="308"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P3_f10_di" bpmnElement="P3_f10"><di:waypoint x="775" y="435"/><di:waypoint x="838" y="435"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P3_f11_di" bpmnElement="P3_f11"><di:waypoint x="962" y="435"/><di:waypoint x="1032" y="435"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P3_m1_di" bpmnElement="P3_m1"><di:waypoint x="450" y="90"/><di:waypoint x="450" y="242"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P3_m2_di" bpmnElement="P3_m2"><di:waypoint x="600" y="242"/><di:waypoint x="600" y="90"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_P3_prep"><bpmndi:BPMNPlane id="Plane_P3_prep" bpmnElement="P3_prep">
+      <bpmndi:BPMNShape id="r_s_di" bpmnElement="r_s"><dc:Bounds x="62" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="r_1_di" bpmnElement="r_1"><dc:Bounds x="168" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="r_2_di" bpmnElement="r_2"><dc:Bounds x="318" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="r_e_di" bpmnElement="r_e"><dc:Bounds x="512" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F_SP_preparar_0_di" bpmnElement="F_SP_preparar_0"><di:waypoint x="98" y="100"/><di:waypoint x="168" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_preparar_1_di" bpmnElement="F_SP_preparar_1"><di:waypoint x="292" y="100"/><di:waypoint x="318" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_preparar_2_di" bpmnElement="F_SP_preparar_2"><di:waypoint x="442" y="100"/><di:waypoint x="512" y="100"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_P3_aud"><bpmndi:BPMNPlane id="Plane_P3_aud" bpmnElement="P3_aud">
+      <bpmndi:BPMNShape id="u_s_di" bpmnElement="u_s"><dc:Bounds x="62" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="u_1_di" bpmnElement="u_1"><dc:Bounds x="168" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="u_2_di" bpmnElement="u_2"><dc:Bounds x="318" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="u_3_di" bpmnElement="u_3"><dc:Bounds x="468" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="u_e_di" bpmnElement="u_e"><dc:Bounds x="662" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F_SP_auditar_0_di" bpmnElement="F_SP_auditar_0"><di:waypoint x="98" y="100"/><di:waypoint x="168" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_auditar_1_di" bpmnElement="F_SP_auditar_1"><di:waypoint x="292" y="100"/><di:waypoint x="318" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_auditar_2_di" bpmnElement="F_SP_auditar_2"><di:waypoint x="442" y="100"/><di:waypoint x="468" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_auditar_3_di" bpmnElement="F_SP_auditar_3"><di:waypoint x="592" y="100"/><di:waypoint x="662" y="100"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>

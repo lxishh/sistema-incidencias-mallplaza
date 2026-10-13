@@ -1,0 +1,87 @@
+@startuml
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam entity {
+  BackgroundColor #FFFFFF
+  BorderColor #bd1737
+}
+hide circle
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #bd1737
+  ArrowColor #333333
+}
+skinparam ArrowColor #333333
+title Modelo de datos (diagrama entidad-relación)
+entity "usuarios" as USUARIOS {
+  * id : bigint <<PK>>
+  --
+  nombre : varchar
+  email : citext <<UK>>
+  password_hash : char
+  rol : enum
+  activo : boolean
+  created_at : timestamptz
+}
+entity "incidencias" as INCIDENCIAS {
+  * id : bigint <<PK>>
+  --
+  rut_operario : varchar
+  ubicacion : enum
+  tipo_falla : enum
+  impacto_operativo : boolean
+  riesgo_accidente : boolean
+  afecta_terceros : boolean
+  comentario : varchar
+  prioridad : enum
+  estado : enum
+  fecha_creacion : timestamptz
+  fecha_inicio_proceso : timestamptz
+  fecha_cierre : timestamptz
+  estado_sync : enum
+  id_externo_mallplaza : varchar <<UK>>
+  intentos_sync : smallint
+  proximo_reintento : timestamptz
+}
+entity "historial_estados" as HISTORIAL_ESTADOS {
+  * id : bigint <<PK>>
+  --
+  incidencia_id : bigint <<FK>>
+  estado_anterior : enum
+  estado_nuevo : enum
+  usuario_id : bigint <<FK>>
+  fecha : timestamptz
+}
+entity "evidencias_fotograficas" as EVIDENCIAS_FOTOGRAFICAS {
+  * id : bigint <<PK>>
+  --
+  incidencia_id : bigint <<FK>>
+  orden : smallint
+  storage_key : varchar <<UK>>
+  mime_type : varchar
+  tamano_bytes : integer
+  created_at : timestamptz
+}
+entity "log_auditoria_api" as LOG_AUDITORIA_API {
+  * id : bigint <<PK>>
+  --
+  incidencia_id : bigint <<FK>>
+  numero_intento : smallint
+  fecha_intento : timestamptz
+  http_status : smallint
+  resultado : varchar
+  id_externo_mallplaza : varchar
+  detalle_error : varchar
+}
+entity "sla_politica" as SLA_POLITICA {
+  * prioridad : enum <<PK>>
+  --
+  respuesta_minutos : integer
+  resolucion_minutos : integer
+}
+USUARIOS ||--o{ HISTORIAL_ESTADOS : registra
+INCIDENCIAS ||--o{ HISTORIAL_ESTADOS : tiene
+INCIDENCIAS ||--o{ EVIDENCIAS_FOTOGRAFICAS : adjunta
+INCIDENCIAS ||--o{ LOG_AUDITORIA_API : sincroniza
+SLA_POLITICA ||--o{ INCIDENCIAS : determina objetivo
+@enduml

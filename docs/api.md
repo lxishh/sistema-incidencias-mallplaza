@@ -40,7 +40,7 @@ Requiere sesión Jefatura. Acepta `desde` y `hasta` opcionales en formato `YYYY-
 
 Devuelve conteo total, abiertas, resueltas, abiertas fuera de SLA, MTTR promedio en minutos, cumplimiento SLA de resolución en porcentaje y distribuciones por prioridad, tipo de falla, ubicación y estado de sincronización. MTTR y cumplimiento SLA usan la cohorte de incidencias creadas dentro del período. Cuando no hay incidencias resueltas, MTTR y porcentaje SLA se devuelven como `null`, no como cero. Los objetivos se consultan desde `sla_politica`.
 
-La ruta requiere autenticación. Al 9 de octubre de 2026, lint y 27 pruebas automatizadas pasan; la consulta también se cotejó con datos sintéticos temporales en PostgreSQL. Los resultados de esa validación no son datos operacionales de Mallplaza.
+La ruta requiere autenticación. Al 9 de octubre de 2026, lint y 33 pruebas automatizadas pasan; la consulta también se cotejó con datos sintéticos temporales en PostgreSQL. Los resultados de esa validación no son datos operacionales de Mallplaza.
 
 ## Capacidades de siguientes sprints
 

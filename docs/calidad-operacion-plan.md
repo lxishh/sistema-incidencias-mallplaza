@@ -39,7 +39,7 @@ El plan combina pruebas unitarias, integración y aceptación. El backend y el r
 | TLS 1.2 o superior | Protege datos en tránsito entre móvil, API, RDS e integración. HTTPS obligatorio en diseño productivo. | No existe despliegue productivo que validar. |
 | OWASP API Security | Complementa controles de autorización por objeto, autenticación, consumo de recursos, configuración y exposición de datos en endpoints. | Rate limit, validación y autorización Jefatura parcial; revisar todos los endpoints previo a producción. |
 | Accesibilidad WCAG 2.2 AA (objetivo de interfaz) | Formulario QR debe ser operable con teclado/lector, etiquetas/contraste y mensajes entendibles. Es relevante para operarios con dispositivos diversos. | PWA local implementada; auditoría formal y pruebas con tecnologías de asistencia pendientes. |
-| Convención Conventional Commits / PR | Hace cambios auditables y facilita revisión grupal y rollback. | Imposible aplicar en checkout sin `.git`; implementar al mover el trabajo al repo compartido. |
+| Convención Conventional Commits / PR | Hace cambios auditables y facilita revisión grupal y rollback. | Aplicada en los commits del repositorio compartido; aún sin pull requests. |
 
 La mención de norma no implica auditoría ni conformidad certificada. Antes de entrega académica, citar edición exacta/fecha de consulta de estándares en bibliografía formal y validar con el docente cuál espera el curso.
 

@@ -64,7 +64,7 @@ El frontend Vite/PWA sí está implementado como prototipo local: formulario de 
 
 - Notebook/PC de 4 núcleos, 8 GB RAM (16 GB recomendados), 10 GB libres, navegador moderno y conexión a Internet.
 - Docker Desktop con backend WSL2 para PostgreSQL local; Node.js 20 y npm; editor de código; Git y cliente PostgreSQL para el trabajo grupal.
-- Repositorio Git compartido con ramas/PR y revisión de código. El checkout local tiene commits y ramas de trabajo, pero no se debe afirmar que estén publicados ni que exista PR: confirmar remoto/estado de publicación desde Ubuntu antes de coordinar el equipo.
+- Repositorio Git compartido con ramas/PR y revisión de código. El remoto `origin` publica una sola rama (`feature/S1-demo-qr`) y no hay pull requests abiertos; ver `docs/estado-proyecto.md`.
 
 ### Producción objetivo (sin dimensionamiento aún)
 

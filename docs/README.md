@@ -24,13 +24,19 @@ El informe consolidado editable se mantiene en Markdown y también se entrega co
 10. [Contrato API Sprint 1](api.md) y [Preguntas abiertas](preguntas.md) para el equipo técnico.
 11. [Ejecución local](ejecucion-local.md): arranque de PostgreSQL, API y frontend con un solo comando Docker Compose.
 12. [Guion de demostración local](guion-demostracion-local.md): escenario sintético, pasos, resultados esperados y aceptación visual local ya realizada.
+13. [Propuesta de ubicaciones y QR por sector](propuesta-ubicaciones-qr.md): propuesta de modelo, API y flujo (pendiente de aprobación).
+14. [Plan de trabajo del equipo](plan-trabajo-equipo.md): tareas, responsables sugeridos y criterios de aceptación hasta el 14-oct.
+15. [Guion de exposición y demo](guion-demo-14-oct.md): calendario, guion de 10 minutos, plan B y preguntas probables.
 
 ## Alcance real a la fecha
 
-El backend implementa API Express, autenticación de Jefatura, validación y cálculo determinista de prioridad, registro JSON de incidencias, consulta/listado, detalle/historial, transiciones y KPI, con PostgreSQL y migración. El frontend local implementa formulario JSON, login, cola, filtros, detalle, historial y vista KPI. La compilación PWA, lint, 27 pruebas backend y `npm audit` completo se registraron en verde; el recorrido visual local también se completó con datos sintéticos.
+El backend implementa API Express, autenticación de Jefatura, validación y cálculo determinista de prioridad, registro JSON de incidencias, consulta/listado, detalle/historial, transiciones y KPI, con PostgreSQL y migración. El frontend local implementa formulario JSON, login, cola, filtros, detalle, historial y vista KPI. La compilación PWA, lint, 33 pruebas backend y `npm audit` completo se registraron en verde; el recorrido visual local también se completó con datos sintéticos.
 
 El esquema contempla metadatos de evidencias y políticas SLA. La carga de fotos, QR gráfico distribuible, worker/reintentos a Casa Central, despliegue AWS y recuperación ante desastre ensayada siguen pendientes. Los diagramas de esos componentes describen el diseño objetivo, no infraestructura implementada. La base local usada para la aceptación conserva los registros sintéticos #1 y #2; revisar el guion antes de volver a operar sobre ella.
 
 ## Criterio para completar el informe grupal
 
 Los puntajes tecnológicos, metas SMART, disponibilidad, RTO/RPO y calendario de fases son propuestas documentadas para discusión; no son compromisos del cliente. Deben validarse con la contraparte, el docente y los demás integrantes antes de presentarlos como baselines aprobados. La matriz de cierre del informe principal señala qué entregables están implementados, documentados, propuestos o bloqueados por dependencias externas.
+16. [Capítulo de análisis y diseño](entregables/capitulo-analisis-diseno.md): análisis comparativo, factibilidad, BPMN, UML, modelo de datos, topología, infraestructura, arquitectura, KPI, SLA, pruebas y normas (versión Word en la misma carpeta).
+17. [Matriz de trazabilidad](entregables/Matriz_trazabilidad_RF_RNF.xlsx): RF y RNF contra casos de uso, componentes y pruebas; casos de prueba; cobertura de la pauta; análisis comparativos y factibilidad económica.
+

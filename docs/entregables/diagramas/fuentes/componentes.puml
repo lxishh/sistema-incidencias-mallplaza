@@ -1,0 +1,79 @@
+@startuml
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam componentStyle rectangle
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #222222
+  ArrowColor #333333
+}
+skinparam database {
+  BackgroundColor #FFFFFF
+  BorderColor #222222
+}
+skinparam cloud {
+  BorderColor #222222
+}
+skinparam ArrowColor #333333
+skinparam actorBorderColor #333333
+skinparam actorBackgroundColor #FFFFFF
+skinparam rectangle {
+  BorderColor #555555
+}
+title Diagrama de componentes UML
+
+actor "Operario" as OP
+actor "Jefatura" as JF
+
+rectangle "Capa de presentación (navegador)" {
+  component "PWA\nVite + JavaScript" as PWA
+  component "Formulario de reporte" as FORM
+  component "Panel de Jefatura\ncola, filtros, detalle" as PANEL
+  component "Dashboard de KPI" as DASH
+}
+
+rectangle "Capa de lógica de negocio (API Express, Node.js 20)" {
+  component "Autenticación\nJWT + bcrypt" as AUTH
+  component "Incidencias\nvalidación con zod" as INC
+  component "Motor de reglas\nde prioridad" as RULES
+  component "KPI y SLA" as KPI
+  component "Seguridad transversal\nlímite de solicitudes, logs" as SEC
+  component "Cliente Casa Central\n(simulado)" as CC #FFF2CC
+  component "Auditoría de API" as AUD #FFF2CC
+  component "Worker de reintentos\n(pendiente)" as WK #FCE4D6
+  component "Almacenamiento de evidencias\n(pendiente)" as EVI #FCE4D6
+}
+
+rectangle "Capa de datos" {
+  database "PostgreSQL 16\n(RDS en AWS)" as DB
+}
+cloud "S3 privado\n(futuro)" as S3 #FCE4D6
+cloud "Casa Central\n(Mallplaza)" as EXT
+
+OP --> FORM : HTTPS / QR
+JF --> PANEL : HTTPS
+PWA ..> FORM
+PWA ..> PANEL
+PWA ..> DASH
+FORM --> INC : REST/JSON
+PANEL --> AUTH : REST/JSON
+PANEL --> INC : REST/JSON
+DASH --> KPI : REST/JSON
+INC --> RULES
+INC --> DB : SQL parametrizado
+AUTH --> DB
+KPI --> DB
+AUD --> DB
+WK --> DB : pendientes
+WK --> CC
+CC --> AUD
+CC --> EXT : HTTPS / POST JSON
+EVI --> S3
+INC ..> EVI
+SEC .. INC
+legend right
+  Blanco: implementado
+  Amarillo: parcial o simulado
+  Naranja: pendiente
+endlegend
+@enduml

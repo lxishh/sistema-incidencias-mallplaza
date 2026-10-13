@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="900" viewBox="0 0 1700 900"><rect width="1700" height="900" fill="#fff"/>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#222"/></marker>
+</defs>
+<text x="30" y="28" font-size="15" font-weight="bold" text-anchor="start" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">Figura A. Topología de comunicación del sistema (entorno objetivo en AWS y prototipo actual)</text>
+<rect x="30" y="150" width="230" height="100" rx="8" fill="#F7F7F7" stroke="#222" stroke-width="1.6"/>
+<text x="145.0" y="189.2" font-size="12" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">Teléfono del operario</text>
+<text x="145.0" y="204.2" font-size="11" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">Navegador móvil + PWA</text>
+<text x="145.0" y="219.2" font-size="11" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">Cámara para leer el QR</text>
+<rect x="30" y="300" width="230" height="100" rx="8" fill="#F7F7F7" stroke="#222" stroke-width="1.6"/>
+<text x="145.0" y="339.2" font-size="12" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">Equipo de Jefatura</text>
+<text x="145.0" y="354.2" font-size="11" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">Navegador (escritorio o móvil)</text>
+<text x="145.0" y="369.2" font-size="11" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">Panel, cola y dashboard</text>
+<rect x="300" y="215" width="120" height="120" rx="60" fill="#EAF2FB" stroke="#222" stroke-width="1.6"/>
+<text x="360.0" y="279.9" font-size="14" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">Internet</text>
+<path d="M260,200 L300,245" fill="none" stroke="#222" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M260,350 L305,305" fill="none" stroke="#222" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="145" y="280" font-size="10.5" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">HTTPS 443 · TLS 1.2 o superior</text>
+<rect x="450" y="50" width="900" height="630" rx="10" fill="none" stroke="#E8912D" stroke-width="1.6"/>
+<text x="462" y="68" font-size="12" font-weight="bold" text-anchor="start" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#B15F00">AWS · región sa-east-1 (São Paulo)</text>
+<rect x="470" y="100" width="150" height="66" rx="8" fill="#FFFFFF" stroke="#222" stroke-width="1.6" stroke-dasharray="7,4"/>
+<text x="545.0" y="129.85" font-size="11" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">DNS + certificado</text>
+<text x="545.0" y="143.85" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">TLS (propuesto)</text>
+<path d="M360,215 L360,133 L470,133" fill="none" stroke="#222" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#a)"/>
+<text x="400" y="126.0" font-size="10.5" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">DNS</text>
+<rect x="640" y="130" width="360" height="520" rx="10" fill="none" stroke="#3B7A3B" stroke-width="1.6"/>
+<text x="652" y="148" font-size="12" font-weight="bold" text-anchor="start" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#2A5C2A">VPC (red privada virtual)</text>
+<rect x="660" y="165" width="320" height="190" rx="10" fill="#F6FBF6" stroke="#6A9A6A" stroke-width="1.6"/>
+<text x="672" y="183" font-size="12" font-weight="bold" text-anchor="start" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#222">Subred pública</text>
+<rect x="675" y="215" width="110" height="90" rx="8" fill="#FFFFFF" stroke="#222" stroke-width="1.6" stroke-dasharray="7,4"/>
+<text x="730.0" y="249.85" font-size="11" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">Balanceador</text>
+<text x="730.0" y="263.85" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">HTTPS</text>
+<text x="730.0" y="277.85" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">(propuesto)</text>
+<rect x="825" y="215" width="140" height="90" rx="8" fill="#FFF8E7" stroke="#222" stroke-width="1.6"/>
+<text x="895.0" y="249.85" font-size="11" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">Elastic Beanstalk</text>
+<text x="895.0" y="263.85" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">EC2 t3.micro</text>
+<text x="895.0" y="277.85" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">Node.js 20 + Express</text>
+<path d="M785,260 L825,260" fill="none" stroke="#222" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="805" y="322" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">HTTP interno</text>
+<rect x="660" y="440" width="320" height="190" rx="10" fill="#F6FBF6" stroke="#6A9A6A" stroke-width="1.6"/>
+<text x="672" y="458" font-size="12" font-weight="bold" text-anchor="start" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#222">Subred privada de datos</text>
+<rect x="690" y="490" width="260" height="90" rx="8" fill="#EAF2FB" stroke="#222" stroke-width="1.6"/>
+<text x="820.0" y="524.85" font-size="11" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">Amazon RDS · PostgreSQL</text>
+<text x="820.0" y="538.85" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">db.t3.micro · 20 GB</text>
+<text x="820.0" y="552.85" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">Una zona (presupuestado)</text>
+<path d="M895,305 L895,490" fill="none" stroke="#222" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="885" y="392.0" font-size="10.5" font-weight="normal" text-anchor="end" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">PostgreSQL 5432 con TLS,</text>
+<text x="885" y="404.5" font-size="10.5" font-weight="normal" text-anchor="end" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">solo desde el grupo de</text>
+<text x="885" y="417.0" font-size="10.5" font-weight="normal" text-anchor="end" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">seguridad de la aplicación</text>
+<path d="M420,300 L560,300 L560,260 L675,260" fill="none" stroke="#222" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="480" y="292.0" font-size="10.5" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">HTTPS 443</text>
+<rect x="1030" y="130" width="300" height="520" rx="10" fill="none" stroke="#888" stroke-width="1.6"/>
+<text x="1042" y="148" font-size="12" font-weight="bold" text-anchor="start" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#444">Servicios de plataforma</text>
+<rect x="1050" y="165" width="260" height="62" rx="8" fill="#FFFFFF" stroke="#222" stroke-width="1.6" stroke-dasharray="7,4"/>
+<text x="1180.0" y="192.85" font-size="11" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">S3 privado (evidencias)</text>
+<text x="1180.0" y="206.85" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">Futuro · HTTPS + permisos IAM</text>
+<rect x="1050" y="255" width="260" height="62" rx="8" fill="#FFFFFF" stroke="#222" stroke-width="1.6"/>
+<text x="1180.0" y="282.85" font-size="11" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">Secrets Manager / Parameter Store</text>
+<text x="1180.0" y="296.85" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">Variables cifradas (JWT, API key)</text>
+<rect x="1050" y="345" width="260" height="62" rx="8" fill="#FFFFFF" stroke="#222" stroke-width="1.6"/>
+<text x="1180.0" y="372.85" font-size="11" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">CloudWatch</text>
+<text x="1180.0" y="386.85" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">Métricas, logs y alarmas</text>
+<rect x="1050" y="470" width="260" height="62" rx="8" fill="#FFFFFF" stroke="#222" stroke-width="1.6"/>
+<text x="1180.0" y="497.85" font-size="11" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">Respaldos automáticos de RDS</text>
+<text x="1180.0" y="511.85" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">Snapshots con retención acordada</text>
+<path d="M965,235 L1000,235 L1000,196 L1050,196" fill="none" stroke="#222" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#a)"/>
+<path d="M965,270 L1050,285" fill="none" stroke="#222" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M965,290 L1000,290 L1000,376 L1050,376" fill="none" stroke="#222" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M950,535 L1050,501" fill="none" stroke="#222" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="1420" y="130" width="250" height="120" rx="8" fill="#FDECEC" stroke="#222" stroke-width="1.6"/>
+<text x="1545.0" y="179.85" font-size="11" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">Casa Central (Mallplaza)</text>
+<text x="1545.0" y="193.85" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">API REST institucional</text>
+<text x="1545.0" y="207.85" font-size="10" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">Entorno sandbox y producción</text>
+<path d="M895,215 L895,80 L1545,80 L1545,130" fill="none" stroke="#222" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#a)"/>
+<text x="1180" y="72.0" font-size="10.5" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">HTTPS 443 · TLS 1.2+ · API key en variable de entorno · POST JSON</text>
+<text x="1560" y="275" font-size="10.5" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#555" font-style="italic">Contrato técnico pendiente;</text>
+<text x="1560" y="289" font-size="10.5" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#555" font-style="italic">hoy es un cliente simulado</text>
+<rect x="30" y="710" width="1300" height="140" rx="10" fill="#F5F9FE" stroke="#2F6DB5" stroke-width="1.6"/>
+<text x="42" y="728" font-size="12" font-weight="bold" text-anchor="start" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#1F4F86">Prototipo actual (equipo de desarrollo, Docker Compose, sin HTTPS)</text>
+<rect x="70" y="745" width="250" height="80" rx="8" fill="#FFFFFF" stroke="#222" stroke-width="1.6"/>
+<text x="195.0" y="781.7" font-size="12" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">Navegador</text>
+<text x="195.0" y="796.7" font-size="11" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">localhost:5173 (Vite)</text>
+<rect x="470" y="745" width="250" height="80" rx="8" fill="#FFFFFF" stroke="#222" stroke-width="1.6"/>
+<text x="595.0" y="781.7" font-size="12" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">API Express</text>
+<text x="595.0" y="796.7" font-size="11" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">puerto 3000 · Node.js</text>
+<rect x="870" y="745" width="250" height="80" rx="8" fill="#FFFFFF" stroke="#222" stroke-width="1.6"/>
+<text x="995.0" y="781.7" font-size="12" font-weight="bold" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">PostgreSQL 16</text>
+<text x="995.0" y="796.7" font-size="11" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">puerto 5432 · contenedor</text>
+<path d="M320,785 L470,785" fill="none" stroke="#222" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="395" y="777.0" font-size="10.5" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">HTTP · REST/JSON</text>
+<path d="M720,785 L870,785" fill="none" stroke="#222" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="795" y="777.0" font-size="10.5" font-weight="normal" text-anchor="middle" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#333">SQL parametrizado</text>
+<rect x="30" y="869" width="26" height="14" rx="3" fill="#fff" stroke="#222" stroke-width="1.6"/>
+<text x="64" y="880" font-size="11" font-weight="normal" text-anchor="start" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">Incluido en el presupuesto del Informe 1</text>
+<rect x="324.0" y="869" width="26" height="14" rx="3" fill="#fff" stroke="#222" stroke-width="1.6" stroke-dasharray="5,3"/>
+<text x="358.0" y="880" font-size="11" font-weight="normal" text-anchor="start" font-family="Arial, Helvetica, DejaVu Sans, sans-serif" fill="#111">Propuesto o futuro (costo adicional o sin construir)</text></svg>

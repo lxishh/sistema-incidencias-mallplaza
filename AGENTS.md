@@ -11,6 +11,7 @@ Prototipo de sistema web para reportar fallas operativas, calcular una prioridad
 - Infra: AWS Elastic Beanstalk + RDS + S3. Todo por HTTPS (TLS 1.2+).
 
 ## Contexto vigente y documentación
+- Estado de cumplimiento y decisiones pendientes: `docs/entregables/Matriz_trazabilidad_RF_RNF.xlsx` y `docs/preguntas.md` (D1 a D12). No resolver una decisión pendiente por inferencia.
 
 Antes de cambiar código, leer `docs/HANDOFF-ANTIGRAVITY.md` para el traspaso operativo y el estado de Git; luego seguir el orden obligatorio de documentación listado abajo.
 
@@ -59,6 +60,8 @@ El prototipo conserva la frontera `CasaCentralClient.crearOrdenTrabajo(incidenci
 - Una rama por bloque de trabajo (por ejemplo `feature/S1-backend` para todo el Sprint 1), un commit por tarea con Conventional Commits y un PR contra `develop`.
 - Toda lógica nueva lleva tests. El motor de reglas lleva test de tabla de verdad.
 - Antes de dar una tarea por terminada: `npm run lint && npm test` en verde.
+- No crear commits cuyo único fin sea registrar el hash de otro commit; actualizar `docs/estado-proyecto.md` en el mismo commit de la tarea.
+- No versionar artefactos de build (`frontend/dist/`) ni binarios generados; el `.docx` del informe es una exportación del `.md`.
 
 ## Mantener el contexto al día
 - Actualizar `docs/estado-proyecto.md` al completar una tarea: estado, fecha, pruebas, límites y siguiente paso.

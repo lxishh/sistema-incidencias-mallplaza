@@ -193,3 +193,10 @@ Los valores están en `sla_politica`. La política define umbrales pero Sprint 1
 | Integración externa | Entrega confiable a Casa Central | Objetivo a establecer durante la fase de integración | Definir latencia, ventana, reintentos e idempotencia con contraparte técnica. |
 
 Estos SLA TI son una propuesta académica para traducir expectativas a mediciones. La disponibilidad real, el horario, soporte, exclusiones, mantenimiento, RTO/RPO y consecuencias deben ser pactados por el cliente; no prometerlos solo por dibujar la arquitectura.
+
+## 5. Notas de revisión (10-oct-2026)
+
+- **SLA operativo y SLA de plataforma.** Los tiempos de la sección 4 (15/30/120/480 min de primera respuesta y 4/8/24/72 h de resolución) son el SLA **operativo**: qué tan rápido se atiende cada incidencia del mall. El Informe 1 usa la misma matriz para el soporte del software; se propone llamar a ese segundo conjunto "severidades S1 a S4" para no confundirlos.
+- **Disponibilidad.** El Informe 1 promete 99,9 %, pero presupuesta una instancia EC2 t3.micro y RDS en una sola zona, configuración que no lo respalda. Decidir entre bajar el objetivo (por ejemplo al 99,5 % de la sección 4) o presupuestar alta disponibilidad (decisión D10).
+- **Documento ampliado.** Los 10 KPI con las cinco dimensiones SMART y los niveles de servicio completos están en `docs/entregables/capitulo-analisis-diseno.md`, secciones 7.1 y 7.2.
+

@@ -6,3 +6,6 @@ backend/coverage/
 !.env.*.example
 *:Zone.Identifier
 *Zone.Identifier
+dist/
+frontend/dist/
+.vite/

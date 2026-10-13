@@ -51,7 +51,7 @@ Si el equipo decide repetir el alta desde cero, debe hacerlo en una base descart
 
 ## Evidencia y estado
 
-- **Automatizada:** lint aprobado, 27 pruebas aprobadas en 8 archivos; cubren alta, transición, autenticación, KPI, rangos y reglas.
+- **Automatizada:** lint aprobado, 33 pruebas aprobadas en 9 archivos; cubren alta, transición, autenticación, KPI, rangos y reglas.
 - **API local aislada:** en una copia temporal independiente, un alta sintética devolvió HTTP 201, `CRITICA`, `PENDIENTE` y `PENDIENTE_SINC`, sin devolver el RUT. Esa copia se eliminó; esta comprobación no describe el contenido actual de `mallplaza_dev`.
 - **KPI:** comprobados con datos sintéticos en una base temporal y revisados visualmente en el panel de gestión.
 - **Aceptación visual completada — 2026-10-09:** en `localhost`, con PostgreSQL local y el commit `61b48e4` de `feature/S1-dashboard-kpis`, se registró el reporte sintético **#2**. La confirmación mostró prioridad `CRITICA` y estado `PENDIENTE`, sin mostrar el RUT. Jefatura lo localizó por ID, abrió el detalle y avanzó el historial `PENDIENTE → EN_PROCESO → RESUELTA`. La fila de la cola terminó como `Resuelta`; el panel se actualizó a 2 incidencias del período, 1 abierta y 1 resuelta, MTTR 0,8 min, SLA 100 % (1 de 1 dentro del objetivo) y 0 abiertas vencidas. La sincronización quedó `PENDIENTE_SINC`, como corresponde al mock. Se cerró sesión y la ruta de Jefatura volvió a pedir autenticación al recargar. La consola del navegador registró `ERR_ABORTED` en la petición de logout durante el cambio de vista; aunque la sesión no quedó disponible al recargar, conviene revisar ese evento en el siguiente pase de robustez.

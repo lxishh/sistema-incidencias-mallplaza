@@ -1,0 +1,59 @@
+@startuml
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #bd1737
+  ArrowColor #444444
+}
+skinparam actorBorderColor #333333
+skinparam noteBackgroundColor #FFF8E1
+skinparam noteBorderColor #999999
+left to right direction
+title Diagrama de casos de uso - Sistema de Gestión y Trazabilidad de Incidencias (Mallplaza Copiapó)
+
+actor "Operario\n(Servicios)" as OP
+actor "Jefatura\n(Mantenimiento)" as JF
+actor "Casa Central\n(sistema externo)" as CC <<sistema>>
+
+rectangle "Sistema de incidencias" {
+  usecase "CU-03\nAcceder al formulario\nmediante QR" as CU03
+  usecase "CU-04\nReportar incidencia" as CU04
+  usecase "CU-05\nAdjuntar evidencia\nfotográfica" as CU05
+  usecase "CU-06\nCalcular prioridad" as CU06
+  usecase "CU-07\nSincronizar con\nCasa Central" as CU07
+  usecase "CU-08\nReintentar envío\nfallido" as CU08
+
+  usecase "CU-01\nIniciar sesión" as CU01
+  usecase "CU-02\nCerrar sesión" as CU02
+  usecase "CU-09\nConsultar cola\npriorizada" as CU09
+  usecase "CU-10\nFiltrar y buscar\nincidencias" as CU10
+  usecase "CU-11\nConsultar detalle\ne historial" as CU11
+  usecase "CU-12\nCambiar estado" as CU12
+  usecase "CU-13\nConsultar dashboard\nde KPI" as CU13
+  usecase "CU-14\nVisualizar estado\nde sincronización" as CU14
+}
+
+note bottom of CU01
+  CU-09 a CU-14 exigen sesión
+  activa de Jefatura (CU-01)
+end note
+
+OP --> CU03
+OP --> CU04
+CU04 ..> CU06 : <<include>>
+CU05 .up.> CU04 : <<extend>>
+CU07 .up.> CU04 : <<extend>>
+CU08 .up.> CU07 : <<extend>>
+CU07 --> CC
+
+JF --> CU01
+JF --> CU02
+JF --> CU09
+JF --> CU11
+JF --> CU12
+JF --> CU13
+CU10 .up.> CU09 : <<extend>>
+CU11 ..> CU14 : <<include>>
+CU13 ..> CU14 : <<include>>
+@enduml

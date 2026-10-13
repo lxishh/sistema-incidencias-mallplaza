@@ -36,7 +36,7 @@ Prototipo local para reportar fallas operativas de Mallplaza Copiapó, calcular 
 - PostgreSQL por Docker Compose, esquema y migración equivalentes.
 - Docker Compose también construye/inicia API y frontend; migraciones y seed ficticio se ejecutan al iniciar la API.
 - Interfaz `CasaCentralClient` mock y helper de auditoría; no se ejecutan desde un worker.
-- ESLint y Vitest/Supertest: lint aprobado y 27 pruebas aprobadas en 8 archivos, incluidos cálculos KPI y validación de rangos.
+- ESLint y Vitest/Supertest: lint aprobado y 33 pruebas aprobadas en 9 archivos, incluidos cálculos KPI y validación de rangos.
 
 ### Frontend implementado y verificado en entorno local
 
@@ -53,9 +53,9 @@ Prototipo local para reportar fallas operativas de Mallplaza Copiapó, calcular 
 
 ### Verificación transversal
 
-- La rama activa es `docs/S1-academic-closeout`, con remoto `origin` configurado. El informe y estado están comprometidos localmente; no se ha publicado ni abierto PR. Ramas visibles: `develop`, `feature/S1-dashboard-kpis`, `chore/S1-dev-dependency-audit` y esta rama documental. Ver `docs/HANDOFF-ANTIGRAVITY.md` antes de integrar ramas.
+- El remoto `origin` publica una sola rama: `feature/S1-demo-qr` (rama por defecto, 15 commits lineales del 9-oct-2026). Las ramas `develop`, `feature/S1-dashboard-kpis`, `chore/S1-dev-dependency-audit` y `docs/S1-academic-closeout` que mencionaban versiones anteriores de este documento no están publicadas, aunque sus commits sí forman parte de esta historia. No se ha abierto ningún PR. Pendiente: acordar `main`/`develop` como base del grupo (ver `docs/preguntas.md`). Ver `docs/HANDOFF-ANTIGRAVITY.md` antes de integrar ramas.
 - El archivo de migración coincide con el identificador histórico `20261009000100-initial-schema`. Los comandos de migración terminan sin cambios; el runner muestra una advertencia de timestamp por el separador legado con guion.
-- bcrypt 6.0.0, Vitest 4.1.11 y node-pg-migrate 8.0.4 se validaron en Node 20.20.2. `npm audit` completo reporta cero vulnerabilidades; lint y 27 pruebas pasan.
+- bcrypt 6.0.0, Vitest 4.1.11 y node-pg-migrate 8.0.4 se validaron en Node 20.20.2. `npm audit` completo reporta cero vulnerabilidades; lint y 33 pruebas pasan.
 
 ## 5. Siguiente objetivo corto
 
@@ -63,7 +63,7 @@ Al 14 de octubre se prioriza un prototipo local reproducible: interfaz de report
 
 ## Próxima tarea activa
 
-- Aceptación visual y audit de dependencias completados; build PWA, lint, 27 pruebas, migraciones locales y `npm audit` completo en verde.
+- Aceptación visual y audit de dependencias completados; build PWA, lint, 33 pruebas, migraciones locales y `npm audit` completo en verde.
 - Pase final: repasar guion, conservar el caso sintético #2 existente y verificar instrucciones de arranque en el equipo de exposición.
 - Logout: la prueba backend confirma HTTP 204, cookie vaciada y 401 posterior en `/api/auth/me`. En la demo, el navegador mostró `ERR_ABORTED`, pero al recargar pidió autenticación. Esto sugiere que la sesión sí se cerró; sin una traza de red no se atribuye una causa al evento.
 
@@ -74,8 +74,16 @@ Al 14 de octubre se prioriza un prototipo local reproducible: interfaz de report
 - Pendiente de prototipo local: QR gráfico distribuible y carga de fotos. No se iniciaron porque la autorización para cambiar el stack requiere aprobación y no conviene inventar dependencias ni relajar controles de archivos.
 - Pendiente externo/productivo: contrato/autenticación/sandbox de Casa Central, cuenta/budget/accesos AWS, dominio/IAM/secretos, política de datos y UAT con contraparte.
 - Verificación de cierre: `git diff --check` pasó y las 27 páginas del Word se revisaron visualmente tras exportar con Word y renderizar con pypdfium2. La verificación de software con Node 20 nativo (v20.20.2 / npm 10.8.2 en Ubuntu) fue reejecutada y ratificada bajo Antigravity: `npm run lint` en verde, `npm test` con las 27 pruebas en 8 archivos aprobadas contra PostgreSQL en Docker, migraciones al día y build PWA reproducible.
-- Cierre Git: informe y documentación comprometidos localmente en `b6812f0`, `de67d96` y traspaso en `af5af8d`; `git status` limpio en `docs/S1-academic-closeout`. No se hizo push ni PR.
+- Cierre Git: informe y documentación comprometidos localmente en `b6812f0`, `de67d96` y traspaso en `af5af8d`; `git status` limpio en `docs/S1-academic-closeout`. No se hizo push ni PR a esa fecha; para el estado actual del remoto ver la sección 7.
 - Prioridad final: (1) ensayar la demo controlada sin borrar datos sintéticos; (2) completar QR gráfico de demostración si el equipo lo prioriza; (3) coordinar publicación en remoto con el equipo. No priorizar fotos, AWS ni Casa Central real antes de cerrar estas comprobaciones y conseguir aprobaciones/contratos.
+
+## Actualización 2026-10-10
+
+- **Cobertura:** 31 de 40 RF construidos (77,5 %); pendientes: fotos (RF-12, RF-13, RF-35), reintentos asíncronos (RF-39), integración real con Casa Central (RF-36 a RF-40, hoy simulada) y verificación en celulares (RF-04, RF-33, RF-34). Detalle en `docs/entregables/Matriz_trazabilidad_RF_RNF.xlsx`.
+- **Pruebas:** 33 pruebas automatizadas aprobadas y 46 casos de API ejecutados con `scripts/ejecutar-casos-api.js` (45 aprobados y 1 hallazgo). Quedan 10 casos manuales y 8 bloqueados por funcionalidad pendiente.
+- **Hallazgo TC-46:** el token de sesión no se revoca al cerrar sesión y dura 8 horas; una cookie copiada antes del cierre sigue siendo válida. Acortar la vigencia o agregar revocación.
+- **Entregables nuevos** en `docs/entregables/`: capítulo de análisis y diseño (BPMN, UML, topología, infraestructura, arquitectura, KPI, SLA, plan de pruebas), matriz de trazabilidad, diagramas y archivos `.bpmn` editables.
+- **Decisiones pendientes** con el cliente o el equipo: D1 a D12 en `docs/preguntas.md`.
 
 ## 6. Protocolo de actualización
 
@@ -93,9 +101,11 @@ Al cerrar cada tarea, actualizar en este archivo:
 
 Actualizar también `docs/informe-proyecto.md` con lo que haya quedado demostrado, y los anexos temáticos relacionados. Mantener este archivo corto: una captura del estado actual, no una bitácora duplicada.
 
+Reglas para no inflar el historial: (1) actualizar este archivo en el mismo commit que la tarea, nunca en un commit aparte cuyo único fin sea registrar el hash de otro commit (el hash ya está en `git log`); (2) cuando una entrada del registro quede superada, resumirla en una línea en vez de acumular entradas; (3) las cifras "actuales" (pruebas, ramas, estado del remoto) se corrigen en su sección, y el registro fechado conserva lo que fue cierto ese día.
+
 ## 7. Git y configuración local
 
-El workspace usa Git desde Ubuntu/WSL para evitar problemas con la ruta UNC. El remoto `origin` y la identidad local están configurados. La rama activa para el cierre documental es `docs/S1-academic-closeout`; no se ha publicado ni se declara PR creado.
+El workspace usa Git desde Ubuntu/WSL para evitar problemas con la ruta UNC. El remoto `origin` y la identidad local están configurados. El remoto `origin` publica una sola rama: `feature/S1-demo-qr` (rama por defecto, 15 commits lineales del 9-oct-2026). Las ramas `develop`, `feature/S1-dashboard-kpis`, `chore/S1-dev-dependency-audit` y `docs/S1-academic-closeout` que mencionaban versiones anteriores de este documento no están publicadas, aunque sus commits sí forman parte de esta historia. No se ha abierto ningún PR. Pendiente: acordar `main`/`develop` como base del grupo (ver `docs/preguntas.md`).
 
 Las variables locales de prueba están excluidas con `.gitignore`. En un clon limpio, crear `backend/.env.test` a partir de `backend/.env.test.example`; versionar únicamente el archivo de ejemplo, nunca un `.env` con credenciales reales.
 
@@ -189,7 +199,7 @@ Las variables locales de prueba están excluidas con `.gitignore`. En un clon li
 - Archivos actualizados:
   - `backend/src/utils/qr.js` y `frontend/src/qr.js`: codificador QR estándar con interfaz unificada (`generateQr`, `generateQrSvg`, `generateQrAscii`).
   - `docs/demo-qr.html` y `frontend/public/demo-qr.svg`: ficha técnica y SVG regenerados con la matriz ISO válida.
-  - `frontend/dist/`: build de producción actualizado.
+  - `frontend/dist/`: no se versiona; se genera con `npm run build:frontend` (se retiró del índice de Git en la limpieza del 10-oct-2026).
 - Verificación y resultado:
   - `npm run lint`: código de salida 0 (ESLint y Prettier limpios).
   - `npm test`: 33 pruebas aprobadas en 9 archivos (100% en verde).

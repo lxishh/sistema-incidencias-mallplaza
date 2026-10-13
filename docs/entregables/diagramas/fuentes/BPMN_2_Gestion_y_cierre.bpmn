@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_P2" targetNamespace="http://mallplaza-copiapo/incidencias">
+  <bpmn:collaboration id="Collab_P2">
+    <bpmn:participant id="Pool_P2" name="Gestión y cierre" processRef="Process_P2"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_P2" name="Gestión y cierre de incidencias" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_P2">
+      <bpmn:lane id="Lane_P2_jef" name="Jefatura"><bpmn:flowNodeRef>P2_inicio</bpmn:flowNodeRef><bpmn:flowNodeRef>P2_auth</bpmn:flowNodeRef><bpmn:flowNodeRef>P2_cola</bpmn:flowNodeRef><bpmn:flowNodeRef>P2_gf</bpmn:flowNodeRef><bpmn:flowNodeRef>P2_filtro</bpmn:flowNodeRef><bpmn:flowNodeRef>P2_det</bpmn:flowNodeRef><bpmn:flowNodeRef>P2_cambiar</bpmn:flowNodeRef><bpmn:flowNodeRef>P2_trab</bpmn:flowNodeRef></bpmn:lane>
+      <bpmn:lane id="Lane_P2_sis" name="Sistema"><bpmn:flowNodeRef>P2_cambio</bpmn:flowNodeRef><bpmn:flowNodeRef>P2_gv</bpmn:flowNodeRef><bpmn:flowNodeRef>P2_gr</bpmn:flowNodeRef><bpmn:flowNodeRef>P2_kpi</bpmn:flowNodeRef><bpmn:flowNodeRef>P2_fin</bpmn:flowNodeRef><bpmn:flowNodeRef>P2_rech</bpmn:flowNodeRef></bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="P2_inicio" name="Incidencia pendiente en la cola"/>
+    <bpmn:subProcess id="P2_auth" name="Iniciar sesión">
+      <bpmn:startEvent id="a_s" name=""/>
+      <bpmn:task id="a_1" name="Ingresar correo y contraseña"/>
+      <bpmn:task id="a_2" name="Validar credenciales y límite de intentos"/>
+      <bpmn:exclusiveGateway id="a_g" name="¿Credenciales válidas?"/>
+      <bpmn:task id="a_3" name="Crear la sesión con cookie protegida"/>
+      <bpmn:endEvent id="a_e1" name="Sesión activa"/>
+      <bpmn:task id="a_4" name="Informar un error genérico"/>
+      <bpmn:endEvent id="a_e2" name="Acceso denegado"/>
+      <bpmn:sequenceFlow id="F_SP_auth_0" sourceRef="a_s" targetRef="a_1"/>
+      <bpmn:sequenceFlow id="F_SP_auth_1" sourceRef="a_1" targetRef="a_2"/>
+      <bpmn:sequenceFlow id="F_SP_auth_2" sourceRef="a_2" targetRef="a_g"/>
+      <bpmn:sequenceFlow id="F_SP_auth_3" name="Sí" sourceRef="a_g" targetRef="a_3"/>
+      <bpmn:sequenceFlow id="F_SP_auth_4" sourceRef="a_3" targetRef="a_e1"/>
+      <bpmn:sequenceFlow id="F_SP_auth_5" name="No" sourceRef="a_g" targetRef="a_4"/>
+      <bpmn:sequenceFlow id="F_SP_auth_6" sourceRef="a_4" targetRef="a_e2"/>
+    </bpmn:subProcess>
+    <bpmn:task id="P2_cola" name="Consultar la cola priorizada"/>
+    <bpmn:exclusiveGateway id="P2_gf" name="¿Necesita acotar la lista?"/>
+    <bpmn:subProcess id="P2_filtro" name="Filtrar y buscar incidencias">
+      <bpmn:startEvent id="f_s" name=""/>
+      <bpmn:task id="f_1" name="Elegir filtros o ingresar el número de incidencia"/>
+      <bpmn:task id="f_2" name="Validar los criterios"/>
+      <bpmn:exclusiveGateway id="f_g" name="¿Criterios válidos?"/>
+      <bpmn:task id="f_3" name="Mostrar coincidencias ordenadas por prioridad"/>
+      <bpmn:endEvent id="f_e1" name="Lista filtrada"/>
+      <bpmn:task id="f_4" name="Mostrar el mensaje de validación"/>
+      <bpmn:endEvent id="f_e2" name="Consulta rechazada"/>
+      <bpmn:sequenceFlow id="F_SP_filtro_0" sourceRef="f_s" targetRef="f_1"/>
+      <bpmn:sequenceFlow id="F_SP_filtro_1" sourceRef="f_1" targetRef="f_2"/>
+      <bpmn:sequenceFlow id="F_SP_filtro_2" sourceRef="f_2" targetRef="f_g"/>
+      <bpmn:sequenceFlow id="F_SP_filtro_3" name="Sí" sourceRef="f_g" targetRef="f_3"/>
+      <bpmn:sequenceFlow id="F_SP_filtro_4" sourceRef="f_3" targetRef="f_e1"/>
+      <bpmn:sequenceFlow id="F_SP_filtro_5" name="No" sourceRef="f_g" targetRef="f_4"/>
+      <bpmn:sequenceFlow id="F_SP_filtro_6" sourceRef="f_4" targetRef="f_e2"/>
+    </bpmn:subProcess>
+    <bpmn:task id="P2_det" name="Revisar detalle e historial"/>
+    <bpmn:task id="P2_cambiar" name="Cambiar el estado de la incidencia"/>
+    <bpmn:task id="P2_trab" name="Atender la falla en terreno (fuera del sistema)"/>
+    <bpmn:subProcess id="P2_cambio" name="Validar y registrar el cambio">
+      <bpmn:startEvent id="s_s" name=""/>
+      <bpmn:task id="s_1" name="Verificar la sesión de Jefatura"/>
+      <bpmn:exclusiveGateway id="s_g" name="¿Transición permitida?"/>
+      <bpmn:task id="s_2" name="Actualizar estado y fechas de inicio o cierre"/>
+      <bpmn:task id="s_3" name="Registrar la entrada en el historial"/>
+      <bpmn:endEvent id="s_e1" name="Cambio aplicado"/>
+      <bpmn:endEvent id="s_e2" name="Cambio rechazado"/>
+      <bpmn:sequenceFlow id="F_SP_cambio_0" sourceRef="s_s" targetRef="s_1"/>
+      <bpmn:sequenceFlow id="F_SP_cambio_1" sourceRef="s_1" targetRef="s_g"/>
+      <bpmn:sequenceFlow id="F_SP_cambio_2" name="Sí" sourceRef="s_g" targetRef="s_2"/>
+      <bpmn:sequenceFlow id="F_SP_cambio_3" sourceRef="s_2" targetRef="s_3"/>
+      <bpmn:sequenceFlow id="F_SP_cambio_4" sourceRef="s_3" targetRef="s_e1"/>
+      <bpmn:sequenceFlow id="F_SP_cambio_5" name="No" sourceRef="s_g" targetRef="s_e2"/>
+    </bpmn:subProcess>
+    <bpmn:exclusiveGateway id="P2_gv" name="¿Cambio válido?"/>
+    <bpmn:exclusiveGateway id="P2_gr" name="¿Quedó Resuelta?"/>
+    <bpmn:task id="P2_kpi" name="Actualizar los indicadores del dashboard"/>
+    <bpmn:endEvent id="P2_fin" name="Incidencia cerrada"/>
+    <bpmn:endEvent id="P2_rech" name="Cambio rechazado"/>
+    <bpmn:sequenceFlow id="P2_f1" sourceRef="P2_inicio" targetRef="P2_auth"/>
+    <bpmn:sequenceFlow id="P2_f2" sourceRef="P2_auth" targetRef="P2_cola"/>
+    <bpmn:sequenceFlow id="P2_f3" sourceRef="P2_cola" targetRef="P2_gf"/>
+    <bpmn:sequenceFlow id="P2_f4" name="Sí" sourceRef="P2_gf" targetRef="P2_filtro"/>
+    <bpmn:sequenceFlow id="P2_f5" name="No" sourceRef="P2_gf" targetRef="P2_det"/>
+    <bpmn:sequenceFlow id="P2_f6" sourceRef="P2_filtro" targetRef="P2_det"/>
+    <bpmn:sequenceFlow id="P2_f7" sourceRef="P2_det" targetRef="P2_cambiar"/>
+    <bpmn:sequenceFlow id="P2_f8" sourceRef="P2_cambiar" targetRef="P2_cambio"/>
+    <bpmn:sequenceFlow id="P2_f9" sourceRef="P2_cambio" targetRef="P2_gv"/>
+    <bpmn:sequenceFlow id="P2_f10" name="Sí" sourceRef="P2_gv" targetRef="P2_gr"/>
+    <bpmn:sequenceFlow id="P2_f11" name="No" sourceRef="P2_gv" targetRef="P2_rech"/>
+    <bpmn:sequenceFlow id="P2_f12" name="Sí" sourceRef="P2_gr" targetRef="P2_kpi"/>
+    <bpmn:sequenceFlow id="P2_f13" sourceRef="P2_kpi" targetRef="P2_fin"/>
+    <bpmn:sequenceFlow id="P2_f14" name="No" sourceRef="P2_gr" targetRef="P2_trab"/>
+    <bpmn:sequenceFlow id="P2_f15" sourceRef="P2_trab" targetRef="P2_cambiar"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_P2"><bpmndi:BPMNPlane id="Plane_P2" bpmnElement="Collab_P2">
+      <bpmndi:BPMNShape id="Pool_P2_di" bpmnElement="Pool_P2" isHorizontal="true"><dc:Bounds x="20" y="20" width="1890" height="420"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_P2_jef_di" bpmnElement="Lane_P2_jef" isHorizontal="true"><dc:Bounds x="48" y="20" width="1862" height="210"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_P2_sis_di" bpmnElement="Lane_P2_sis" isHorizontal="true"><dc:Bounds x="48" y="230" width="1862" height="210"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_inicio_di" bpmnElement="P2_inicio"><dc:Bounds x="132" y="117" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_auth_di" bpmnElement="P2_auth" isExpanded="false"><dc:Bounds x="238" y="102" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_cola_di" bpmnElement="P2_cola"><dc:Bounds x="388" y="102" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_gf_di" bpmnElement="P2_gf"><dc:Bounds x="575" y="110" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_filtro_di" bpmnElement="P2_filtro" isExpanded="false"><dc:Bounds x="688" y="44" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_det_di" bpmnElement="P2_det"><dc:Bounds x="838" y="102" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_cambiar_di" bpmnElement="P2_cambiar"><dc:Bounds x="988" y="102" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_trab_di" bpmnElement="P2_trab"><dc:Bounds x="1438" y="102" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_cambio_di" bpmnElement="P2_cambio" isExpanded="false"><dc:Bounds x="1138" y="302" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_gv_di" bpmnElement="P2_gv"><dc:Bounds x="1325" y="310" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_gr_di" bpmnElement="P2_gr"><dc:Bounds x="1475" y="310" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_kpi_di" bpmnElement="P2_kpi"><dc:Bounds x="1588" y="302" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_fin_di" bpmnElement="P2_fin"><dc:Bounds x="1782" y="317" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_rech_di" bpmnElement="P2_rech"><dc:Bounds x="1332" y="385" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="P2_f1_di" bpmnElement="P2_f1"><di:waypoint x="168" y="135"/><di:waypoint x="238" y="135"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f2_di" bpmnElement="P2_f2"><di:waypoint x="362" y="135"/><di:waypoint x="388" y="135"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f3_di" bpmnElement="P2_f3"><di:waypoint x="512" y="135"/><di:waypoint x="575" y="135"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f4_di" bpmnElement="P2_f4"><di:waypoint x="600" y="110"/><di:waypoint x="600" y="77"/><di:waypoint x="688" y="77"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f5_di" bpmnElement="P2_f5"><di:waypoint x="625" y="135"/><di:waypoint x="838" y="135"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f6_di" bpmnElement="P2_f6"><di:waypoint x="812" y="77"/><di:waypoint x="825" y="77"/><di:waypoint x="825" y="135"/><di:waypoint x="838" y="135"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f7_di" bpmnElement="P2_f7"><di:waypoint x="962" y="135"/><di:waypoint x="988" y="135"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f8_di" bpmnElement="P2_f8"><di:waypoint x="1112" y="135"/><di:waypoint x="1125" y="135"/><di:waypoint x="1125" y="335"/><di:waypoint x="1138" y="335"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f9_di" bpmnElement="P2_f9"><di:waypoint x="1262" y="335"/><di:waypoint x="1325" y="335"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f10_di" bpmnElement="P2_f10"><di:waypoint x="1375" y="335"/><di:waypoint x="1475" y="335"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f11_di" bpmnElement="P2_f11"><di:waypoint x="1350" y="360"/><di:waypoint x="1350" y="385"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f12_di" bpmnElement="P2_f12"><di:waypoint x="1525" y="335"/><di:waypoint x="1588" y="335"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f13_di" bpmnElement="P2_f13"><di:waypoint x="1712" y="335"/><di:waypoint x="1782" y="335"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f14_di" bpmnElement="P2_f14"><di:waypoint x="1500" y="310"/><di:waypoint x="1500" y="168"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_f15_di" bpmnElement="P2_f15"><di:waypoint x="1500" y="102"/><di:waypoint x="1500" y="68"/><di:waypoint x="1050" y="68"/><di:waypoint x="1050" y="102"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_P2_auth"><bpmndi:BPMNPlane id="Plane_P2_auth" bpmnElement="P2_auth">
+      <bpmndi:BPMNShape id="a_s_di" bpmnElement="a_s"><dc:Bounds x="62" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_1_di" bpmnElement="a_1"><dc:Bounds x="168" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_2_di" bpmnElement="a_2"><dc:Bounds x="318" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_g_di" bpmnElement="a_g"><dc:Bounds x="505" y="75" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_3_di" bpmnElement="a_3"><dc:Bounds x="618" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_e1_di" bpmnElement="a_e1"><dc:Bounds x="812" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_4_di" bpmnElement="a_4"><dc:Bounds x="468" y="198" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="a_e2_di" bpmnElement="a_e2"><dc:Bounds x="662" y="213" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F_SP_auth_0_di" bpmnElement="F_SP_auth_0"><di:waypoint x="98" y="100"/><di:waypoint x="168" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_auth_1_di" bpmnElement="F_SP_auth_1"><di:waypoint x="292" y="100"/><di:waypoint x="318" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_auth_2_di" bpmnElement="F_SP_auth_2"><di:waypoint x="442" y="100"/><di:waypoint x="505" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_auth_3_di" bpmnElement="F_SP_auth_3"><di:waypoint x="555" y="100"/><di:waypoint x="618" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_auth_4_di" bpmnElement="F_SP_auth_4"><di:waypoint x="742" y="100"/><di:waypoint x="812" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_auth_5_di" bpmnElement="F_SP_auth_5"><di:waypoint x="530" y="125"/><di:waypoint x="530" y="198"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_auth_6_di" bpmnElement="F_SP_auth_6"><di:waypoint x="592" y="231"/><di:waypoint x="662" y="231"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_P2_filtro"><bpmndi:BPMNPlane id="Plane_P2_filtro" bpmnElement="P2_filtro">
+      <bpmndi:BPMNShape id="f_s_di" bpmnElement="f_s"><dc:Bounds x="62" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="f_1_di" bpmnElement="f_1"><dc:Bounds x="168" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="f_2_di" bpmnElement="f_2"><dc:Bounds x="318" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="f_g_di" bpmnElement="f_g"><dc:Bounds x="505" y="75" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="f_3_di" bpmnElement="f_3"><dc:Bounds x="618" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="f_e1_di" bpmnElement="f_e1"><dc:Bounds x="812" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="f_4_di" bpmnElement="f_4"><dc:Bounds x="468" y="198" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="f_e2_di" bpmnElement="f_e2"><dc:Bounds x="662" y="213" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F_SP_filtro_0_di" bpmnElement="F_SP_filtro_0"><di:waypoint x="98" y="100"/><di:waypoint x="168" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_filtro_1_di" bpmnElement="F_SP_filtro_1"><di:waypoint x="292" y="100"/><di:waypoint x="318" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_filtro_2_di" bpmnElement="F_SP_filtro_2"><di:waypoint x="442" y="100"/><di:waypoint x="505" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_filtro_3_di" bpmnElement="F_SP_filtro_3"><di:waypoint x="555" y="100"/><di:waypoint x="618" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_filtro_4_di" bpmnElement="F_SP_filtro_4"><di:waypoint x="742" y="100"/><di:waypoint x="812" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_filtro_5_di" bpmnElement="F_SP_filtro_5"><di:waypoint x="530" y="125"/><di:waypoint x="530" y="198"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_filtro_6_di" bpmnElement="F_SP_filtro_6"><di:waypoint x="592" y="231"/><di:waypoint x="662" y="231"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_P2_cambio"><bpmndi:BPMNPlane id="Plane_P2_cambio" bpmnElement="P2_cambio">
+      <bpmndi:BPMNShape id="s_s_di" bpmnElement="s_s"><dc:Bounds x="62" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_1_di" bpmnElement="s_1"><dc:Bounds x="168" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_g_di" bpmnElement="s_g"><dc:Bounds x="355" y="75" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_2_di" bpmnElement="s_2"><dc:Bounds x="468" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_3_di" bpmnElement="s_3"><dc:Bounds x="618" y="67" width="124" height="66"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_e1_di" bpmnElement="s_e1"><dc:Bounds x="812" y="82" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_e2_di" bpmnElement="s_e2"><dc:Bounds x="362" y="213" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F_SP_cambio_0_di" bpmnElement="F_SP_cambio_0"><di:waypoint x="98" y="100"/><di:waypoint x="168" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_cambio_1_di" bpmnElement="F_SP_cambio_1"><di:waypoint x="292" y="100"/><di:waypoint x="355" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_cambio_2_di" bpmnElement="F_SP_cambio_2"><di:waypoint x="405" y="100"/><di:waypoint x="468" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_cambio_3_di" bpmnElement="F_SP_cambio_3"><di:waypoint x="592" y="100"/><di:waypoint x="618" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_cambio_4_di" bpmnElement="F_SP_cambio_4"><di:waypoint x="742" y="100"/><di:waypoint x="812" y="100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SP_cambio_5_di" bpmnElement="F_SP_cambio_5"><di:waypoint x="380" y="125"/><di:waypoint x="380" y="213"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>

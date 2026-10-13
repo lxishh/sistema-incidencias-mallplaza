@@ -1,0 +1,80 @@
+[
+  {
+    "codigo": "N2Z6K4HRJM",
+    "nombre": "[DEMO] Acceso principal peatonal",
+    "sector": "Accesos",
+    "nivel_transito": "ALTO_TRANSITO"
+  },
+  {
+    "codigo": "S8LL7ZRNWY",
+    "nombre": "[DEMO] Pasillo central, nivel 1",
+    "sector": "Nivel 1",
+    "nivel_transito": "ALTO_TRANSITO"
+  },
+  {
+    "codigo": "F6TWH8U5FX",
+    "nombre": "[DEMO] Escaleras mecánicas centrales",
+    "sector": "Nivel 1-2",
+    "nivel_transito": "ALTO_TRANSITO"
+  },
+  {
+    "codigo": "ET5WN4FYG8",
+    "nombre": "[DEMO] Patio de comidas, zona de mesas",
+    "sector": "Patio de comidas",
+    "nivel_transito": "ALTO_TRANSITO"
+  },
+  {
+    "codigo": "M2WM9XRWJR",
+    "nombre": "[DEMO] Baños del patio de comidas",
+    "sector": "Patio de comidas",
+    "nivel_transito": "ALTO_TRANSITO"
+  },
+  {
+    "codigo": "9N7CWLD3YN",
+    "nombre": "[DEMO] Hall de acceso al cine",
+    "sector": "Entretención",
+    "nivel_transito": "TRANSITO_MEDIO"
+  },
+  {
+    "codigo": "F32MPDJDL2",
+    "nombre": "[DEMO] Servicio al cliente y cajeros",
+    "sector": "Nivel 1",
+    "nivel_transito": "TRANSITO_MEDIO"
+  },
+  {
+    "codigo": "A7QNHC9UZ2",
+    "nombre": "[DEMO] Pasillo de tiendas, nivel 2",
+    "sector": "Nivel 2",
+    "nivel_transito": "TRANSITO_MEDIO"
+  },
+  {
+    "codigo": "3C8MSM3RPR",
+    "nombre": "[DEMO] Baños del nivel 2",
+    "sector": "Nivel 2",
+    "nivel_transito": "TRANSITO_MEDIO"
+  },
+  {
+    "codigo": "BEQXUHTA5J",
+    "nombre": "[DEMO] Estacionamiento, acceso peatonal",
+    "sector": "Estacionamientos",
+    "nivel_transito": "TRANSITO_MEDIO"
+  },
+  {
+    "codigo": "UKSMMJGEMS",
+    "nombre": "[DEMO] Estacionamiento, sector alejado",
+    "sector": "Estacionamientos",
+    "nivel_transito": "BAJO_TRANSITO"
+  },
+  {
+    "codigo": "TJZYUMV3RC",
+    "nombre": "[DEMO] Andén de carga y descarga",
+    "sector": "Servicios internos",
+    "nivel_transito": "BAJO_TRANSITO"
+  },
+  {
+    "codigo": "9CPW6695DS",
+    "nombre": "[DEMO] Pasillo de servicio y bodega de mantenimiento",
+    "sector": "Servicios internos",
+    "nivel_transito": "BAJO_TRANSITO"
+  }
+]
