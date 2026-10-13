@@ -57,16 +57,17 @@ function authRouter({ config, pool }) {
           "INVALID_CREDENTIALS",
           "Credenciales inválidas",
         );
+      const sessionTtlMinutes = config.SESSION_TTL_MINUTES;
       const token = jwt.sign({ rol: user.rol }, config.JWT_SECRET, {
         subject: String(user.id),
         algorithm: "HS256",
-        expiresIn: "30m",
+        expiresIn: `${sessionTtlMinutes}m`,
       });
       res.cookie("mallplaza_session", token, {
         httpOnly: true,
         sameSite: "strict",
         secure: config.NODE_ENV === "production",
-        maxAge: 30 * 60 * 1000,
+        maxAge: sessionTtlMinutes * 60 * 1000,
         path: "/",
       });
       res.status(200).json({

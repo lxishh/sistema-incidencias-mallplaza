@@ -16,6 +16,7 @@ const schema = z.object({
     }, "Debe ser una zona horaria IANA válida"),
   RATE_LIMIT_LOGIN_MAX: z.coerce.number().int().positive().default(10),
   RATE_LIMIT_INCIDENCIAS_MAX: z.coerce.number().int().positive().default(60),
+  SESSION_TTL_MINUTES: z.coerce.number().int().positive().default(30),
 });
 function loadConfig(env = process.env) {
   const parsed = schema.safeParse(env);

@@ -47,6 +47,8 @@ Por defecto se crea una cuenta ficticia:
 
 Estos valores y la clave JWT predeterminada son solo para el perfil local desechable. No usar información real, contraseñas reutilizadas ni reportes operativos. Para personalizar la cuenta, configura `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` y, opcionalmente, `SEED_ADMIN_NOMBRE` en el archivo `.env` local (ignorado por Git) antes del primer seed. La semilla no sobrescribe una cuenta existente con el mismo correo.
 
+La duración de la sesión de Jefatura está configurada por defecto en 30 minutos (mitigación de TC-46). Se puede personalizar con la variable de entorno `SESSION_TTL_MINUTES` (número entero positivo en minutos), la cual ajusta de forma sincronizada el tiempo de expiración del JWT y el `maxAge` de la cookie `mallplaza_session`.
+
 La base usa el volumen `mallplaza-postgres` y mantiene `mallplaza_dev` y la base de pruebas local. Las migraciones se aplican en cada inicio de la API y no recrean la base.
 
 ## Desarrollo y compilación fuera de Docker

@@ -31,6 +31,7 @@ services:
       DATABASE_URL: postgresql://mallplaza:mallplaza_dev@postgres:5432/mallplaza_dev
       JWT_SECRET: ${JWT_SECRET:-local-development-only-jwt-secret-change-before-deployment}
       REPORT_TZ: America/Santiago
+      SESSION_TTL_MINUTES: ${SESSION_TTL_MINUTES:-30}
       SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-jefatura@example.test}
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-LocalDemo-2026-Only!}
       SEED_ADMIN_NOMBRE: ${SEED_ADMIN_NOMBRE:-Jefatura Demo}
