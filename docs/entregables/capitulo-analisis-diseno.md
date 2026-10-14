@@ -65,7 +65,7 @@ El proyecto es técnicamente factible. El prototipo cubre 31 de los 40 requerimi
 | Integración con Casa Central | Cliente simulado y auditoría probados; contrato sin definir | Alto | Adaptador aislado, reintentos diseñados y cierre del contrato con TI de Mallplaza |
 | Lectura del QR en celulares | Sin prueba en iPhone ni Android | Medio | Probar en dispositivos reales; la cámara en PWA exige HTTPS |
 | Capacidad de la instancia t3.micro | 20 envíos simultáneos locales sin errores; sin prueba de carga real | Medio | Prueba de carga con el volumen esperado |
-| Seguridad y datos personales | bcrypt, RUT fuera de registros; el token de sesión no se revoca al cerrar sesión (8 horas) | Medio | Acortar la vigencia o revocar; política según Ley 21.719 |
+| Seguridad y datos personales | bcrypt, RUT fuera de registros; vigencia de sesión acortada y configurable (30 min por defecto); token_version planificada | Medio | Vigencia reducida mitiga exposición; invalidación con versión de token en backlog; política según Ley 21.719 |
 | Disponibilidad | Una instancia y base de datos en una sola zona | Medio | Ajustar el objetivo o presupuestar alta disponibilidad |
 
 : Tabla 4. Evaluación de factibilidad técnica. Fuente: Elaboración propia.
@@ -529,7 +529,7 @@ El 10 de octubre de 2026 pasó completa la suite automatizada del repositorio (3
 
 : Tabla 23. Casos de prueba ejecutados contra el backend (10 de octubre de 2026). Fuente: Elaboración propia.
 
-El hallazgo **TC-46** indica que la cookie de sesión copiada antes de cerrar sesión sigue siendo válida hasta que expira (8 horas), porque el token no se revoca en el servidor. El requisito RF-03 se cumple en el navegador, pero conviene acortar la vigencia o agregar revocación. La medición de rendimiento (p95 de 6 ms en 30 envíos y 20 envíos simultáneos sin errores) es una referencia local y no reemplaza una prueba de carga en un entorno parecido a producción.
+El hallazgo **TC-46** indicó originalmente que la cookie de sesión previa seguía siendo válida hasta su expiración. Como mitigación de corto plazo para la entrega, la vigencia se redujo y se parametrizó mediante la variable `SESSION_TTL_MINUTES` (30 minutos por defecto, en lugar de 8 horas), sincronizada con el `maxAge` de la cookie. Adicionalmente, el frontend detecta la expiración (HTTP 401), detiene el refresco automático y retorna al acceso informando al usuario. La solución de fondo (revocación en base de datos mediante `token_version`, Solución B) quedó planificada como tarea técnica T14 para posterior desarrollo. La medición de rendimiento (p95 de 6 ms en 30 envíos y 20 envíos simultáneos sin errores) es una referencia local y no reemplaza una prueba de carga en un entorno parecido a producción.
 
 ## 9. Normas y estándares aplicados
 
